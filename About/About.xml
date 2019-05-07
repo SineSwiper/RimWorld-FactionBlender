@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+    <name>Faction Blender</name>
+    <author>SineSwiper</author>
+    <url>https://github.com/SineSwiper/RimWorld-FactionBlender</url>
+    <supportedVersions><li>1.0</li></supportedVersions>
+<description>Are you annoyed that you downloaded all of these different races and animal mods, but they come with some boring homogeneous faction to show them off?  Wouldn't it be more realistic if there were a faction that brought these races together?
+
+Faction Blender fixes this problem by introducing a new faction that takes in refugees and wanderers from all races and walks of life to form a civil coalition!
+
+Hobbits, Dwarves, and Elves from Lord of the Rim?  Check.  Elder Things?  Check.  Asari from RimEffect?  Got them.  Federation soldiers and their creations?  GlitterTech commandos?  Tanks?  Dinosaurs?  Mechanoids?  Genetic Rim monstrosities?  Eldritch horrors?  Some race mod you just created?  Yep, all of them.
+
+Just have vanilla pawns in your game?  Now you have a faction with outlanders, tribals, mechanoids, and thrumbos.
+
+Pirates aren't left out, either.  An amalgam pirate band will come stomping with their own unified gang of pawns to terrorize your town, too.
+
+As a bonus, this also fixes a problem with non-vanilla pack animals being left out of trading caravans, due to missing BiomeDef declarations.
+
+Requires HugsLib.</description>
+</ModMetaData>

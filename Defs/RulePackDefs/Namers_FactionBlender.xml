@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- This is a special namer to make sure we always use some form of [political_union_outlander] (ie: a coalition) -->
+
+  <!-- Civil Coalition -->
+
+  <RulePackDef>
+    <defName>NamerFaction_FB_Civil</defName>
+    <include>
+      <li>OutlanderPlaceNameUtility</li>
+    </include>
+    <rulePack>
+      <rulesStrings>
+        <li>r_name->[civil_noun] [political_union_outlander]</li>
+        <li>r_name->[civil_noun] [political_adjective] [political_union_outlander]</li>
+        <li>r_name->[political_union_outlander] of [civil_noun]</li>
+        <li>r_name->[political_union_outlander] for [civil_noun]</li>
+        <li>r_name->[political_adjective] [political_union_outlander] of [civil_noun]</li>
+        <li>r_name->[political_adjective] [political_union_outlander] for [civil_noun]</li>
+        <li>r_name(p=0.6)->[political_adjective] [political_union_outlander]</li>
+
+        <li>civil_noun->One</li>
+        <li>civil_noun->the Many</li>
+        <li>civil_noun->All</li>
+        <li>civil_noun(p=0.6)->[PlaceOutlander]</li>
+        <li>civil_noun(p=0.4)->[Direction] [PlaceOutlander]</li>
+      </rulesStrings>
+      <rulesFiles>
+        <li>political_union_outlander->Words/Nouns/PoliticalUnions_Outlander</li>
+        <li>political_adjective->Words/Adjectives/PoliticalUnions</li>
+      </rulesFiles>
+    </rulePack>
+  </RulePackDef>
+
+  <!-- Amalgam Pirate Band -->
+
+  <RulePackDef>
+    <defName>NamerFaction_FB_Pirate</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>r_name->The [ColorBadass] [political_union_outlander]</li>
+        <li>r_name->The [AdjectiveBadass] [political_union_outlander]</li>
+
+        <li>r_name->The [political_union_outlander] of [badass_item]s</li>
+        <li>r_name->The [badass_item] [political_union_outlander]</li>
+        <li>r_name->The [badass_item]'s [political_union_outlander]</li>
+        <li>r_name->The [badass_item]s' [political_union_outlander]</li>
+        <li>r_name->[political_union_outlander] of the [badass_item]</li>
+
+        <li>r_name->The [political_union_outlander]'s [badass_group]</li>
+        <li>r_name->The [badass_group] of [political_union_outlander]s</li>
+
+        <li>badass_item->[Weapon]</li>
+        <li>badass_item->[ColorBadass] [Weapon]</li>
+        <li>badass_item->[AdjectiveBadass] [Weapon]</li>
+        <li>badass_item->[PersonBadass]</li>
+        <li>badass_item->[ColorBadass] [PersonBadass]</li>
+        <li>badass_item->[AdjectiveBadass] [PersonBadass]</li>
+        <li>badass_item->[Enemy]</li>
+        <li>badass_item->[ColorBadass] [Enemy]</li>
+        <li>badass_item->[AdjectiveBadass] [Enemy]</li>
+        <li>badass_item->[ConceptBadass]</li>
+        <li>badass_item->[ColorBadass] [ConceptBadass]</li>
+        <li>badass_item->[AdjectiveBadass] [ConceptBadass]</li>
+        <li>badass_item->[ColorBadass] [Bodypart]</li>
+        <li>badass_item->[ColorBadass] [AnimalBadass]</li>
+        <li>badass_item->[AdjectiveBadass] [AnimalBadass]</li>
+        <li>badass_item->[AdjectiveLarge] [AnimalBadass]</li>
+
+        <li>badass_group->[groupname]</li>
+        <li>badass_group->[AnimalGroup]</li>
+        <li>badass_group->[ConceptBadass]</li>
+        <li>badass_group->[ColorBadass] [ConceptBadass]</li>
+        <li>badass_group(p=0.4)->[Gore]</li>
+      </rulesStrings>
+      <rulesFiles>
+        <li>political_union_outlander->Words/Nouns/PoliticalUnions_Outlander</li>
+        <li>groupname->Words/Nouns/GroupNames</li>
+      </rulesFiles>
+    </rulePack>
+  </RulePackDef>
+
+</Defs>
