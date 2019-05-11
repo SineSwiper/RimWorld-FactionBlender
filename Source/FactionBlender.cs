@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using HugsLib;
+using HugsLib.Settings;
 using Verse;
 
 namespace FactionBlender {
+    [StaticConstructorOnStartup]
     public class Base : ModBase {
         public override string ModIdentifier {
             get { return "FactionBlender"; }
@@ -14,12 +16,20 @@ namespace FactionBlender {
         public Base() {
             Instance = this;
         }
+
+        // Settings
+        internal static SettingHandle<bool>   filterWeakerAnimalsRaids;
+        internal static SettingHandle<bool>   filterSlowPawnsCaravans;
+        internal static SettingHandle<bool>   filterSmallerPackAnimalsCaravans;
+        internal static SettingHandle<int>    pawnKindDifficultyLevel;
+        internal static SettingHandle<string> excludedFactionTypes;
+
         public override void DefsLoaded() {
             var FB_Factions = new List<FactionDef>();
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
             FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
 
-            Logger.Message("Scanning and inserting hair, backstory, trader kinds, and pawn groups");
+            Logger.Message("Scanning and inserting hair, backstory, and trader kinds");
             foreach (FactionDef FBfac in FB_Factions) {
                 // NOTE: RemoveDuplicates only does an object comparison, which isn't good enough for these strings.
             
@@ -58,6 +68,76 @@ namespace FactionBlender {
             FB_Civil.caravanTraderKinds.RemoveDuplicates();
             FB_Civil.visitorTraderKinds.RemoveDuplicates();
             FB_Civil.   baseTraderKinds.RemoveDuplicates();
+
+            this.ProcessSettings();
+            this.RepopulatePawnKindDefs();
+        }
+
+        public void ProcessSettings () {
+            // Read/declare settings
+            filterWeakerAnimalsRaids = Settings.GetHandle<bool>(
+                "FilterWeakerAnimalsRaids", "FB_FilterWeakerAnimalsRaids_Title".Translate(), "FB_FilterWeakerAnimalsRaids_Description".Translate(),
+                true
+            );
+            filterWeakerAnimalsRaids.DisplayOrder = 1;
+
+            filterSlowPawnsCaravans = Settings.GetHandle<bool>(
+                "FilterSlowPawnsCaravans", "FB_FilterSlowPawnsCaravans_Title".Translate(), "FB_FilterSlowPawnsCaravans_Description".Translate(),
+                true
+            );
+            filterSlowPawnsCaravans.DisplayOrder = 2;
+
+            filterSmallerPackAnimalsCaravans = Settings.GetHandle<bool>(
+                "FilterSmallerPackAnimalsCaravans", "FB_FilterSmallerPackAnimalsCaravans_Title".Translate(), "FB_FilterSmallerPackAnimalsCaravans_Description".Translate(),
+                true
+            );
+            filterSmallerPackAnimalsCaravans.DisplayOrder = 3;
+
+            pawnKindDifficultyLevel = Settings.GetHandle<int>(
+                "PawnKindDifficultyLevel", "FB_PawnKindDifficultyLevel_Title".Translate(), "FB_PawnKindDifficultyLevel_Description".Translate(),
+                5000, Validators.IntRangeValidator(100, 100000)
+            );
+            pawnKindDifficultyLevel.DisplayOrder = 4;
+
+            excludedFactionTypes = Settings.GetHandle<string>(
+                "ExcludedFactionTypes", "FB_ExcludedFactionTypes_Title".Translate(), "FB_ExcludedFactionTypes_Description".Translate(),
+                // No Vampires: Too many post-XML modifications and they tend to burn up on entry, anyway
+                // No Star Vampires: They are loners that attack ANYBODY on contact, including their own faction
+                "ROMV_Sabbat, ROM_StarVampire"
+                // TODO: Validator here...
+            );
+            excludedFactionTypes.DisplayOrder = 5;
+
+            // Changing any setting should trigger the repopulation method
+            foreach (var setting in new SettingHandle<bool>[] {
+                filterWeakerAnimalsRaids, filterSlowPawnsCaravans, filterSmallerPackAnimalsCaravans
+            } ) {
+                setting.OnValueChanged = x => { Instance.RepopulatePawnKindDefs(); };
+            }
+            pawnKindDifficultyLevel.OnValueChanged = x => { Instance.RepopulatePawnKindDefs(); };
+            excludedFactionTypes   .OnValueChanged = x => { Instance.RepopulatePawnKindDefs(); };
+        }
+
+        // TODO: Figure out why ARWoM monsters don't show up
+
+        public void RepopulatePawnKindDefs() {
+            var FB_Factions = new List<FactionDef>();
+            FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
+            FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
+
+            // Split out excludedFactionTypes
+            string[] excludedFactionTypesList = Regex.Split(excludedFactionTypes.Value.Trim(), "[^\\w]+");
+
+            Logger.Message("Scanning and inserting pawn groups");
+
+            // Clear out old settings, if any
+            foreach (FactionDef FBfac in FB_Factions) {
+                foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {
+                    foreach (var optList in new List<PawnGenOption>[] { maker.options, maker.traders, maker.carriers, maker.guards } ) {
+                        optList.RemoveAll(x => true);
+                    }
+                }
+            }
 
             // Loop through each PawnKindDef
             foreach (PawnKindDef pawn in DefDatabase<PawnKindDef>.AllDefs) {
@@ -115,16 +195,33 @@ namespace FactionBlender {
                 if (isHeavyWeapons)  msg += "Heavy Weapons, ";
 
                 msg += "Speed: " + pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed);
-                if (isSniper || isHeavyWeapons) Logger.Message(msg);
+                if (pawn.combatPower > 1000) Logger.Message(msg);
                 */
 
+                // Filter by defaultFactionType
                 if (pawn.defaultFactionType != null) {
-                    // No Vampires: Too many post-XML modifications and they tend to burn up on entry, anyway
-                    if (pawn.defaultFactionType.defName == "ROMV_Sabbat") continue;
-
-                    // No Star Vampires: They are loners that attack ANYBODY on contact, including their own faction
-                    if (pawn.defaultFactionType.defName == "ROM_StarVampire") continue;
+                    foreach (string factionDefName in excludedFactionTypesList) {
+                        string trimmed = factionDefName.Trim();
+                        if (trimmed.Length >= 1 && pawn.defaultFactionType.defName == trimmed) continue;
+                    }
                 }
+
+                /* True Story: Sarg Bjornson (Genetic Rim author) added Archotech Centipedes and somebody ended up
+                 * fighting one in a FB raid the same day.  Amusing, but, in @Extinction's words, "a fight of
+                 * apocalyptic proportions".
+                 * 
+                 * High combatPower pawns to look out for:
+                 * 
+                 * Archotech Centipedes at 10K power
+                 * Heavy MERFs at 1500 (why?)
+                 * AI haul/clean bots are at 999,999 for some reason (Misc. Robots)
+                 * Demons (from ARWoM) at 3000 (though I never see ARWoM monsters in FB raids...)
+                 * Greater Elementals (ARWoM) at 1500
+                 * Alpha Werewolves, Mechathrumbos, Gallatrosses at 1000
+                 * 
+                 * For vanilla reference, Mech_Centipedes are 400 and Thrumbos are 500.
+                 */
+                if (pawn.combatPower > pawnKindDifficultyLevel.Value) continue;
 
                 foreach (FactionDef FBfac in FB_Factions) {
                     foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {
@@ -152,8 +249,10 @@ namespace FactionBlender {
                             if (!pawn.isFighter) continue;
 
                             // If it's an animal, make sure Vegeta agrees with the power level
-                            if (race.Animal     && pawn.combatPower < minCombatPower)      continue;
-                            if (race.herdAnimal && pawn.combatPower < minCombatPower + 50) continue;
+                            if (filterWeakerAnimalsRaids.Value) {
+                                if (race.Animal     && pawn.combatPower < minCombatPower)      continue;
+                                if (race.herdAnimal && pawn.combatPower < minCombatPower + 50) continue;
+                            }
 
                             // XXX: Unfortunately, there are no names for these pawnGroupMakers, so we have to use commonality
                             // to identify each type.
@@ -171,7 +270,7 @@ namespace FactionBlender {
                         }
                         else if (isTrader) {
                             // Enforce a minimum speed.  Trader pawns shouldn't get left too far behind, especially pack animals.
-                            if (pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed) < 3) continue;
+                            if (filterSlowPawnsCaravans.Value && pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed) < 3) continue;
                             
                             // Trader group makers split up their pawns into three buckets.  The pawn will go into one of those
                             // three, or none of them.
@@ -180,12 +279,7 @@ namespace FactionBlender {
                             }
                             else if (
                                 race.packAnimal &&
-                                /* As amusing as it is watching chickenffalos hauling a bunch of goods with their tiny little bags,
-                                 * the game tends to unrealistically overload them with 20-25x their carry weight, instead of
-                                 * spawning more of them to carry the load.  And who the hell would actually use these to haul
-                                 * things, anyway?  No catfellos, either.
-                                 */
-                                race.baseBodySize >= 1
+                                (!filterSmallerPackAnimalsCaravans.Value || race.baseBodySize >= 1)
                             ) {
                                 maker.carriers.Add(newOpt);
                             }
