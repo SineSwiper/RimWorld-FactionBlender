@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
     <FB_FilterWeakerAnimalsRaids_Title>Filter weaker animals in raids</FB_FilterWeakerAnimalsRaids_Title>
-    <FB_FilterWeakerAnimalsRaids_Description>Don't include weaker animals in both pirate and civil raids, based on combat power.  Fluffy bunny rabbits aren't very useful in combat.</FB_FilterWeakerAnimalsRaids_Description>
+    <FB_FilterWeakerAnimalsRaids_Description>Controls which animals to include in pirate raids, based on minimum combat power.  Civil raids will use a smaller version of this filter.</FB_FilterWeakerAnimalsRaids_Description>
     <FB_FilterSlowPawnsCaravans_Title>Filter slow pawns in caravans</FB_FilterSlowPawnsCaravans_Title>
-    <FB_FilterSlowPawnsCaravans_Description>Don't include slower humanlike or animal pawns in trade caravans.  These pawns might make it easier for hostiles (or your own colony) to pick them off without a proper defense.</FB_FilterSlowPawnsCaravans_Description>
+    <FB_FilterSlowPawnsCaravans_Description>Controls the minimum base movement speed of humanlike or animal pawns in trade caravans.  These pawns might make it easier for hostiles (or your own colony) to pick them off without a proper defense.</FB_FilterSlowPawnsCaravans_Description>
     <FB_FilterSmallerPackAnimalsCaravans_Title>Filter smaller pack animals in caravans</FB_FilterSmallerPackAnimalsCaravans_Title>
-    <FB_FilterSmallerPackAnimalsCaravans_Description>Don't include smaller pack animals in trade caravans.  As amusing as it is watching chickenffalos or catfellos hauling a bunch of goods with their tiny little bags, the game tends to unrealistically overload them with 20-25x their carry weight, instead of spawning more of them to carry the load.</FB_FilterSmallerPackAnimalsCaravans_Description>
+    <FB_FilterSmallerPackAnimalsCaravans_Description>Controls how small pack animals can be in trade caravans, based on base body size.  As amusing as it is watching chickenffalos or catfellos hauling a bunch of goods with their tiny little bags, the game tends to unrealistically overload them with 20-25x their carry weight, instead of spawning more of them to carry the load.</FB_FilterSmallerPackAnimalsCaravans_Description>
     <FB_PawnKindDifficultyLevel_Title>Pawn kind difficulty level</FB_PawnKindDifficultyLevel_Title>
-    <FB_PawnKindDifficultyLevel_Description>Controls what kind of pawns might show up, based on combat power.  The higher the level, the more pawn kinds are included in the pool.  Does not control anything about the size of raids, how many of each type appears, or how the raid formula works.</FB_PawnKindDifficultyLevel_Description>
+    <FB_PawnKindDifficultyLevel_Description>Controls what kind of pawns might show up, based on maximum combat power.  The higher the level, the more pawn kinds are included in the pool.  Does not control anything about the size of raids, how many of each type appears, or how the raid formula works.</FB_PawnKindDifficultyLevel_Description>
     <FB_ExcludedFactionTypes_Title>Excluded pawn kinds by faction type</FB_ExcludedFactionTypes_Title>
     <FB_ExcludedFactionTypes_Description>A comma-delimited string of faction defNames.  This list is used to filter out pawns that belong to one of these defaultFactionTypes.</FB_ExcludedFactionTypes_Description>
+    <Filtered>Filtered</Filtered>
 </LanguageData>
