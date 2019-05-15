@@ -84,6 +84,7 @@ namespace FactionBlender {
         }
 
         public override void SettingsChanged() {
+            lastSettingChanged = "";
             this.RepopulatePawnKindDefs();
         }
 
@@ -93,6 +94,8 @@ namespace FactionBlender {
             // Read/declare settings
             filterWeakerAnimalsRaids = Settings.GetHandle<float>(
                 "FilterWeakerAnimalsRaids", "FB_FilterWeakerAnimalsRaids_Title".Translate(), "FB_FilterWeakerAnimalsRaids_Description".Translate(),
+                // Pirates will want stronger animals.  Bears are 200, and we definitely don't want to exclude
+                // those.  Muffalos are 100, which is probably something a pirate raid shouldn't have.
                 150, Validators.FloatRangeValidator(0, 400)
             );
             filterWeakerAnimalsRaids.DisplayOrder = 1;
@@ -105,6 +108,8 @@ namespace FactionBlender {
 
             filterSlowPawnsCaravans = Settings.GetHandle<float>(
                 "FilterSlowPawnsCaravans", "FB_FilterSlowPawnsCaravans_Title".Translate(), "FB_FilterSlowPawnsCaravans_Description".Translate(),
+                // MoveSpeed of 3.0 is still slower than the 4.6 humanlike pawns, but fast enough for them to not
+                // lag too far behind.  Don't want to go beyond 4.0, as that hits stuff like Muffallos.
                 3, Validators.FloatRangeValidator(0, 4)
             );
             filterSlowPawnsCaravans.DisplayOrder = 3;
@@ -129,6 +134,7 @@ namespace FactionBlender {
 
             pawnKindDifficultyLevel = Settings.GetHandle<float>(
                 "PawnKindDifficultyLevel", "FB_PawnKindDifficultyLevel_Title".Translate(), "FB_PawnKindDifficultyLevel_Description".Translate(),
+                // This should just filter out the Archotech Centipede
                 5000, Validators.IntRangeValidator(100, 12000)
             );
             pawnKindDifficultyLevel.DisplayOrder = 7;
@@ -146,6 +152,7 @@ namespace FactionBlender {
                 "ROMV_Sabbat, ROM_StarVampire"
             );
             excludedFactionTypes.DisplayOrder = 9;
+            // XXX: You need to actually hit Enter to see the filtered list.  Need an onClick here somehow.
             excludedFactionTypes.OnValueChanged = x => { lastSettingChanged = "excludedFactionTypes"; };
 
             // Add filter displays
@@ -394,9 +401,8 @@ namespace FactionBlender {
 
                 // If it's an animal, make sure Vegeta agrees with the power level
                 if (filterWeakerAnimalsRaids.Value > 0) {
-                    bool? rejectVal = watchSetting == "filterWeakerAnimalsRaids" ? nil : false;
-                    if (race.Animal     && pawn.combatPower < minCombatPower)      return rejectVal;
-                    if (race.herdAnimal && pawn.combatPower < minCombatPower + 50) return rejectVal;
+                    if (race.Animal && pawn.combatPower < minCombatPower)
+                        return watchSetting == "filterWeakerAnimalsRaids" ? nil : false;
                 }
             }
             // Trade filters //
