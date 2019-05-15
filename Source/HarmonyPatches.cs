@@ -1,9 +1,10 @@
 ﻿using Harmony;
 using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Verse;
+using UnityEngine;
 
 namespace FactionBlender {
     [StaticConstructorOnStartup]
@@ -160,6 +161,127 @@ namespace FactionBlender {
                     return false;
                 }
                 return true;
+            }
+        }
+
+        /* A better version of GenerateCarriers.
+         * 
+         * Vanilla pack animal creation for caravans doesn't really take into account the variety of pack
+         * animals we now have.  It typically only creates 3-4 pack animals and randomly stuffs them with all
+         * of the wares.  This will happen even if, say, tiny chickenffalos can't hold the massive load.  Or
+         * it will split them up among 3-4 huge paraceramuffalo that could still hold 10 times the amount.
+         * 
+         * I wish I had the patience to figure out how make the small tweak as a transpiler fix.  However,
+         * since I plan on just writing this override, I might as well add in my other ideas.
+         * 
+         * Like the IsPackAnimalAllowed patch, this maybe should be its own "Fix Pack Animals" mod.
+         */
+
+        [HarmonyPatch(typeof (PawnGroupKindWorker_Trader), "GenerateCarriers", null)]
+        public static class GenerateCarriers_Override {
+            
+            // This may be an complete override, but if anybody wants to add another prefix, it will default to
+            // run before this.  I don't think anybody's really messed with this method, though.
+            [HarmonyPriority(Priority.Last)]
+            [HarmonyPrefix]
+            private static bool Prefix(PawnGroupMakerParms parms, PawnGroupMaker groupMaker, Pawn trader, List<Thing> wares, List<Pawn> outPawns) {
+                Func<Thing, float> massTotaler = t => t.stackCount * t.GetStatValue(StatDefOf.Mass, true);
+                
+                List<Thing> list = wares.Where(t => !(t is Pawn)).ToList();
+                list.SortByDescending(massTotaler);
+                
+                float ttlMassThings = list.Sum(massTotaler);
+                float ttlCapacity   = 0f;
+                float ttlBodySize   = 0f;
+                int   numCarriers   = 0;
+
+                IEnumerable<PawnGenOption> carrierKinds = groupMaker.carriers.Where(p => {
+                    if (parms.tile != -1)
+                        return Find.WorldGrid[parms.tile].biome.IsPackAnimalAllowed(p.kind.race);
+                    return true;
+                });
+
+                PawnKindDef kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
+
+                // No slow or small juveniles
+                Predicate<Pawn> validator = (p =>
+                    p.ageTracker.CurLifeStage.bodySizeFactor >= 1 &&
+                    p.GetStatValue(StatDefOf.MoveSpeed, true) >= p.kindDef.race.GetStatValueAbstract(StatDefOf.MoveSpeed)
+                );
+
+                // 50/50 chance of uniform carriers (like vanilla) or mixed carriers
+                bool mixedCarriers = Rand.RangeInclusive(0, 1) == 1;
+
+                // Generate all of the carrier pawns (empty).  Either we spawn as many pawns as we need to cover
+                // 120% of the weight of the items, or enough pawns before it seems "unreasonable" based on body
+                // size.
+                for (; ttlCapacity < ttlMassThings * 1.2 && ttlBodySize < 20; numCarriers++) {
+                    // Still the most abusive constructor I've ever seen...
+                    PawnGenerationRequest request = new PawnGenerationRequest(
+                        kind, parms.faction, PawnGenerationContext.NonPlayer, parms.tile, false, false, false, false, true, false, 1f, false, true, true,
+                        parms.inhabitants, false, false, false, validator, null, new float?(), new float?(), new float?(), new Gender?(), new float?(), null
+                    );
+                    Pawn pawn = PawnGenerator.GeneratePawn(request);
+                    outPawns.Add(pawn);
+                    
+                    ttlCapacity += MassUtility.Capacity(pawn);
+                    // Still can't have 100 chickenmuffalos.  That might slow down some PCs.
+                    ttlBodySize += Mathf.Max(pawn.BodySize, 0.5f);
+
+                    if (mixedCarriers) kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
+                }
+
+                // Add items (in descending order of weight) to randomly chosen pack animals.  This isn't the most
+                // efficient routine, as we're trying to be a bit random.  If I was trying to be efficient, I would
+                // use something like SortByDescending(p.Capacity) against the existing thing list.
+                foreach (Thing thing in list) {
+                    List<Pawn> validPawns = outPawns.FindAll(p => !MassUtility.WillBeOverEncumberedAfterPickingUp(p, thing, thing.stackCount));
+
+                    if (validPawns.Count() != 0) {
+                        validPawns.RandomElement().inventory.innerContainer.TryAdd(thing, true);
+                    }
+                    else if (thing.stackCount > 1) {
+                        // No carrier can handle the full stack; split it up
+                        int countLeft = thing.stackCount;
+                        int c = 0;  // safety counter (while loops can be dangerous)
+                        while (countLeft > 0) {
+                            validPawns = outPawns.FindAll(p => MassUtility.CountToPickUpUntilOverEncumbered(p, thing) >= 1);
+                            if (validPawns.Count() != 0 && c < thing.stackCount) {
+                                Pawn pawn = validPawns.RandomElement();
+                                int countToAdd = Mathf.Min( MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing), countLeft );
+                                countLeft -= pawn.inventory.innerContainer.TryAdd(thing, countToAdd, true);
+                            }
+                            else {
+                                // Either no carrier can handle a single item, or we're just in some bad while loop breakout.  In
+                                // any case, force it in, evenly split among all carriers.
+                                int splitCount = Mathf.FloorToInt(countLeft / outPawns.Count());
+                                if (splitCount > 0) {
+                                    outPawns.ForEach(p => p.inventory.innerContainer.TryAdd(thing, splitCount, true));
+                                    countLeft -= splitCount * outPawns.Count();
+                                }
+                                
+                                // Give the remainer to the ones with space (one at a time)
+                                while (countLeft > 0) {
+                                    validPawns = new List<Pawn>(outPawns);
+                                    validPawns.SortByDescending(p => MassUtility.FreeSpace(p));
+                                    validPawns.First().inventory.innerContainer.TryAdd(thing, 1, true);
+                                    countLeft--;
+                                }
+                                break;
+                            }
+                            c++;
+                        }
+                    }
+                    else {
+                        // No way to split it; force it in
+                        validPawns = new List<Pawn>(outPawns);
+                        validPawns.SortByDescending(p => MassUtility.FreeSpace(p));
+                        validPawns.First().inventory.innerContainer.TryAdd(thing, true);
+                    }
+                }
+
+                // Always skip the original method
+                return false;
             }
         }
     }
