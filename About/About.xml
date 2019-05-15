@@ -14,7 +14,7 @@ Just have vanilla pawns in your game?  Now you have a faction with outlanders, t
 
 Pirates aren't left out, either.  An amalgam pirate band will come stomping with their own unified gang of pawns to terrorize your town, too.
 
-As a bonus, this also fixes a problem with non-vanilla pack animals being left out of trading caravans, due to missing BiomeDef declarations.
+As a bonus, this also fixes a few problems with trade caravan pack animals, increasing the variety and how they carry their cargo.
 
 Requires HugsLib.</description>
 </ModMetaData>

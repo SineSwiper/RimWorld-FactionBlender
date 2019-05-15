@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HugsLib.UpdateFeatureDef Abstract="true" Name="UpdateFeatureBase">
+		<modNameReadable>Faction Blender</modNameReadable>
+		<modIdentifier>FactionBlender</modIdentifier>
+		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1734490820</linkUrl>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_1_0</defName>
+		<assemblyVersion>1.1.0.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added a config menu.  Now you can tweak which pawns are included in various groups.
+- Replaced the caravan pack animal generation algorithm.  Now, trade caravan pack animals will vary in count based on the wares weight, will sometimes show up with a variety of pack animals, and will try to balance the cargo's weight without overloading themselves (usually).
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- The new Archotech Centipede from Genetic Rim is no longer a threat.  Unless you want to re-adjust the slider...
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- A few more varations on faction names
+- The herdAnimal property is no longer a factor in determining if they are appropriate in combat
+- Since the pack animal algorithm has been replaced, body size is no longer a factor in determining appropriate caravan pack animals
+        </content>
+	</HugsLib.UpdateFeatureDef>
+</Defs>
