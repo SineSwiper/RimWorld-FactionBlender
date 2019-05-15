@@ -20,13 +20,11 @@ namespace FactionBlender {
         // Settings
         internal static SettingHandle<float>  filterWeakerAnimalsRaids;
         internal static SettingHandle<float>  filterSlowPawnsCaravans;
-        internal static SettingHandle<float>  filterSmallerPackAnimalsCaravans;
         internal static SettingHandle<float>  pawnKindDifficultyLevel;
         internal static SettingHandle<string> excludedFactionTypes;
 
         public static SettingHandle<float>  fwarFilterDisplay;
         public static SettingHandle<float>  fspcFilterDisplay;
-        public static SettingHandle<float>  fspacFilterDisplay;
         public static SettingHandle<float>  pkdlFilterDisplay;
         public static SettingHandle<string> eftFilterDisplay;
 
@@ -120,24 +118,12 @@ namespace FactionBlender {
             };
             filterSlowPawnsCaravans.OnValueChanged = x => { lastSettingChanged = "filterSlowPawnsCaravans"; };
 
-            filterSmallerPackAnimalsCaravans = Settings.GetHandle<float>(
-                "FilterSmallerPackAnimalsCaravans", "FB_FilterSmallerPackAnimalsCaravans_Title".Translate(), "FB_FilterSmallerPackAnimalsCaravans_Description".Translate(),
-                1, Validators.FloatRangeValidator(0, 1)
-            );
-            filterSmallerPackAnimalsCaravans.DisplayOrder = 5;
-            filterSmallerPackAnimalsCaravans.CustomDrawer = rect => {
-                return DrawUtility.CustomDrawer_Filter(
-                    rect, filterSmallerPackAnimalsCaravans, false, 0, 1, 0.05f
-                );
-            };
-            filterSmallerPackAnimalsCaravans.OnValueChanged = x => { lastSettingChanged = "filterSmallerPackAnimalsCaravans"; };
-
             pawnKindDifficultyLevel = Settings.GetHandle<float>(
                 "PawnKindDifficultyLevel", "FB_PawnKindDifficultyLevel_Title".Translate(), "FB_PawnKindDifficultyLevel_Description".Translate(),
                 // This should just filter out the Archotech Centipede
                 5000, Validators.IntRangeValidator(100, 12000)
             );
-            pawnKindDifficultyLevel.DisplayOrder = 7;
+            pawnKindDifficultyLevel.DisplayOrder = 5;
             pawnKindDifficultyLevel.CustomDrawer = rect => {
                 return DrawUtility.CustomDrawer_Filter(
                     rect, pawnKindDifficultyLevel, false, 100, 12000, 100
@@ -151,7 +137,7 @@ namespace FactionBlender {
                 // No Star Vampires: They are loners that attack ANYBODY on contact, including their own faction
                 "ROMV_Sabbat, ROM_StarVampire"
             );
-            excludedFactionTypes.DisplayOrder = 9;
+            excludedFactionTypes.DisplayOrder = 7;
             // XXX: You need to actually hit Enter to see the filtered list.  Need an onClick here somehow.
             excludedFactionTypes.OnValueChanged = x => { lastSettingChanged = "excludedFactionTypes"; };
 
@@ -183,19 +169,6 @@ namespace FactionBlender {
                 );
             };
             fspcFilterDisplay.VisibilityPredicate = delegate { return lastSettingChanged == "filterSlowPawnsCaravans"; };
-
-            fspacFilterDisplay = Settings.GetHandle<float>("fspacFilterDisplay", "", "", filterSmallerPackAnimalsCaravans.Value);
-            fspacFilterDisplay.Unsaved = true;
-            fspacFilterDisplay.DisplayOrder = 6;
-            fspacFilterDisplay.CustomDrawer = rect => {
-                return DrawUtility.CustomDrawer_FilteredPawnKinds(
-                    rect, fspacFilterDisplay, fullPawnKindList,
-                    (pawn => FilterPawnKindDef(pawn, "trade", "filterSmallerPackAnimalsCaravans") == null),
-                    (list => { list.SortBy(pawn => pawn.RaceProps.baseBodySize, pawn => pawn.defName); }),
-                    (pawn => pawn.RaceProps.baseBodySize.ToString("F2"))
-                );
-            };
-            fspacFilterDisplay.VisibilityPredicate = delegate { return lastSettingChanged == "filterSmallerPackAnimalsCaravans"; };
 
             pkdlFilterDisplay = Settings.GetHandle<float>("pkdlFilterDisplay", "", "", pawnKindDifficultyLevel.Value);
             pkdlFilterDisplay.Unsaved = true;
@@ -412,9 +385,6 @@ namespace FactionBlender {
                     pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed) < filterSlowPawnsCaravans.Value
                 )
                     return watchSetting == "filterSlowPawnsCaravans" ? nil : false;
-                
-                if (race.packAnimal && race.baseBodySize < filterSmallerPackAnimalsCaravans.Value)
-                    return watchSetting == "filterSmallerPackAnimalsCaravans" ? nil : false;
             }
             
             return true;
