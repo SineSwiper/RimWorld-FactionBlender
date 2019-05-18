@@ -10,5 +10,5 @@
         <li>HugsLib</li>
         <li>HumanoidAlienRaces2.0</li>
     </loadAfter>
-    <manifestUri>https://rawgit.com/SineSwiper/RimWorld-FactionBlender/master/About/Manifest.xml</manifestUri>
+    <manifestUri>https://raw.githubusercontent.com/SineSwiper/RimWorld-FactionBlender/master/About/Manifest.xml</manifestUri>
 </Manifest>
