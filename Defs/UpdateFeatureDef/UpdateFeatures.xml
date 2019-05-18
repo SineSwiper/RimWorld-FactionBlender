@@ -7,6 +7,16 @@
 	</HugsLib.UpdateFeatureDef>
 
 	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_1_5</defName>
+		<assemblyVersion>1.1.5.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Now you can use all your races for vanilla starting scenarios!
+- Added all races for wanderer, refugee, and slave types as well
+- All of these options are adjustable in Mod Settings
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
 		<defName>FactionBlender_1_1_0</defName>
 		<assemblyVersion>1.1.0.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
