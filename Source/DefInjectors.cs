@@ -56,7 +56,7 @@ namespace FactionBlender {
 
             // Split out excludedFactionTypes
             FB.excludedFactionTypesList =
-                Regex.Split(FB.excludedFactionTypes.Value.Trim(), "[^\\w]+").
+                Regex.Split( ((SettingHandle<string>)FB.config["ExcludedFactionTypes"]).Value.Trim(), "[^\\w]+").
                 Select(x => x.Trim()).
                 Where (x => x.Length >= 1).
                 ToArray()
@@ -116,11 +116,11 @@ namespace FactionBlender {
                         bool isTrader = maker.kindDef.defName == "Trader";
 
                         // Allow "combat ready" animals
-                        int origCP         = (int)FB.filterWeakerAnimalsRaids.Value;
+                        int origCP         = (int)((SettingHandle<float>)FB.config["FilterWeakerAnimalsRaids"]).Value;
                         int minCombatPower =
-                            isPirate ? origCP :                                           // 100%
-                            isCombat ? (int)System.Math.Round( (float)origCP / 3 * 2 ) :  // 66%
-                                       (int)System.Math.Round( (float)origCP / 3 )        // 33%
+                            isPirate ? origCP :                                     // 100%
+                            isCombat ? (int)System.Math.Round( origCP / 3f * 2f ) : // 66%
+                                       (int)System.Math.Round( origCP / 3f )        // 33%
                         ;
 
                         // Create the pawn option
