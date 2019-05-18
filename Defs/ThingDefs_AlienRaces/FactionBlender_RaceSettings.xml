@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <AlienRace.RaceSettings>
+    <defName>FactionBlender_RaceSettings</defName>
+	  <pawnKindSettings>
+		<alienrefugeekinds></alienrefugeekinds>
+		<alienslavekinds></alienslavekinds>
+		<startingColonists>
+            <li>
+                <pawnKindEntries></pawnKindEntries>
+                <factionDefs>
+                    <li>PlayerColony</li>
+                </factionDefs>
+            </li>
+        </startingColonists>
+        <alienwandererkinds>
+            <li>
+                <pawnKindEntries></pawnKindEntries>
+                <factionDefs>
+                    <li>PlayerColony</li>
+                </factionDefs>
+            </li>
+        </alienwandererkinds>
+	  </pawnKindSettings>
+  </AlienRace.RaceSettings>
+
+</Defs>

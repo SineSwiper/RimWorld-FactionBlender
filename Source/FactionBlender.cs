@@ -40,6 +40,9 @@ namespace FactionBlender {
 
             Logger.Message("Injecting pawn groups to our factions");
             DefInjector.InjectPawnKindDefsToFactions(FB_Factions);
+
+            Logger.Message("Injecting pawn groups to our race settings");
+            DefInjector.InjectPawnKindEntriesToRaceSettings();
         }
 
         public override void SettingsChanged() {

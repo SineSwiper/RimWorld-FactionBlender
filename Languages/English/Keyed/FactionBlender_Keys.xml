@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
+    <FB_EnableMixedStartingColonists_Title>Mixed starting colonists</FB_EnableMixedStartingColonists_Title>
+    <FB_EnableMixedStartingColonists_Description>Controls whether vanilla starting scenarios (except New Tribals) will include a variety of races and pawn kinds.</FB_EnableMixedStartingColonists_Description>
+    <FB_EnableMixedRefugees_Title>Mixed race refugees</FB_EnableMixedRefugees_Title>
+    <FB_EnableMixedRefugees_Description>Controls whether refugees, which appear in several common events, will include a variety of races and pawn kinds.</FB_EnableMixedRefugees_Description>
+    <FB_EnableMixedSlaves_Title>Mixed race slaves</FB_EnableMixedSlaves_Title>
+    <FB_EnableMixedSlaves_Description>Controls whether slaves, from rescue quests or slave traders, will include a variety of races and pawn kinds.</FB_EnableMixedSlaves_Description>
+    <FB_EnableMixedWanderers_Title>Mixed race wanderers</FB_EnableMixedWanderers_Title>
+    <FB_EnableMixedWanderers_Description>Controls whether wanderers, who may wander to join your colony, will include a variety of races and pawn kinds.</FB_EnableMixedWanderers_Description>
+
     <FB_FilterWeakerAnimalsRaids_Title>Min combat power (raid animals)</FB_FilterWeakerAnimalsRaids_Title>
     <FB_FilterWeakerAnimalsRaids_Description>Controls which animals to include in pirate raids, based on minimum combat power.  Civilians will use 66% of this mimimum for raids, and 33% for trade caravan guards.</FB_FilterWeakerAnimalsRaids_Description>
     <FB_FilterSlowPawnsCaravans_Title>Min move speed (caravan pawns)</FB_FilterSlowPawnsCaravans_Title>
@@ -8,5 +17,6 @@
     <FB_PawnKindDifficultyLevel_Description>Controls what kind of pawns might show up, based on maximum combat power.  The higher the level, the more pawn kinds are included in the pool.  Does not control anything about the size of raids, how many of each type appears, or how the raid formula works.</FB_PawnKindDifficultyLevel_Description>
     <FB_ExcludedFactionTypes_Title>Excluded pawn kinds by faction type</FB_ExcludedFactionTypes_Title>
     <FB_ExcludedFactionTypes_Description>A comma-delimited string of faction defNames.  This list is used to filter out pawns that belong to one of these defaultFactionTypes.</FB_ExcludedFactionTypes_Description>
+
     <Filtered>Filtered</Filtered>
 </LanguageData>

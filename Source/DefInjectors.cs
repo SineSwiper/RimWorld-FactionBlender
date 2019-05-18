@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using HugsLib;
-using HugsLib.Settings;
 using Verse;
+using HugsLib.Settings;
+using AlienRace;
+using UnityEngine;
 
 namespace FactionBlender {
     public class DefInjectors {
@@ -173,5 +174,89 @@ namespace FactionBlender {
             }
         }
 
+        public void InjectPawnKindEntriesToRaceSettings() {
+            Base FB = Base.Instance;
+
+            bool enabledStartingColonists = ((SettingHandle<bool>)FB.config["EnableMixedStartingColonists"]).Value;
+            bool enabledRefugees          = ((SettingHandle<bool>)FB.config["EnableMixedRefugees"         ]).Value;
+            bool enabledSlaves            = ((SettingHandle<bool>)FB.config["EnableMixedSlaves"           ]).Value;
+            bool enabledWanderers         = ((SettingHandle<bool>)FB.config["EnableMixedWanderers"        ]).Value;
+
+            var pks = DefDatabase<RaceSettings>.GetNamed("FactionBlender_RaceSettings").pawnKindSettings;
+
+            var pkeLists = new List<List<PawnKindEntry>> {
+                pks.alienrefugeekinds, pks.alienslavekinds, pks.alienwandererkinds[0].pawnKindEntries, pks.startingColonists[0].pawnKindEntries
+            };
+
+            // Clear out old settings, if any
+            pkeLists.ForEach( pkel => pkel.RemoveAll(x => true) );
+
+            // If everything is disabled, short-circuit here
+            if (!enabledStartingColonists && !enabledRefugees && !enabledSlaves && !enabledWanderers) return;
+
+            /* AlienRace's pawn generation system works by collecting all of the PKEs, looking at the chance,
+             * and if it hits the chance, and randomly picks a kindDef from the PKE bucket to spawn (equal chance
+             * here).  And then it keeps going.  So, it could end up with a 100% entry, but still snag a 10 or 1%
+             * entry on the way down.
+             * 
+             * We'll take advantage of this by always have a 100% bucket for most of the pawns, so we're
+             * guaranteed to have a variety pool.  If it ends up getting hit by one of the other pools, so be
+             * it, but at least it will never hit the vanilla basicMemberKind "pool".
+             */
+
+            // Slaves will just have a 100% bucket, which we'll insert directly
+            if (enabledSlaves) {
+                pks.alienslavekinds.Add( new PawnKindEntry() );
+                pks.alienslavekinds[0].chance = 100;
+            }
+
+            // Everything else will have (the same) chance buckets, based on combat power
+            var chanceBuckets = new Dictionary<int, PawnKindEntry>();
+            
+            // Before we start, figure out if there are any PKDs that seem outnumbered, based on the number of
+            // PKDs tied to that race.  We'll use that to balance the kindDef string counts.
+            List<PawnKindDef> allFilteredPKDs = DefDatabase<PawnKindDef>.AllDefs.Where(pawn => pawn.RaceProps.Humanlike && FB.FilterPawnKindDef(pawn, "global")).ToList();
+            var raceCounts = new Dictionary<string, int>();
+            allFilteredPKDs.ForEach( pawn => {
+                string name = pawn.race.defName;
+                if (!raceCounts.ContainsKey(name)) raceCounts[name] = 0;
+                raceCounts[name]++;
+            });
+
+            // Loop through each humanlike PawnKindDef
+            foreach (PawnKindDef pawn in allFilteredPKDs) {
+                string name = pawn.defName;
+
+                // Any non-fighter is probably a "slave" type
+                if (!pawn.isFighter && enabledSlaves) pks.alienslavekinds[0].kindDefs.Add(name);
+
+                // Calculate the chance
+                // 50 and below = 100% chance (base colonist is 35)
+                // 75  = 20%
+                // 100 = ~14% --> 10%
+                // 150 = 10% (good pirate mercs)
+                // 250 = 7% (thrumbo race)
+                int chance = Mathf.RoundToInt( 100 / Mathf.Sqrt( Mathf.Max(1, pawn.combatPower - 50) ) );
+
+                // Use increments of 10% until we get to 10%, and make sure we don't try for 0%
+                if (chance >= 10) chance = Mathf.RoundToInt( chance / 10f ) * 10;
+                if (chance <= 0)  chance = 1;
+
+                if (!chanceBuckets.ContainsKey(chance)) chanceBuckets[chance] = new PawnKindEntry { chance = chance };
+
+                // Add a number of entries based on the popularity of the race within PKDs (maximum of 8)
+                int numEntries = Mathf.Clamp(Mathf.RoundToInt( 8 / raceCounts[pawn.race.defName] ), 1, 8);
+                foreach (int i in Enumerable.Range(1, numEntries)) {
+                    chanceBuckets[chance].kindDefs.Add(name);
+                }
+            }
+
+            var newPKEList = chanceBuckets.Values.ToList();
+            newPKEList.SortByDescending(pke => pke.chance);
+
+            if (enabledRefugees)          pks.alienrefugeekinds                    .AddRange(newPKEList);
+            if (enabledWanderers)         pks.alienwandererkinds[0].pawnKindEntries.AddRange(newPKEList);
+            if (enabledStartingColonists) pks.startingColonists [0].pawnKindEntries.AddRange(newPKEList);
+        }
     }
 }
