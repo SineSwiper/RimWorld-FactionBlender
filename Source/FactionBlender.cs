@@ -11,9 +11,10 @@ namespace FactionBlender {
         public override string ModIdentifier {
             get { return "FactionBlender"; }
         }
-        public static Base             Instance    { get; private set; }
-        public static DefInjectors     DefInjector { get; private set; }
-        public static List<FactionDef> FB_Factions { get; private set; }
+        public static Base             Instance     { get; private set; }
+        public static DefInjectors     DefInjector  { get; private set; }
+        public static List<FactionDef> FB_Factions  { get; private set; }
+        public static bool             hasAlienRace { get; private set; }
 
         public Base() {
             Instance    = this;
@@ -29,6 +30,8 @@ namespace FactionBlender {
         public string[] excludedFactionTypesList;
 
         public override void DefsLoaded() {
+            hasAlienRace = GenTypes.GetTypeInAnyAssembly("AlienRace.RaceSettings") != null;            
+
             FB_Factions.RemoveAll(x => true);
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
             FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
@@ -41,8 +44,13 @@ namespace FactionBlender {
             Logger.Message("Injecting pawn groups to our factions");
             DefInjector.InjectPawnKindDefsToFactions(FB_Factions);
 
-            Logger.Message("Injecting pawn groups to our race settings");
-            DefInjector.InjectPawnKindEntriesToRaceSettings();
+            if (hasAlienRace) {
+                Logger.Message("Injecting pawn groups to our race settings");
+                DefInjector.InjectPawnKindEntriesToRaceSettings();
+            }
+            else {
+                Logger.Message("AlienRace not loaded; no race settings for us!");
+            }
         }
 
         public override void SettingsChanged() {
@@ -51,15 +59,18 @@ namespace FactionBlender {
             Logger.Message("Re-injecting pawn groups to our factions");
             DefInjector.InjectPawnKindDefsToFactions(FB_Factions);
 
-            Logger.Message("Re-injecting pawn groups to our race settings");
-            DefInjector.InjectPawnKindEntriesToRaceSettings();
+            if (hasAlienRace) {
+                Logger.Message("Re-injecting pawn groups to our race settings");
+                DefInjector.InjectPawnKindEntriesToRaceSettings();
+            }
         }
 
         public void ProcessSettings () {
             /*
              * Booleans
              */
-            var bSettings = new List<string> {
+            var bSettings = new List<string> {};
+            if (hasAlienRace) bSettings = new List<string> {
                 "EnableMixedStartingColonists",
                 "EnableMixedRefugees",         
                 "EnableMixedSlaves",           
@@ -74,6 +85,7 @@ namespace FactionBlender {
                 var setting = (SettingHandle<bool>)config[sName];
                 setting.DisplayOrder = order;
                 setting.OnValueChanged = x => { lastSettingChanged = ""; };
+                setting.VisibilityPredicate = delegate { return hasAlienRace; };
                 order++;
             }
 
@@ -206,7 +218,7 @@ namespace FactionBlender {
                 } },
             };
 
-            order = 6;
+            order -= (fSettings.Count + sSettings.Count) * 2 - 1;
             foreach (string sName in fltSettings) {
                 config[sName] = Settings.GetHandle<float>(sName, "", "", 0);
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Verse;
 using HugsLib.Settings;
-using AlienRace;
 using UnityEngine;
 
 namespace FactionBlender {
@@ -174,17 +173,24 @@ namespace FactionBlender {
             }
         }
 
+        // TODO: Make the hasAlienRace checks actually work.  It's exceptionally hard to make references
+        // optional in C#.
+
         public void InjectPawnKindEntriesToRaceSettings() {
             Base FB = Base.Instance;
+
+            if (!FB.config.ContainsKey("EnableMixedStartingColonists")) return;
 
             bool enabledStartingColonists = ((SettingHandle<bool>)FB.config["EnableMixedStartingColonists"]).Value;
             bool enabledRefugees          = ((SettingHandle<bool>)FB.config["EnableMixedRefugees"         ]).Value;
             bool enabledSlaves            = ((SettingHandle<bool>)FB.config["EnableMixedSlaves"           ]).Value;
             bool enabledWanderers         = ((SettingHandle<bool>)FB.config["EnableMixedWanderers"        ]).Value;
 
-            var pks = DefDatabase<RaceSettings>.GetNamed("FactionBlender_RaceSettings").pawnKindSettings;
+            if (!Base.hasAlienRace) return;
 
-            var pkeLists = new List<List<PawnKindEntry>> {
+            var pks = DefDatabase<AlienRace.RaceSettings>.GetNamed("FactionBlender_RaceSettings").pawnKindSettings;
+
+            var pkeLists = new List<List<AlienRace.PawnKindEntry>> {
                 pks.alienrefugeekinds, pks.alienslavekinds, pks.alienwandererkinds[0].pawnKindEntries, pks.startingColonists[0].pawnKindEntries
             };
 
@@ -206,16 +212,25 @@ namespace FactionBlender {
 
             // Slaves will just have a 100% bucket, which we'll insert directly
             if (enabledSlaves) {
-                pks.alienslavekinds.Add( new PawnKindEntry() );
+                pks.alienslavekinds.Add( new AlienRace.PawnKindEntry() );
                 pks.alienslavekinds[0].chance = 100;
+                pks.alienslavekinds[0].kindDefs.AddRange(
+                    DefDatabase<PawnKindDef>.AllDefs.Where(
+                        // Any non-fighter is probably a "slave" type
+                        pawn => pawn.RaceProps.Humanlike && !pawn.isFighter && FB.FilterPawnKindDef(pawn, "global")
+                    ).Select(pawn => pawn.defName).ToList()
+                );
             }
 
             // Everything else will have (the same) chance buckets, based on combat power
-            var chanceBuckets = new Dictionary<int, PawnKindEntry>();
-            
+            var chanceBuckets = new Dictionary<int, AlienRace.PawnKindEntry>();
+
             // Before we start, figure out if there are any PKDs that seem outnumbered, based on the number of
             // PKDs tied to that race.  We'll use that to balance the kindDef string counts.
-            List<PawnKindDef> allFilteredPKDs = DefDatabase<PawnKindDef>.AllDefs.Where(pawn => pawn.RaceProps.Humanlike && FB.FilterPawnKindDef(pawn, "global")).ToList();
+            List<PawnKindDef> allFilteredPKDs = DefDatabase<PawnKindDef>.AllDefs.Where(
+                pawn => pawn.RaceProps.Humanlike && Base.Instance.FilterPawnKindDef(pawn, "global")
+            ).ToList();
+
             var raceCounts = new Dictionary<string, int>();
             allFilteredPKDs.ForEach( pawn => {
                 string name = pawn.race.defName;
@@ -226,9 +241,6 @@ namespace FactionBlender {
             // Loop through each humanlike PawnKindDef
             foreach (PawnKindDef pawn in allFilteredPKDs) {
                 string name = pawn.defName;
-
-                // Any non-fighter is probably a "slave" type
-                if (!pawn.isFighter && enabledSlaves) pks.alienslavekinds[0].kindDefs.Add(name);
 
                 // Calculate the chance
                 // 50 and below = 100% chance (base colonist is 35)
@@ -242,7 +254,7 @@ namespace FactionBlender {
                 if (chance >= 10) chance = Mathf.RoundToInt( chance / 10f ) * 10;
                 if (chance <= 0)  chance = 1;
 
-                if (!chanceBuckets.ContainsKey(chance)) chanceBuckets[chance] = new PawnKindEntry { chance = chance };
+                if (!chanceBuckets.ContainsKey(chance)) chanceBuckets[chance] = new AlienRace.PawnKindEntry { chance = chance };
 
                 // Add a number of entries based on the popularity of the race within PKDs (maximum of 8)
                 int numEntries = Mathf.Clamp(Mathf.RoundToInt( 8 / raceCounts[pawn.race.defName] ), 1, 8);
