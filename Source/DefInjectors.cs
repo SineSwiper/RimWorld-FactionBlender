@@ -216,8 +216,9 @@ namespace FactionBlender {
                 pks.alienslavekinds[0].chance = 100;
                 pks.alienslavekinds[0].kindDefs.AddRange(
                     DefDatabase<PawnKindDef>.AllDefs.Where(
-                        // Any non-fighter is probably a "slave" type
-                        pawn => pawn.RaceProps.Humanlike && !pawn.isFighter && FB.FilterPawnKindDef(pawn, "global")
+                        // Any non-fighter is probably a "slave" type.  But exclude traders.  It doesn't make any sense to 
+                        // have traders trying to trade away themselves.
+                        pawn => pawn.RaceProps.Humanlike && !pawn.isFighter && !pawn.trader && FB.FilterPawnKindDef(pawn, "global")
                     ).Select(pawn => pawn.defName).ToList()
                 );
             }
