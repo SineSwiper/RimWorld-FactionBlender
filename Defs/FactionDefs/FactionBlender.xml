@@ -25,10 +25,12 @@
     <settlementNameMaker>NamerSettlementPirate</settlementNameMaker>
     <techLevel>Spacer</techLevel>
 
-    <!-- Filled by DefsLoaded hook, but we put some here to stave off the warnings -->
-    <hairTags><li>Punk</li></hairTags>
-    <backstoryCategories><li>Civil</li></backstoryCategories>
-
+    <hairTags>
+        <li>Punk</li>
+    </hairTags>
+    <backstoryCategories>
+        <li>Raider</li>
+    </backstoryCategories>
     <geneticVariance>1</geneticVariance>
     <allowedArrivalTemperatureRange>
       <min>-40</min>
@@ -130,9 +132,12 @@
     <techLevel>Spacer</techLevel>
     <geneticVariance>1</geneticVariance>
 
-    <!-- Filled by DefsLoaded hook, but we put some here to stave off the warnings -->
-    <hairTags><li>Punk</li></hairTags>
-    <backstoryCategories><li>Civil</li></backstoryCategories>
+    <hairTags>
+        <li>Urban</li>
+    </hairTags>
+    <backstoryCategories>
+        <li>Civil</li>
+    </backstoryCategories>
     <caravanTraderKinds>
       <li>Caravan_Outlander_BulkGoods</li>
       <li>Caravan_Outlander_CombatSupplier</li>

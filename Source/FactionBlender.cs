@@ -36,7 +36,7 @@ namespace FactionBlender {
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
             FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
 
-            Logger.Message("Injecting hair, backstory, and trader kinds to our factions");
+            Logger.Message("Injecting trader kinds to our factions");
             DefInjector.InjectMiscToFactions(FB_Factions);
 
             ProcessSettings();

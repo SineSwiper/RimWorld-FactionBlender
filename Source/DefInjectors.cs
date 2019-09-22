@@ -9,27 +9,6 @@ using UnityEngine;
 namespace FactionBlender {
     public class DefInjectors {
         public void InjectMiscToFactions(List<FactionDef> FB_Factions) {
-            foreach (FactionDef FBfac in FB_Factions) {
-                // NOTE: RemoveDuplicates only does an object comparison, which isn't good enough for these strings.
-            
-                // Add all hairTags
-                foreach (HairDef hair in DefDatabase<HairDef>.AllDefs) {
-                    foreach (var tag in hair.hairTags) {
-                        if (!FBfac.hairTags.Contains(tag)) FBfac.hairTags.Add(tag);
-                    }
-                }
-                FBfac.hairTags.RemoveDuplicates();
-
-                // Add all backstoryCategories
-                var bscat = FBfac.backstoryCategories;
-                foreach (var backstory in BackstoryDatabase.allBackstories) {
-                    foreach (var category in backstory.Value.spawnCategories) {
-                        if (!bscat.Contains(category)) bscat.Add(category);
-                    }
-                }
-                bscat.RemoveDuplicates();
-            }
-
             // Fix caravanTraderKinds, visitorTraderKinds, baseTraderKinds for the civil faction only
             FactionDef FB_Civil = FB_Factions[1];
             foreach (var faction in DefDatabase<FactionDef>.AllDefs) {
