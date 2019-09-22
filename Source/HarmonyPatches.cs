@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
+using Verse.AI;
 using UnityEngine;
 
 namespace FactionBlender {
@@ -276,6 +277,66 @@ namespace FactionBlender {
                 }
 
                 // Always skip the original method
+                return false;
+            }
+        }
+
+        /* Warn user of badly-behaving pawns that attack their own faction (or friendlies).
+         * 
+         * This seems to happen more often than you would think, because many mods assume they are in a
+         * homogenous faction that wouldn't possibly have the other enemy in it, especially if they have their
+         * own AttackTargetSearcher/Finder or BestAttackTarget method.
+         * 
+         * I attempted to modify the behavior here, but nothing short of a RaceProperties transplant with a new
+         * set of ThinkTrees would work here.
+         */
+
+        [HarmonyPatch(typeof (Pawn_MindState), "MindStateTick", null)]
+        public static class MindStateTick_Patch {
+            public static Dictionary<string, bool> hasWarnedAboutMisbehavingPawn = new Dictionary<string, bool> {};
+
+            [HarmonyPrefix]
+            public static void Prefix(Pawn_MindState __instance) {
+                Pawn pawn = __instance?.pawn;
+
+                // Early state?
+                if (pawn == null) return;
+                if (pawn.Faction?.def?.defName == null) return;
+
+                // Not ours; short-circuit
+                if (!pawn.Faction.def.defName.Contains("FactionBlender")) return;
+
+                // Already warned about it; short-circuit
+                if ( hasWarnedAboutMisbehavingPawn.ContainsKey(pawn.ToString()) ) return;
+
+                // Check the current job for hostilities
+                Job job = pawn.CurJob;
+                if (
+                    job != null && TryCheckFriendlyFaction(pawn, job.targetA.Thing) && (
+                        job.def == JobDefOf.AttackMelee || job.def == JobDefOf.AttackStatic || job.def == JobDefOf.Hunt || job.def == JobDefOf.Ignite ||
+                        job.def == JobDefOf.Ingest || job.def == JobDefOf.Kidnap || job.def == JobDefOf.PredatorHunt || job.def == JobDefOf.Slaughter
+                    )
+                ) {
+                    // Warn about it
+                    Pawn tPawn = job.targetA.Thing as Pawn;
+                    Base.Instance.ModLogger.Warning(
+                        "Friendly faction attack (" + job.def.ToString() + ") between " + pawn.ToString() + " and " + tPawn.ToString() + ".  " +
+                        "The pawn type may need to be blacklisted in the Faction Blender configuration.  " +
+                        "(Race: " + pawn.kindDef.race.defName + ", defaultFactionType: " + pawn.kindDef.defaultFactionType + ")"
+                    );
+                    hasWarnedAboutMisbehavingPawn.Add(pawn.ToString(), true);
+                }
+
+                return;
+            }
+
+            internal static bool TryCheckFriendlyFaction(Pawn pawn, Thing target) {
+                if (target == null) return false;
+                Pawn tPawn = target as Pawn;
+                if (tPawn  == null) return false;
+                if (tPawn  == pawn) return false;
+
+                if (!pawn.Faction.HostileTo(tPawn.Faction) && !GenHostility.IsActiveThreatTo(tPawn, pawn.Faction)) return true;
                 return false;
             }
         }
