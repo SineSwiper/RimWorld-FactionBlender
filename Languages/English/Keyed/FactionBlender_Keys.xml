@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
     <FB_EnableMixedStartingColonists_Title>Mixed starting colonists</FB_EnableMixedStartingColonists_Title>
-    <FB_EnableMixedStartingColonists_Description>Controls whether vanilla starting scenarios (except New Tribals) will include a variety of races and pawn kinds.</FB_EnableMixedStartingColonists_Description>
+    <FB_EnableMixedStartingColonists_Description>Controls whether vanilla starting scenarios will include a variety of races and pawn kinds.</FB_EnableMixedStartingColonists_Description>
     <FB_EnableMixedRefugees_Title>Mixed race refugees</FB_EnableMixedRefugees_Title>
     <FB_EnableMixedRefugees_Description>Controls whether refugees, which appear in several common events, will include a variety of races and pawn kinds.</FB_EnableMixedRefugees_Description>
     <FB_EnableMixedSlaves_Title>Mixed race slaves</FB_EnableMixedSlaves_Title>

@@ -11,6 +11,7 @@
                 <pawnKindEntries></pawnKindEntries>
                 <factionDefs>
                     <li>PlayerColony</li>
+                    <li>PlayerTribe</li>
                 </factionDefs>
             </li>
         </startingColonists>
@@ -19,6 +20,7 @@
                 <pawnKindEntries></pawnKindEntries>
                 <factionDefs>
                     <li>PlayerColony</li>
+                    <li>PlayerTribe</li>
                 </factionDefs>
             </li>
         </alienwandererkinds>
