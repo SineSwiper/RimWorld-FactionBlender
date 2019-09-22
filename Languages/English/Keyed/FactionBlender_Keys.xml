@@ -17,6 +17,8 @@
     <FB_PawnKindDifficultyLevel_Description>Controls what kind of pawns might show up, based on maximum combat power.  The higher the level, the more pawn kinds are included in the pool.  Does not control anything about the size of raids, how many of each type appears, or how the raid formula works.</FB_PawnKindDifficultyLevel_Description>
     <FB_ExcludedFactionTypes_Title>Excluded pawn kinds by faction type</FB_ExcludedFactionTypes_Title>
     <FB_ExcludedFactionTypes_Description>A comma-delimited string of faction defNames.  This list is used to filter out pawns that belong to one of these defaultFactionTypes.</FB_ExcludedFactionTypes_Description>
+    <FB_ExcludedRaces_Title>Excluded pawn kinds by race</FB_ExcludedRaces_Title>
+    <FB_ExcludedRaces_Description>A comma-delimited string of race defNames.  This list is used to filter out individual pawns of a specific race.</FB_ExcludedRaces_Description>
 
     <Filtered>Filtered</Filtered>
 </LanguageData>

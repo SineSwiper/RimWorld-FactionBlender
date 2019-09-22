@@ -1,6 +1,8 @@
 ﻿using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HugsLib;
 using HugsLib.Settings;
 using Verse;
@@ -31,6 +33,27 @@ namespace FactionBlender {
         public string lastSettingChanged = "";
 
         public string[] excludedFactionTypesList;
+        public string[] excludedRacesList;
+
+        public void FillFilterLists(string excludedFactionTypes = "", string excludedRaces = "") {
+            // Split out excludedFactionTypes
+            if (excludedFactionTypes.Length == 0) excludedFactionTypes = ((SettingHandle<string>)config["ExcludedFactionTypes"]).Value;
+            if (excludedRaces       .Length == 0) excludedRaces        = ((SettingHandle<string>)config["ExcludedRaces"       ]).Value;
+
+            excludedFactionTypesList =
+                Regex.Split(excludedFactionTypes.Trim(), "[^\\w]+").
+                Select(x => x.Trim()).
+                Where (x => x.Length >= 1).
+                ToArray()
+            ;
+
+            excludedRacesList =
+                Regex.Split(excludedRaces.Trim(), "[^\\w]+").
+                Select(x => x.Trim()).
+                Where (x => x.Length >= 1).
+                ToArray()
+            ;
+        }
 
         public override void DefsLoaded() {
             hasAlienRace = GenTypes.GetTypeInAnyAssemblyNew("AlienRace.RaceSettings", "AlienRace") != null;
@@ -45,6 +68,7 @@ namespace FactionBlender {
             ProcessSettings();
 
             Logger.Message("Injecting pawn groups to our factions");
+            FillFilterLists();
             DefInjector.InjectPawnKindDefsToFactions(FB_Factions);
 
             if (hasAlienRace) {
@@ -69,6 +93,18 @@ namespace FactionBlender {
         }
 
         public void ProcessSettings () {
+            // Hidden config version entry
+            Version currentVer    = Instance.GetVersion();
+            string  currentVerStr = currentVer.ToString();
+
+            config["ConfigVersion"] = Settings.GetHandle<string>("ConfigVersion", "", "", currentVerStr);
+            var configVerSetting = (SettingHandle<string>)config["ConfigVersion"];
+            configVerSetting.DisplayOrder = 0;
+            configVerSetting.NeverVisible = true;
+
+            string  configVerStr = configVerSetting.Value;
+            Version configVer    = new Version(configVerStr);
+            
             /*
              * Booleans
              */
@@ -150,11 +186,28 @@ namespace FactionBlender {
              */
             var sSettings = new List<string> {
                 "ExcludedFactionTypes",
+                "ExcludedRaces",
             };
             var sDefaults = new Dictionary<string, string> {
                 // No Vampires: Too many post-XML modifications and they tend to burn up on entry, anyway
                 // No Star Vampires: They are loners that attack ANYBODY on contact, including their own faction
-                { "ExcludedFactionTypes", "ROMV_Sabbat, ROM_StarVampire" },
+                // No xenomorphs: Same thing
+                { "ExcludedFactionTypes", "ROMV_Sabbat, ROM_StarVampire, RRY_Xenomorph" },
+
+                // Better Infestation Queens: They tend to wander around, gathering resources, and ignoring the fight.
+                { "ExcludedRaces", "BI_Queen" },
+            };
+            var sPrevDefaults = new Dictionary<string, Dictionary<string, string>> {
+                // This is used to change the defaults on mod upgrades
+                { "ExcludedFactionTypes", new Dictionary<string, string> {
+                    { "1.1.0.0", "ROMV_Sabbat, ROM_StarVampire" },
+                    { "1.1.5.0", "ROMV_Sabbat, ROM_StarVampire" },
+                    { "1.1.5.1", "ROMV_Sabbat, ROM_StarVampire" },
+                    { currentVerStr, sDefaults["ExcludedFactionTypes"] },
+                } },
+                { "ExcludedRaces", new Dictionary<string, string> {
+                    { currentVerStr, sDefaults["ExcludedRaces"] },
+                } },
             };
 
             foreach (string sName in sSettings) {
@@ -165,9 +218,20 @@ namespace FactionBlender {
                 var setting = (SettingHandle<string>)config[sName];
                 setting.DisplayOrder = order;
                 // XXX: You need to actually hit Enter to see the filtered list.  Need an onClick here somehow.
-                setting.OnValueChanged = x => { lastSettingChanged = sName; };
+                if (sName == "ExcludedFactionTypes") setting.OnValueChanged = x => { FillFilterLists(x);     lastSettingChanged = sName; };
+                else                                 setting.OnValueChanged = x => { FillFilterLists("", x); lastSettingChanged = sName; }; 
                 order += 2;
+
+                // Force change defaults on mod upgrade
+                if (!currentVer.Equals(configVer)) {
+                    var prevDefault = sPrevDefaults[sName][configVerSetting.Value];
+                    if (prevDefault == null || setting.Value == prevDefault) setting.Value = sDefaults[sName];
+                }
             }
+
+            // Set the new config value to the current version, now that the above values have been changed
+            configVer                             = currentVer;
+            configVerStr = configVerSetting.Value = currentVerStr;
 
             /*
              * Filter Displays
@@ -179,12 +243,14 @@ namespace FactionBlender {
                 "fspcFilterDisplay",
                 "pkdlFilterDisplay",
                  "eftFilterDisplay",
+                  "erFilterDisplay",
             };
             var fltAffected = new Dictionary<string, string> {
                 { "fwarFilterDisplay", "FilterWeakerAnimalsRaids" },
                 { "fspcFilterDisplay", "FilterSlowPawnsCaravans"  },
                 { "pkdlFilterDisplay", "PawnKindDifficultyLevel"  },
                 {  "eftFilterDisplay", "ExcludedFactionTypes"     },
+                {   "erFilterDisplay", "ExcludedRaces"            },
             };
             var fltDrawers = new Dictionary<string, SettingHandle.DrawCustomControl> {
                 { "fwarFilterDisplay", rect => {
@@ -217,6 +283,14 @@ namespace FactionBlender {
                         (pawn => FilterPawnKindDef(pawn, "global", "ExcludedFactionTypes") == null),
                         (list => { list.SortBy(pawn => pawn.defaultFactionType != null ? pawn.defaultFactionType.defName : "", pawn => pawn.defName); }),
                         (pawn => pawn.defaultFactionType != null ? pawn.defaultFactionType.defName : "")
+                    );
+                } },
+                {  "erFilterDisplay", rect => {
+                    return DrawUtility.CustomDrawer_FilteredPawnKinds(
+                        rect, config["erFilterDisplay"], fullPawnKindList,
+                        (pawn => FilterPawnKindDef(pawn, "global", "ExcludedRaces") == null),
+                        (list => { list.SortBy(pawn => pawn.race.defName, pawn => pawn.defName); }),
+                        (pawn => pawn.race.defName)
                     );
                 } },
             };
@@ -269,6 +343,14 @@ namespace FactionBlender {
                 foreach (string factionDefName in excludedFactionTypesList) {
                     if (pawn.defaultFactionType.defName == factionDefName)
                         return watchSetting == "ExcludedFactionTypes" ? nil : false;
+                }
+            }
+
+            // Filter by race defName
+            if (pawn.race.defName != null) {
+                foreach (string raceDefName in excludedRacesList) {
+                    if (pawn.race.defName == raceDefName)
+                        return watchSetting == "ExcludedRaces" ? nil : false;
                 }
             }
 
