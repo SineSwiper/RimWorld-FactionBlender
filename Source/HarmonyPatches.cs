@@ -151,12 +151,7 @@ namespace FactionBlender {
         public static class CanBeBuilder_Patch {
             [HarmonyPrefix]
             private static bool Prefix(Pawn p, ref bool __result) {
-                if (
-                    // Carefully short-circuit, so that we don't cause our own ticking exception
-                    p == null ||
-                    p.def == null || p.story == null ||
-                    p.def.thingClass == null
-                ) {
+                if (p?.def?.thingClass == null) {
                     __result = false;
                     return false;
                 }

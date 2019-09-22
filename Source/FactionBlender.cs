@@ -15,11 +15,14 @@ namespace FactionBlender {
         public static DefInjectors     DefInjector  { get; private set; }
         public static List<FactionDef> FB_Factions  { get; private set; }
         public static bool             hasAlienRace { get; private set; }
+        
+        internal HugsLib.Utils.ModLogger ModLogger { get; private set; }
 
         public Base() {
             Instance    = this;
             DefInjector = new FactionBlender.DefInjectors();
             FB_Factions = new List<FactionDef>();
+            ModLogger   = this.Logger;
         }
 
         // Settings
@@ -30,7 +33,7 @@ namespace FactionBlender {
         public string[] excludedFactionTypesList;
 
         public override void DefsLoaded() {
-            hasAlienRace = GenTypes.GetTypeInAnyAssembly("AlienRace.RaceSettings") != null;            
+            hasAlienRace = GenTypes.GetTypeInAnyAssemblyNew("AlienRace.RaceSettings", "AlienRace") != null;
 
             FB_Factions.RemoveAll(x => true);
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
@@ -247,14 +250,10 @@ namespace FactionBlender {
             if (pawn.trader)     msg += "Trader, ";
             if (race.packAnimal) msg += "PackAnimal, ";
             if (race.predator)   msg += "Predator, ";
-            if (isRanged)        msg += "Ranged, ";
-            if (!isRanged)       msg += "Melee, ";
-            if (isSniper)        msg += "Sniper, ";
-            if (isHeavyWeapons)  msg += "Heavy Weapons, ";
 
             msg += "Speed: " + pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed);
-            if (pawn.combatPower > 1000) Logger.Message(msg);
-             */
+            if (pawn.defName.StartsWith(...)|| pawn.defName.Contains(...)) Logger.Message(msg);
+            */
 
             // Global filters //
 

@@ -28,8 +28,6 @@ namespace FactionBlender {
             FB_Civil.   baseTraderKinds.RemoveDuplicates();
         }
 
-        // TODO: Figure out why ARWoM monsters don't show up
-
         public void InjectPawnKindDefsToFactions(List<FactionDef> FB_Factions) {
             Base FB = Base.Instance;
 
@@ -87,6 +85,19 @@ namespace FactionBlender {
                         Regex.IsMatch(race.deathActionWorkerClass.Name, "E?xplosion|Bomb")
                     ) isHeavyWeapons = true;
                 }
+
+                /*
+                 * DEBUG
+                 *
+                string msg = pawn.defName;
+                msg += " --> ";
+                if (isRanged)        msg += "Ranged, ";
+                if (!isRanged)       msg += "Melee, ";
+                if (isSniper)        msg += "Sniper, ";
+                if (isHeavyWeapons)  msg += "Heavy Weapons, ";
+
+                if (pawn.defName.StartsWith(...)|| pawn.defName.Contains(...)) FB.ModLogger.Message(msg);
+                */
 
                 foreach (FactionDef FBfac in FB_Factions) {
                     foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {
