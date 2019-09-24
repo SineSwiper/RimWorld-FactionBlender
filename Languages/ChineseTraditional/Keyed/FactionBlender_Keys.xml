@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <FB_EnableMixedStartingColonists_Title>混编初始殖民者</FB_EnableMixedStartingColonists_Title>
+  <FB_EnableMixedStartingColonists_Description>控制原版剧本的初始人物（新部落除外）是否可能包含混编种族。</FB_EnableMixedStartingColonists_Description>
+  <FB_EnableMixedRefugees_Title>混编难民</FB_EnableMixedRefugees_Title>
+  <FB_EnableMixedRefugees_Description>控制事件中出现的难民是否有可能是混编种族。</FB_EnableMixedRefugees_Description>
+  <FB_EnableMixedSlaves_Title>混编奴隶</FB_EnableMixedSlaves_Title>
+  <FB_EnableMixedSlaves_Description>控制营救任务或奴隶商人中的奴隶是否可能是混编种族。</FB_EnableMixedSlaves_Description>
+  <FB_EnableMixedWanderers_Title>混编流浪者</FB_EnableMixedWanderers_Title>
+  <FB_EnableMixedWanderers_Description>控制那些可能会加入你们的流浪者是否可能是其他种族。</FB_EnableMixedWanderers_Description>
+
+  <FB_FilterWeakerAnimalsRaids_Title>战斗势力最小值(动物)</FB_FilterWeakerAnimalsRaids_Title>
+  <FB_FilterWeakerAnimalsRaids_Description>控制海盗袭击队中包含的动物的多样性，基于战斗势力的最小值。平民队伍会被设为最小战斗势力值的66%，而商队则为33%。</FB_FilterWeakerAnimalsRaids_Description>
+  <FB_FilterSlowPawnsCaravans_Title>最小移动速度(商队人员)</FB_FilterSlowPawnsCaravans_Title>
+  <FB_FilterSlowPawnsCaravans_Description>控制商队中类人生物和动物的最小基础移速。降低他们的速度可以让你在袭击商队时更容易。</FB_FilterSlowPawnsCaravans_Description>
+  <FB_PawnKindDifficultyLevel_Title>战斗势力最大值(人员)</FB_PawnKindDifficultyLevel_Title>
+  <FB_PawnKindDifficultyLevel_Description>战斗势力最大值控制战斗人员候选池的大小，级别越高，侯选池中的人员就越多，混编种族也会可能出现。这个选项不会影响袭击规模和强度。</FB_PawnKindDifficultyLevel_Description>
+  <FB_ExcludedFactionTypes_Title>按阵营排除种族</FB_ExcludedFactionTypes_Title>
+  <FB_ExcludedFactionTypes_Description>逗点隔开的阵营 defNames 字符串。这个列表用于从 defaultFactionTypes 中过滤掉一些种族.</FB_ExcludedFactionTypes_Description>
+
+  <Filtered>过滤的</Filtered>
+
+</LanguageData>
