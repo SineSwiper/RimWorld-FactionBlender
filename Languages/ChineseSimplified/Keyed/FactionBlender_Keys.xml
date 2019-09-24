@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <FB_EnableMixedStartingColonists_Title>混编初始殖民者</FB_EnableMixedStartingColonists_Title>
-  <FB_EnableMixedStartingColonists_Description>控制原版剧本的初始人物（新部落除外）是否可能包含混编种族。</FB_EnableMixedStartingColonists_Description>
+  <FB_EnableMixedStartingColonists_Description>控制原版剧本的初始人物是否可能包含混编种族。</FB_EnableMixedStartingColonists_Description>
   <FB_EnableMixedRefugees_Title>混编难民</FB_EnableMixedRefugees_Title>
   <FB_EnableMixedRefugees_Description>控制事件中出现的难民是否有可能是混编种族。</FB_EnableMixedRefugees_Description>
   <FB_EnableMixedSlaves_Title>混编奴隶</FB_EnableMixedSlaves_Title>
