@@ -145,6 +145,52 @@ namespace FactionBlender {
             }
             return change;
         }
+
+        // Draws the input control for larger textbox string settings.  Unlike DrawHandleInputText, this will
+        // also update validation and change status on focused keypresses.
+        public static bool CustomDrawer_InputTextbox(Rect controlRect, SettingHandle handle) {
+            // HugsLibs keeps the HandleControlInfo private, so we'll just have to work around that...
+            string controlName = "control" + handle.GetHashCode();
+            bool   validationScheduled = false;
+            bool   badInput            = false;
+
+            var evt = Event.current;
+            GUI.SetNextControlName(controlName);
+
+            // XXX: Because we're setting the "temp" value directly on the SettingHandle, validation is only
+            // used for colorizing the input box on badInput.
+
+            // TODO: Use TextAreaScrollable.  This would also require a more permanent HandleControlInfo-like
+            // object to hold the scrollbar data
+            handle.StringValue = Widgets.TextArea(controlRect, handle.StringValue, false);
+
+            // Trigger on each keypress
+            var focused = GUI.GetNameOfFocusedControl() == controlName;
+            if (focused && evt.type == EventType.KeyUp) validationScheduled = true;
+
+            var changed = false;
+            if (validationScheduled && !focused) {
+                try {
+                    if (handle.Validator != null && !handle.Validator(handle.StringValue)) {
+                        badInput = true;
+                    }
+                    else {
+                        badInput = false;
+                        changed = true;
+                    }
+                }
+                catch (Exception e) {
+                    Base.Instance.ModLogger.ReportException(e, Base.Instance.ModIdentifier, false, "SettingsHandle.Validator");
+                }
+            }
+            if (badInput) {
+                var prevColor = GUI.color;
+                GUI.color = new Color(.9f, .1f, .1f, 1f);
+                Widgets.DrawBox(controlRect);
+                GUI.color = prevColor;
+            }
+            return changed;
+        }
     }
 
     public static class Extensions {

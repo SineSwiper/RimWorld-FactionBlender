@@ -217,10 +217,12 @@ namespace FactionBlender {
 
                 var setting = (SettingHandle<string>)config[sName];
                 setting.DisplayOrder = order;
-                // XXX: You need to actually hit Enter to see the filtered list.  Need an onClick here somehow.
                 if (sName == "ExcludedFactionTypes") setting.OnValueChanged = x => { FillFilterLists(x);     lastSettingChanged = sName; };
                 else                                 setting.OnValueChanged = x => { FillFilterLists("", x); lastSettingChanged = sName; }; 
                 order += 2;
+
+                setting.CustomDrawer = rect => DrawUtility.CustomDrawer_InputTextbox(rect, setting);
+                setting.CustomDrawerHeight = 34f * 4;
 
                 // Force change defaults on mod upgrade
                 if (!currentVer.Equals(configVer)) {
