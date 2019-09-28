@@ -7,6 +7,26 @@
 	</HugsLib.UpdateFeatureDef>
 
 	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_2_0</defName>
+		<assemblyVersion>1.2.0.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Mixed race starting colonists now work for Lost Tribes scenario
+- Added config option to blacklist specific races ("Excluded pawn kinds by race")
+- Added Chinese translations.  (Thanks, CaptainSnafu!)
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Different racial backstories no longer get mixed together.  The same goes for hair styles.
+- Xenomorphs and Better Infestation's Queens are in the blacklist by default
+- Blacklist config options now use a larger textbox
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Badly-behaving pawns (ones that attack their own faction) will get a debug warning that will include the defaultFactionType and race defName to use in one of the blacklists
+- Blacklist filter displays will update their cache properly while entries are being changed
+- Blacklist config options will detect defaults based on the previous mod version and upgrade them
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
 		<defName>FactionBlender_1_1_5</defName>
 		<assemblyVersion>1.1.5.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
