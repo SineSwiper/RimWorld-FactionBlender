@@ -26,54 +26,85 @@ namespace FactionBlender {
             /* XXX: Trying to figure out the min-max temperatures of a biome by indirect inference of the
              * BiomeWorker scores is a very dicey at best.  I'm just going to resort to a static list, and
              * it's not going to be perfect...
+             *
+             * Absolute min/max of planet is generally -50C to 40C.  Muffalos, the universally compatible
+             * pack animal, has a min/max of -55C to 45C.  Assume a seasonal temp swing of +/-25C, after
+             * figuring out the average temp ranges (ie: tile.temperature).
+             *
+             * Currently supports:
+             *   Vanilla
+             *   Advanced Biomes
+             *   Alpha Biomes
+             *   Rainbeau's Realistic Planets
+             *   Rainbeau's Permafrost
+             *   Nature's Pretty Sweet
+             *   Mallorn Forest (from Lord of the Rims - Elves)
+             *   Terra Project
+             *   Misc. MapGen Xtension 'Urban Biome'
              */
+            public static readonly Dictionary<string, int[]> biomeMinMaxTemp = new Dictionary<string, int[]> {
+                { "SeaIce",              new[] {-50, 5} },
+                { "IceSheet",            new[] {-50, 5} },
+                { "Tundra",              new[] {-50,25} },
+                { "Permafrost",          new[] {-50, 5} },
+                { "RRP_Permafrost",      new[] {-50, 5} },
+                { "TundraSkerries",      new[] {-50,35} },
+                { "AB_PropaneLakes",     new[] {-50, 5} },
 
-            // Currently supports vanilla, Advanced Biomes, and Mallorn Forest (from Lord of the Rims - Elves)
-            public static readonly Dictionary<string, int> minBiomeTemp = new Dictionary<string, int> {
-                { "SeaIce",           -50 },
-                { "IceSheet",         -50 },
-                { "Tundra",           -50 },
+                { "TemperateForest",     new[] {-35,25} },
+                { "TemperateSwamp",      new[] {-35,25} },
+                { "BorealForest",        new[] {-35,25} },
+                { "ColdBog",             new[] {-35,25} },
+                { "RRP_Grassland",       new[] {-35,40} },
+                { "MallornForest",       new[] {-35,40} },
+                { "TKKN_Oasis",          new[] {-35,40} },
+                { "TKKN_RedwoodForest",  new[] {-35,35} },
+                { "TKKN_SequoiaForest",  new[] {-35,40} },
+                { "TKKN_Grasslands",     new[] {-35,40} },
+                { "CaveOasis",           new[] {-35,40} },
+                { "TunnelworldCave",     new[] {-35,40} },
+                { "CaveEntrance",        new[] {-35,40} },
+                { "DesertHighPlains",    new[] {-35,40} },
+                { "Archipelago",         new[] {-35,40} },
+                { "AB_GallatrossGraveyard",     new[] {-35,40} },
+                { "AB_GelatinousSuperorganism", new[] {-35,40} },
+                { "TemperateForest_UrbanRuins", new[] {-35,25} },
+                { "TemperateSwamp_UrbanRuins",  new[] {-35,25} },
+                { "BorealForest_UrbanRuins",    new[] {-35,25} },
 
-                { "BorealForest",     -35 },
-                { "ColdBog",          -35 },
+                { "Desert",              new[] {-25,40} },
+                { "AridShrubland",       new[] {-25,40} },
+                { "Wasteland",           new[] {-25,40} },
+                { "RRP_TemperateDesert", new[] {-25,35} },
+                { "TKKN_Desert",         new[] {-25,40} },
+                { "VolcanicIsland",      new[] {-25,40} },
+                { "AB_RockyCrags",       new[] {-25,40} },
 
-                { "TemperateForest",    -25 },
-                { "TemperateSwamp",     -25 },
-                { "MallornForest",      -25 },
-                { "TropicalRainforest", -25 },
-                { "PoisonForest",       -25 },
-                { "TropicalSwamp",      -25 },
-                { "Desert",             -25 },
-                { "Wasteland",          -25 },
+                { "TKKN_VolcanicFlow",   new[] {-20,40} },
 
-                { "AridShrubland",   0 },
-                { "ExtremeDesert",   0 },
-                { "Volcano",         0 },
-                { "Wetland",         0 },
-                { "Savanna",         0 },
-            };
+                { "ExtremeDesert",       new[] {-15,40} },
+                { "RRP_Oasis",           new[] {-15,40} },
 
-            public static readonly Dictionary<string, int> maxBiomeTemp = new Dictionary<string, int> {
-                { "SeaIce",   5 },
-                { "IceSheet", 5 },
+                { "RRP_Steppes",         new[] {-10,40} },
+                { "AB_MycoticJungle",    new[] {-10,40} },
+                { "AB_OcularForest",     new[] {-10,40} },
+                { "Oasis",               new[] {-10,40} },
 
-                { "Tundra",       25 },
-                { "BorealForest", 25 },
-                { "ColdBog",      25 },
+                { "TropicalRainforest",  new[] { -5,40} },
+                { "TropicalSwamp",       new[] { -5,40} },
+                { "PoisonForest",        new[] { -5,40} },
+                { "Savanna",             new[] { -5,40} },
+                { "RRP_Savanna",         new[] { -5,40} },
+                { "Atoll",               new[] { -5,40} },
+                { "AB_FeraliskInfestedJungle",     new[] { -5,40} },
+                { "AB_MechanoidIntrusion",         new[] { -5,40} },
+                { "TropicalRainforest_UrbanRuins", new[] { -5,40} },
+                { "TropicalSwamp_UrbanRuins",      new[] { -5,40} },
 
-                { "TemperateForest",    35 },
-                { "TemperateSwamp",     35 },
-                { "MallornForest",      35 },
-                { "TropicalRainforest", 35 },
-                { "PoisonForest",       35 },
-                { "TropicalSwamp",      35 },
-                { "Desert",             35 },
-                { "Wasteland",          35 },
-                { "AridShrubland",      35 },
-                { "ExtremeDesert",      35 },
-                { "Volcano",            35 },
-                { "Wetland",            35 },
-                { "Savanna",            35 },
+                { "Volcano",             new[] {  0,40} },
+                { "Wetland",             new[] {  0,40} },
+                { "Savanna",             new[] {  0,40} },
+                { "TKKN_Savanna",        new[] {  0,40} },
             };
 
             [HarmonyPostfix]
@@ -99,11 +130,11 @@ namespace FactionBlender {
                 // Make sure the animal's comfort zone fits inside the min/max biome temperature ranges
 
                 string biomeName = __instance.defName;
-                if (!minBiomeTemp.ContainsKey(biomeName)) {
+                if (!biomeMinMaxTemp.ContainsKey(biomeName)) {
                     // We don't have a temperature defined, so hope for the best
                     Log.ErrorOnce(
                         "[FactionBlender] Unrecognized biome " + biomeName + ".  Accepting all pack animals for traders here, which might cause some " +
-                        "to freeze/burn to death, if the biome is hostile.  Ask the dev to include the biome in the static min/max temp list.",
+                        "to freeze/burn to death, if the biome is hostile.  Ask the FB dev to include the biome in the static min/max temp list.",
                         __instance.debugRandomId + 1688085595
                     );
 
@@ -111,20 +142,9 @@ namespace FactionBlender {
                     ___allowedPackAnimals.AddDistinct(pawn);
                     return;
                 }
-                else if (!maxBiomeTemp.ContainsKey(biomeName)) {
-                    Log.ErrorOnce(
-                        "[FactionBlender] Found minBiomeTemp without matching maxBiomeTemp for " + biomeName + "!  Dev goofed up!",
-                        __instance.debugRandomId + 1688085595
-                    );
-                    Log.TryOpenLogWindow();
 
-                    __result = true;
-                    ___allowedPackAnimals.AddDistinct(pawn);
-                    return;
-                }
-
-                int minTemp = minBiomeTemp[biomeName];
-                int maxTemp = maxBiomeTemp[biomeName];
+                int minTemp = biomeMinMaxTemp[biomeName][0];
+                int maxTemp = biomeMinMaxTemp[biomeName][1];
 
                 if (
                     pawn.GetStatValueAbstract(StatDefOf.ComfyTemperatureMin, null) <= minTemp &&
