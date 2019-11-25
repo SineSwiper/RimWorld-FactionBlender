@@ -3,6 +3,7 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using Verse;
 using Verse.AI;
 using UnityEngine;
@@ -358,6 +359,59 @@ namespace FactionBlender {
 
                 if (!pawn.Faction.HostileTo(tPawn.Faction) && !GenHostility.IsActiveThreatTo(tPawn, pawn.Faction)) return true;
                 return false;
+            }
+        }
+
+        /* Take heed!  Here be transpiler dragons!
+         * 
+         * Attempt to reduce the line spacing between dialog options within the faction negotiation dialog.
+         * 
+         * This will allow more space for more trader kinds if the player requests a trade caravan.  The civil
+         * FB faction tends to have a lot of them, and this seems to be the easiest way to allow more of them
+         * to appear.  It's not perfect, though.  A working scrollbar would be best, but fixing that requires
+         * access to a lot of private accessors.
+         * 
+         * Ironically, the easiest solution still requires a transpiler.
+         */
+
+        [HarmonyPatch(typeof(Dialog_Negotiation), "DrawNode")]
+        public static class DrawNode_Transpiler {
+            [HarmonyTranspiler]
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) {
+                var codes = new List<CodeInstruction>(instructions);
+
+                for (int i = 0; i < codes.Count; i++) {
+                    /* We are looking for two statements like this (one for y and one for num1):
+                     * 
+                     * IL_00f0: ldloc.3      // y  | IL_00fb: ldloc.s      num1
+                     * IL_00f1: ldloc.s      num2
+                     * IL_00f3: ldc.r4       7
+                     * IL_00f8: add
+                     * IL_00f9: add
+                     * IL_00fa: stloc.3      // y  | IL_0106: stloc.s      num1
+                     */
+
+                    // Look ahead to make sure the statement is exactly what we expect
+                    if (
+                        i+5 < codes.Count &&
+                        codes[i+1].opcode == OpCodes.Ldloc_S &&
+                        codes[i+2].opcode == OpCodes.Ldc_R4  &&
+                        codes[i+3].opcode == OpCodes.Add     &&
+                        codes[i+4].opcode == OpCodes.Add     && (
+                            codes[i].opcode == OpCodes.Ldloc_3 && codes[i+5].opcode == OpCodes.Stloc_3 ||
+                            codes[i].opcode == OpCodes.Ldloc_S && codes[i+5].opcode == OpCodes.Stloc_S
+                        ) &&
+                        (float) codes[i+2].operand == 7f
+                    ) {
+                        /* The two statements have different variables, but the same 7f R4.  We want to change both.
+                         * 
+                         * Yes, we want to change this all the way down to 1.  We really don't need double-spaced lines here.
+                         */
+                        codes[i+2] = new CodeInstruction(OpCodes.Ldc_R4, 1f);  // 7f --> 1f
+                    }
+                }
+
+                return codes.AsEnumerable();
             }
         }
     }
