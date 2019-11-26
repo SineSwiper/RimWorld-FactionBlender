@@ -24,7 +24,7 @@ namespace FactionBlender {
          * This _should_ be its own mod.  I might split this off eventually.
          */
 
-        [HarmonyPatch(typeof(RimWorld.BiomeDef), "IsPackAnimalAllowed")]
+        [HarmonyPatch(typeof(BiomeDef), "IsPackAnimalAllowed")]
         public static class BiomeDef_IsPackAnimalAllowed_Patch {
             /* XXX: Trying to figure out the min-max temperatures of a biome by indirect inference of the
              * BiomeWorker scores is a very dicey at best.  I'm just going to resort to a static list, and
@@ -96,7 +96,6 @@ namespace FactionBlender {
                 { "TropicalRainforest",  new[] { -5,40} },
                 { "TropicalSwamp",       new[] { -5,40} },
                 { "PoisonForest",        new[] { -5,40} },
-                { "Savanna",             new[] { -5,40} },
                 { "RRP_Savanna",         new[] { -5,40} },
                 { "Atoll",               new[] { -5,40} },
                 { "AB_FeraliskInfestedJungle",     new[] { -5,40} },
@@ -111,7 +110,7 @@ namespace FactionBlender {
             };
 
             [HarmonyPostfix]
-            static void IsPackAnimalAllowed_Postfix(RimWorld.BiomeDef __instance, ref bool __result, List<ThingDef> ___allowedPackAnimals, ThingDef pawn) {
+            static void IsPackAnimalAllowed_Postfix(BiomeDef __instance, ref bool __result, List<ThingDef> ___allowedPackAnimals, ThingDef pawn) {
                 // If the original already gave us a positive result, just accept it and short-circuit
                 if (__result) return;
 
@@ -146,8 +145,9 @@ namespace FactionBlender {
                     return;
                 }
 
-                int minTemp = biomeMinMaxTemp[biomeName][0];
-                int maxTemp = biomeMinMaxTemp[biomeName][1];
+                var minMaxTemp = biomeMinMaxTemp[biomeName];
+                int minTemp = minMaxTemp[0];
+                int maxTemp = minMaxTemp[1];
 
                 if (
                     pawn.GetStatValueAbstract(StatDefOf.ComfyTemperatureMin, null) <= minTemp &&
@@ -171,7 +171,7 @@ namespace FactionBlender {
          * definition.  So, protect all of that by checking all levels of expected objects for undefinedness.
          */
 
-        [HarmonyPatch(typeof (LordToil_Siege), "CanBeBuilder", null)]
+        [HarmonyPatch(typeof(LordToil_Siege), "CanBeBuilder")]
         public static class CanBeBuilder_Patch {
             [HarmonyPrefix]
             private static bool Prefix(Pawn p, ref bool __result) {
@@ -196,7 +196,7 @@ namespace FactionBlender {
          * Like the IsPackAnimalAllowed patch, this maybe should be its own "Fix Pack Animals" mod.
          */
 
-        [HarmonyPatch(typeof (PawnGroupKindWorker_Trader), "GenerateCarriers", null)]
+        [HarmonyPatch(typeof(PawnGroupKindWorker_Trader), "GenerateCarriers")]
         public static class GenerateCarriers_Override {
             
             // This may be an complete override, but if anybody wants to add another prefix, it will default to
@@ -314,12 +314,12 @@ namespace FactionBlender {
          * set of ThinkTrees would work here.
          */
 
-        [HarmonyPatch(typeof (Pawn_MindState), "MindStateTick", null)]
+        [HarmonyPatch(typeof(Pawn_MindState), "MindStateTick")]
         public static class MindStateTick_Patch {
             public static Dictionary<string, bool> hasWarnedAboutMisbehavingPawn = new Dictionary<string, bool> {};
 
             [HarmonyPrefix]
-            public static void Prefix(Pawn_MindState __instance) {
+            private static void Prefix(Pawn_MindState __instance) {
                 Pawn pawn = __instance?.pawn;
 
                 // Early state?
