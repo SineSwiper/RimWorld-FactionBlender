@@ -10,22 +10,7 @@ namespace FactionBlender {
     public class DefInjectors {
         public void InjectMiscToFactions(List<FactionDef> FB_Factions) {
             // Fix caravanTraderKinds, visitorTraderKinds, baseTraderKinds for the civil faction only
-            FactionDef FB_Civil = FB_Factions[1];
-            foreach (var faction in DefDatabase<FactionDef>.AllDefs) {
-                if (faction == FB_Civil) continue;
-
-                foreach (var caravan in faction.caravanTraderKinds) {
-                    // Tribal caravans are just lesser versions of the outlander ones, except for the slavers, which we
-                    // don't want here.
-                    if (caravan.defName.Contains("Neolithic")) continue;
-                    FB_Civil.caravanTraderKinds.Add(caravan);
-                }
-                FB_Civil.visitorTraderKinds.AddRange(faction.visitorTraderKinds);
-                FB_Civil.   baseTraderKinds.AddRange(faction.   baseTraderKinds);
-            }
-            FB_Civil.caravanTraderKinds.RemoveDuplicates();
-            FB_Civil.visitorTraderKinds.RemoveDuplicates();
-            FB_Civil.   baseTraderKinds.RemoveDuplicates();
+            TraderKindDefInjector.InjectTraderKindDefsToFactions(FB_Factions);
         }
 
         public void InjectPawnKindDefsToFactions(List<FactionDef> FB_Factions) {
