@@ -17,6 +17,7 @@ namespace FactionBlender {
         public static DefInjectors     DefInjector  { get; private set; }
         public static List<FactionDef> FB_Factions  { get; private set; }
         public static bool             hasAlienRace { get; private set; }
+        public static Dictionary<string, SettingHandle> Config { get; private set; }
         
         internal HugsLib.Utils.ModLogger ModLogger { get; private set; }
 
@@ -25,6 +26,7 @@ namespace FactionBlender {
             DefInjector = new FactionBlender.DefInjectors();
             FB_Factions = new List<FactionDef>();
             ModLogger   = this.Logger;
+            Config      = config;
         }
 
         // Settings
@@ -113,7 +115,8 @@ namespace FactionBlender {
                 "EnableMixedStartingColonists",
                 "EnableMixedRefugees",         
                 "EnableMixedSlaves",           
-                "EnableMixedWanderers",        
+                "EnableMixedWanderers",
+                "EnableMixedAncients",
             };
 
             int order = 1;

@@ -8,6 +8,8 @@
     <FB_EnableMixedSlaves_Description>Controls whether slaves, from rescue quests or slave traders, will include a variety of races and pawn kinds.</FB_EnableMixedSlaves_Description>
     <FB_EnableMixedWanderers_Title>Mixed race wanderers</FB_EnableMixedWanderers_Title>
     <FB_EnableMixedWanderers_Description>Controls whether wanderers, who may wander to join your colony, will include a variety of races and pawn kinds.</FB_EnableMixedWanderers_Description>
+    <FB_EnableMixedAncients_Title>Mixed race ancients</FB_EnableMixedAncients_Title>
+    <FB_EnableMixedAncients_Description>Controls whether ancients, from ancient dangers and other events, will include a variety of races and pawn kinds.</FB_EnableMixedAncients_Description>
 
     <FB_FilterWeakerAnimalsRaids_Title>Min combat power (raid animals)</FB_FilterWeakerAnimalsRaids_Title>
     <FB_FilterWeakerAnimalsRaids_Description>Controls which animals to include in pirate raids, based on minimum combat power.  Civilians will use 66% of this mimimum for raids, and 33% for trade caravan guards.</FB_FilterWeakerAnimalsRaids_Description>

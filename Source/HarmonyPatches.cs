@@ -1,8 +1,11 @@
 ﻿using Harmony;
+using HugsLib.Settings;
 using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using Verse;
 using Verse.AI;
 using UnityEngine;
@@ -359,6 +362,157 @@ namespace FactionBlender {
                 if (!pawn.Faction.HostileTo(tPawn.Faction) && !GenHostility.IsActiveThreatTo(tPawn, pawn.Faction)) return true;
                 return false;
             }
+        }
+
+        /*
+         * These are a series of patches against Ancient pawn generators, to allow a mixed set of pawns.
+         */
+
+        public static class GenerateAncientsPatches {
+            private static Pawn GenerateBaseAncient(ThingSetMaker_MapGen_AncientPodContents instance) {
+                // Faction grabber, with a few backup plans
+                Faction faction = null;
+                if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.First(f => f.def.defName == "FactionBlender_Civil");
+                if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.First(f => f.def.defName == "FactionBlender_Pirate");
+                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, true, true, TechLevel.Spacer);
+                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, true, true);
+
+                // 20% chance of animals and others
+                PawnKindDef pawnKind = null;
+                bool allowNonHuman = Rand.Range(1, 5) == 1;
+                for (int i = 0; i < 10; i++) {
+                    pawnKind = faction != null ? faction.RandomPawnKind() : PawnKindDefOf.AncientSoldier;  // fallback of last resort
+
+                    if (pawnKind.RaceProps.baseBodySize >= 3)          continue;  // maybe no dinosaurs in cryptosleep caskets?
+                    if (allowNonHuman || pawnKind.RaceProps.Humanlike) break;
+                }
+
+                Pawn pawn = PawnGenerator.GeneratePawn(new PawnGenerationRequest(
+                    kind: pawnKind,
+                    faction: Faction.OfAncients,
+                    certainlyBeenInCryptosleep: true
+                ));
+
+                // [Reflection] this.GiveRandomLootInventoryForTombPawn(pawn);
+                MethodInfo giveLootMethod = AccessTools.Method(typeof(ThingSetMaker_MapGen_AncientPodContents), "GiveRandomLootInventoryForTombPawn");
+                giveLootMethod.Invoke(instance, new object[] { pawn });
+
+                return pawn;
+            }
+
+            [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateFriendlyAncient")]
+            private static class GenerateFriendlyAncient_Override {
+                [HarmonyPrefix]
+                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                    // Skip this method (if the config is disabled)
+                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+
+                    __result = GenerateBaseAncient(__instance);
+
+                    // Skip the original method
+                    return false;
+                }
+            }
+
+            [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateIncappedAncient")]
+            private static class GenerateIncappedAncient_Override {
+                [HarmonyPrefix]
+                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                    // Skip this method (if the config is disabled)
+                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+
+                    Pawn pawn = GenerateBaseAncient(__instance);
+                    HealthUtility.DamageUntilDowned(pawn, true);
+
+                    __result = pawn;
+
+                    // Skip the original method
+                    return false;
+                }
+            }
+
+            [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateAngryAncient")]
+            private static class GenerateAngryAncient_Override {
+                [HarmonyPrefix]
+                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                    // Skip this method (if the config is disabled)
+                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+
+                    Pawn pawn = GenerateBaseAncient(__instance);
+                    pawn.SetFactionDirect(Faction.OfAncientsHostile);
+
+                    __result = pawn;
+
+                    // Skip the original method
+                    return false;
+                }
+            }
+
+            [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateHalfEatenAncient")]
+            private static class GenerateHalfEatenAncient_Override {
+                [HarmonyPrefix]
+                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                    // Skip this method (if the config is disabled)
+                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+
+                    Pawn pawn = GenerateBaseAncient(__instance);
+                
+                    int num = Rand.Range(6, 10);
+                    for (int index = 0; index < num; ++index) {
+                        pawn.TakeDamage(new DamageInfo(
+                            def: DamageDefOf.Bite, 
+                            amount: Rand.Range(3, 8), 
+                            instigator: (Thing) pawn
+                        ));
+                    }
+
+                    __result = pawn;
+
+                    // Skip the original method
+                    return false;
+                }
+            }
+
+            // Find other appropriate pawnkind types besides just megascarabs
+            [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateScarabs")]
+            private static class GenerateScarabs_Override {
+                [HarmonyPrefix]
+                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref List<Thing> __result) {
+                    // Skip this method (if the config is disabled)
+                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+
+                    PawnKindDef pawnKind = DefDatabase<PawnKindDef>.AllDefsListForReading.Where(p =>
+                        p.isFighter && !p.RaceProps.Humanlike &&
+                        p.combatPower >= 20 && p.combatPower <= 240 &&
+                        (
+                            p.RaceProps.FleshType == FleshTypeDefOf.Insectoid || Regex.IsMatch(
+                                p.RaceProps.meatDef.label.ToLower(),
+                                // Something something creepy crawlies
+                                @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobraflesh|" +
+                                // Some people might call this evil, but who's the one who installed the AvP mod?  We all know this is the
+                                // kind of frightening stuff you wanted...
+                                "xenomorph flesh"
+                            )
+                        ) && p.RaceProps.baseBodySize <= 0.6
+                    ).RandomElement();
+
+                    List<Thing> thingList = new List<Thing>();
+                    int cpLimit = Rand.Range(120, 240);
+                    int ttlCP   = 0;
+                    while (ttlCP < cpLimit) {
+                        Pawn pawn = PawnGenerator.GeneratePawn(pawnKind);
+                        pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Manhunter);
+                        thingList.Add(pawn);
+                        ttlCP += (int)pawnKind.combatPower;
+                    }
+
+                    __result = thingList;
+
+                    // Skip the original method
+                    return false;
+                }
+            }
+
         }
 
     }
