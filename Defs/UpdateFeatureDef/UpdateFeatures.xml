@@ -7,6 +7,20 @@
 	</HugsLib.UpdateFeatureDef>
 
 	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_2_5</defName>
+		<assemblyVersion>1.2.5</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Ancient dangers are a bit more interesting
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Trader kinds for FB factions are merged together, so that they can all fit on the faction negotiation dialog
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added a bunch more biomes to the "Is pack animal allowed?" patch; re-adjusted temperatures
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
 		<defName>FactionBlender_1_2_0</defName>
 		<assemblyVersion>1.2.0.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Manifest>
     <identifier>FactionBlender</identifier>
-    <version>1.2.0.0</version>
+    <version>1.2.5</version>
     <dependencies>
         <li>HugsLib</li>
         <li>HumanoidAlienRaces2.0</li>
