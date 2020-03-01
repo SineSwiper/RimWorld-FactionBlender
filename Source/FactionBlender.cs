@@ -18,7 +18,7 @@ namespace FactionBlender {
         public static List<FactionDef> FB_Factions  { get; private set; }
         public static bool             hasAlienRace { get; private set; }
         public static Dictionary<string, SettingHandle> Config { get; private set; }
-        
+
         internal HugsLib.Utils.ModLogger ModLogger { get; private set; }
 
         public Base() {
@@ -64,10 +64,9 @@ namespace FactionBlender {
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
             FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
 
-            Logger.Message("Injecting trader kinds to our factions");
-            DefInjector.InjectMiscToFactions(FB_Factions);
-
             ProcessSettings();
+
+            DefInjector.InjectMiscToFactions(FB_Factions);
 
             Logger.Message("Injecting pawn groups to our factions");
             FillFilterLists();
@@ -106,15 +105,15 @@ namespace FactionBlender {
 
             string  configVerStr = configVerSetting.Value;
             Version configVer    = new Version(configVerStr);
-            
+
             /*
              * Booleans
              */
             var bSettings = new List<string> {};
             if (hasAlienRace) bSettings = new List<string> {
                 "EnableMixedStartingColonists",
-                "EnableMixedRefugees",         
-                "EnableMixedSlaves",           
+                "EnableMixedRefugees",
+                "EnableMixedSlaves",
                 "EnableMixedWanderers",
                 "EnableMixedAncients",
             };
@@ -136,8 +135,8 @@ namespace FactionBlender {
              */
             var fSettings = new List<string> {
                 "FilterWeakerAnimalsRaids",
-                "FilterSlowPawnsCaravans", 
-                "PawnKindDifficultyLevel", 
+                "FilterSlowPawnsCaravans",
+                "PawnKindDifficultyLevel",
             };
             var fDefaults = new Dictionary<string, float> {
                 // Pirates will want stronger animals.  Bears are 200, and we definitely don't want to exclude
@@ -221,7 +220,7 @@ namespace FactionBlender {
                 var setting = (SettingHandle<string>)config[sName];
                 setting.DisplayOrder = order;
                 if (sName == "ExcludedFactionTypes") setting.OnValueChanged = x => { FillFilterLists(x);     lastSettingChanged = sName; };
-                else                                 setting.OnValueChanged = x => { FillFilterLists("", x); lastSettingChanged = sName; }; 
+                else                                 setting.OnValueChanged = x => { FillFilterLists("", x); lastSettingChanged = sName; };
                 order += 2;
 
                 setting.CustomDrawer = rect => DrawUtility.CustomDrawer_InputTextbox(rect, setting);
@@ -378,7 +377,7 @@ namespace FactionBlender {
                 )
                     return watchSetting == "FilterSlowPawnsCaravans" ? nil : false;
             }
-            
+
             return true;
         }
 

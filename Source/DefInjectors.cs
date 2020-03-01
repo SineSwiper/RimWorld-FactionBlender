@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,8 +10,60 @@ using UnityEngine;
 namespace FactionBlender {
     public class DefInjectors {
         public void InjectMiscToFactions(List<FactionDef> FB_Factions) {
+            Base FB = Base.Instance;
+
+            // Preemptively fix apparelStuffFilters for the basic factions that'll get FB pawn kinds
+            // (See also Harmony patch for GenerateWorkingPossibleApparelSetFor)
+            FB.ModLogger.Message("Injecting apparel filters to basic factions");
+
+            if ((SettingHandle<bool>)FB.config["EnableMixedAncients"]) {
+                // Give Ancients the best stuff (Plasteel, Hyperweave, Gold, etc.)
+                InjectApparelStuffIntoFaction(FactionDef.Named("Ancients"),        5, 100_000);
+                InjectApparelStuffIntoFaction(FactionDef.Named("AncientsHostile"), 5, 100_000);
+            }
+
+            if ((SettingHandle<bool>)FB.config["EnableMixedStartingColonists"]) {
+                // PlayerColony gets average stuff (Synthread, Wool, etc.)
+                InjectApparelStuffIntoFaction(FactionDef.Named("PlayerColony"), 2.5f, 5);
+
+                // PlayerTribe gets the worst stuff (Cloth, Steel, etc.)
+                InjectApparelStuffIntoFaction(FactionDef.Named("PlayerTribe"), 0, 2.5f);
+            }
+
             // Fix caravanTraderKinds, visitorTraderKinds, baseTraderKinds for the civil faction only
+            FB.ModLogger.Message("Injecting trader kinds to our factions");
             TraderKindDefInjector.InjectTraderKindDefsToFactions(FB_Factions);
+        }
+
+        private static void InjectApparelStuffIntoFaction(FactionDef faction, float valMin, float valMax) {
+            var hasStuffCategory = new HashSet<StuffCategoryDef> {};
+
+            // Assign each "stuff" into the faction filter, based on a market value quality filter
+            foreach (var stuff in DefDatabase<ThingDef>.AllDefs.Where(
+                st => st.IsStuff && st != ThingDefOf.Human.race.leatherDef && st.GetStatValueAbstract(StatDefOf.MarketValue) is float mv &&
+                mv >= valMin && mv <= valMax
+            ) ) {
+                faction.apparelStuffFilter.SetAllow(stuff, true);
+                stuff.stuffProps.categories?.ForEach(scd => hasStuffCategory.Add(scd));
+            }
+            
+            // Make sure every stuffCategory is captured
+            foreach (var stuffCategory in DefDatabase<StuffCategoryDef>.AllDefs) {
+                if (!hasStuffCategory.Contains(stuffCategory)) {
+                    // Find a "stuff" that fits
+                    ThingDef stuff = DefDatabase<ThingDef>.AllDefs.Where(
+                        st => st.IsStuff && st.stuffProps.categories != null && st.stuffProps.categories.Contains(stuffCategory)
+                    ).OrderBy(
+                        // Whichever is closest to the min/max ranges
+                        st => Math.Min(
+                            Math.Abs( st.GetStatValueAbstract(StatDefOf.MarketValue) - valMin ),
+                            Math.Abs( st.GetStatValueAbstract(StatDefOf.MarketValue) - valMax )
+                        )
+                    ).First();
+                    
+                    faction.apparelStuffFilter.SetAllow(stuff, true);
+                }
+            }
         }
 
         public void InjectPawnKindDefsToFactions(List<FactionDef> FB_Factions) {

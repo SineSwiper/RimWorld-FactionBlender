@@ -366,6 +366,78 @@ namespace FactionBlender {
             }
         }
 
+        /* Automatically fix conflicts between FactionDef->apparelStuffFilter and PawnKindDef->apparelRequired->stuffCategories.
+         * 
+         * Apparently, if the game tries to create a tribal's (wooden) war mask in a faction with conflicting
+         * apparelStuffFilters, it can't make the pawn.  So, auto-detect the condition and auto-fix it.
+         * 
+         * Some extra details: https://steamcommunity.com/workshop/filedetails/discussion/839005762/1750150007024567884/
+         */
+        [HarmonyPatch(typeof(PawnApparelGenerator), "GenerateWorkingPossibleApparelSetFor")]
+        public static class GenerateWorkingPossibleApparelSetFor_Patch {
+            [HarmonyPrefix]
+            private static void Prefix(Pawn pawn, float money, List<ThingStuffPair> apparelCandidates) {
+                // Short-circuit    
+                if (pawn == null || pawn.Faction == null || pawn.kindDef.apparelRequired == null) return;
+
+                // [Reflection prep] PawnApparelGenerator.CanUseStuff(pawn, pa);
+                MethodInfo CanUseStuffMethod = AccessTools.Method(typeof(PawnApparelGenerator), "CanUseStuff");
+
+                List<ThingStuffPair> allApparelPairs = ThingStuffPair.AllWith(td => td.IsApparel);
+
+                List<ThingDef> reqApparel = pawn.kindDef.apparelRequired;
+                for (int i = 0; i < reqApparel.Count; i++) {
+                    IEnumerable<ThingStuffPair> pairs = allApparelPairs.Where(
+                        pa => pa.thing == reqApparel[i]
+                    );
+
+                    // The original method is going to have a bad time, so auto-add an appropriate filter to fix it
+                    if ( !pairs.Any( pa => (bool)CanUseStuffMethod.Invoke(null, new object[] { pawn, pa }) ) ) {
+                        string logMsg =
+                            "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
+                            reqApparel[i] + " while generating apparel for " + pawn.kindDef.defName + "; "
+                        ;
+                            
+                        ThingFilter factionFilter = pawn.Faction.def.apparelStuffFilter;
+                        string      factionName   = pawn.Faction.def.defName;
+                        if (factionFilter != null) {
+                            List<StuffCategoryDef> stuffCategories = reqApparel[i].stuffCategories;
+                            ThingStuffPair examplePair = pairs.RandomElementByWeight(pa => pa.Commonality);
+
+                            if (stuffCategories == null && examplePair != null && examplePair.stuff != null) stuffCategories = examplePair.stuff.stuffProps.categories;
+
+                            if (stuffCategories != null) {
+                                logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + stuffCategories.Join();
+
+                                foreach (StuffCategoryDef sc in stuffCategories) {
+                                    factionFilter.SetAllow(sc, true);
+                                }
+                            }
+                            else if (examplePair.stuff != null) {
+                                logMsg = logMsg + "adding " + examplePair.stuff + " to " + factionName + "'s apparelStuffFilter";
+                                factionFilter.SetAllow(examplePair.stuff, true);
+                            }
+                            else if (examplePair != null) {
+                                logMsg = logMsg + "adding " + examplePair.thing + " to " + factionName + "'s apparelStuffFilter";
+                                factionFilter.SetAllow(examplePair.thing, true);
+                            }
+                            else {  // probably pendatic, but ¯\_(ツ)_/¯
+                                logMsg = logMsg + "adding " + reqApparel[i] + " to " + factionName + "'s apparelStuffFilter";
+                                factionFilter.SetAllow(reqApparel[i], true);
+                            }
+                        }
+                        else {
+                            logMsg = logMsg + "cannot fix since there is no apparelStuffFilter for " + factionName;
+                        }
+
+                        Base.Instance.ModLogger.Warning(logMsg);
+                    }
+                }
+
+                return;
+            }
+        }
+
         /*
          * These are a series of patches against Ancient pawn generators, to allow a mixed set of pawns.
          */
