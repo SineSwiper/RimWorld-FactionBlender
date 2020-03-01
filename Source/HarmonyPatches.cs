@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using HugsLib.Settings;
 using RimWorld;
 using System;
@@ -235,10 +235,12 @@ namespace FactionBlender {
                 // 120% of the weight of the items, or enough pawns before it seems "unreasonable" based on body
                 // size.
                 for (; ttlCapacity < ttlMassThings * 1.2 && ttlBodySize < 20; numCarriers++) {
-                    // Still the most abusive constructor I've ever seen...
                     PawnGenerationRequest request = new PawnGenerationRequest(
-                        kind, parms.faction, PawnGenerationContext.NonPlayer, parms.tile, false, false, false, false, true, false, 1f, false, true, true,
-                        parms.inhabitants, false, false, false, validator, null, new float?(), new float?(), new float?(), new Gender?(), new float?(), null
+                        kind:             kind,
+                        faction:          parms.faction,
+                        tile:             parms.tile,
+                        inhabitant:       parms.inhabitants,
+                        validatorPreGear: validator
                     );
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
                     outPawns.Add(pawn);

@@ -52,7 +52,7 @@ namespace FactionBlender {
             traderKindDefs.RemoveDuplicates();  // parent classes, etc.
 
             // Add the rest, while merging where we find (label-like) dupes
-            foreach (var traderKind in traderKindDefs) {
+            foreach (var traderKind in traderKindDefs.ToList()) {
                 string curLabel = traderKind.label.ToLower();
                 string newLabel = newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
                 int lm = FB_Civil.caravanTraderKinds.FirstIndexOf(tkd =>

@@ -58,7 +58,7 @@ namespace FactionBlender {
         }
 
         public override void DefsLoaded() {
-            hasAlienRace = GenTypes.GetTypeInAnyAssemblyNew("AlienRace.RaceSettings", "AlienRace") != null;
+            hasAlienRace = GenTypes.GetTypeInAnyAssembly("AlienRace.RaceSettings", "AlienRace") != null;
 
             FB_Factions.RemoveAll(x => true);
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
