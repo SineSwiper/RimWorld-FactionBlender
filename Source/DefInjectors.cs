@@ -59,9 +59,9 @@ namespace FactionBlender {
                             Math.Abs( st.GetStatValueAbstract(StatDefOf.MarketValue) - valMin ),
                             Math.Abs( st.GetStatValueAbstract(StatDefOf.MarketValue) - valMax )
                         )
-                    ).First();
-                    
-                    faction.apparelStuffFilter.SetAllow(stuff, true);
+                    ).FirstOrFallback();
+
+                    if (stuff != null) faction.apparelStuffFilter.SetAllow(stuff, true);
                 }
             }
         }

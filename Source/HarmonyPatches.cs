@@ -371,7 +371,7 @@ namespace FactionBlender {
          * Apparently, if the game tries to create a tribal's (wooden) war mask in a faction with conflicting
          * apparelStuffFilters, it can't make the pawn.  So, auto-detect the condition and auto-fix it.
          * 
-         * Some extra details: https://steamcommunity.com/workshop/filedetails/discussion/839005762/1750150007024567884/
+         * Some extra details: https://ludeon.com/forums/index.php?topic=50672.0
          */
         [HarmonyPatch(typeof(PawnApparelGenerator), "GenerateWorkingPossibleApparelSetFor")]
         public static class GenerateWorkingPossibleApparelSetFor_Patch {
@@ -407,7 +407,7 @@ namespace FactionBlender {
                             if (stuffCategories == null && examplePair != null && examplePair.stuff != null) stuffCategories = examplePair.stuff.stuffProps.categories;
 
                             if (stuffCategories != null) {
-                                logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + stuffCategories.Join();
+                                logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + string.Join(", ", stuffCategories);
 
                                 foreach (StuffCategoryDef sc in stuffCategories) {
                                     factionFilter.SetAllow(sc, true);
