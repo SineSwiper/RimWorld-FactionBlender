@@ -450,8 +450,8 @@ namespace FactionBlender {
             private static Pawn GenerateBaseAncient(ThingSetMaker_MapGen_AncientPodContents instance) {
                 // Faction grabber, with a few backup plans
                 Faction faction = null;
-                if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.First(f => f.def.defName == "FactionBlender_Civil");
-                if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.First(f => f.def.defName == "FactionBlender_Pirate");
+                if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == "FactionBlender_Civil");
+                if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == "FactionBlender_Pirate");
                 if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, true, true, TechLevel.Spacer);
                 if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, true, true);
 
