@@ -69,14 +69,6 @@ namespace FactionBlender {
         public void InjectPawnKindDefsToFactions(List<FactionDef> FB_Factions) {
             Base FB = Base.Instance;
 
-            // Split out excludedFactionTypes
-            FB.excludedFactionTypesList =
-                Regex.Split( ((SettingHandle<string>)FB.config["ExcludedFactionTypes"]).Value.Trim(), "[^\\w]+").
-                Select(x => x.Trim()).
-                Where (x => x.Length >= 1).
-                ToArray()
-            ;
-
             // Clear out old settings, if any
             foreach (FactionDef FBfac in FB_Factions) {
                 foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {

@@ -34,25 +34,28 @@ namespace FactionBlender {
 
         public string lastSettingChanged = "";
 
-        public string[] excludedFactionTypesList;
-        public string[] excludedRacesList;
+        public Regex[] excludedFactionTypesList;
+        public Regex[] excludedRacesList;
 
         public void FillFilterLists(string excludedFactionTypes = "", string excludedRaces = "") {
             // Split out excludedFactionTypes
             if (excludedFactionTypes.Length == 0) excludedFactionTypes = ((SettingHandle<string>)config["ExcludedFactionTypes"]).Value;
             if (excludedRaces       .Length == 0) excludedRaces        = ((SettingHandle<string>)config["ExcludedRaces"       ]).Value;
 
+            // Trim, use * as RegEx wildcard, check for blanks, bind to exact matching
             excludedFactionTypesList =
-                Regex.Split(excludedFactionTypes.Trim(), "[^\\w]+").
-                Select(x => x.Trim()).
+                Regex.Split(excludedFactionTypes.Trim(), @"[^\w*]+").
+                Select(x => x.Trim().Replace("*", @"\w*")).
                 Where (x => x.Length >= 1).
+                Select(x => new Regex("^" + x + "$")).
                 ToArray()
             ;
 
             excludedRacesList =
-                Regex.Split(excludedRaces.Trim(), "[^\\w]+").
-                Select(x => x.Trim()).
+                Regex.Split(excludedRaces.Trim(), @"[^\w*]+").
+                Select(x => x.Trim().Replace("*", @"\w*")).
                 Where (x => x.Length >= 1).
+                Select(x => new Regex("^" + x + "$")).
                 ToArray()
             ;
         }
@@ -197,18 +200,19 @@ namespace FactionBlender {
                 { "ExcludedFactionTypes", "ROMV_Sabbat, ROM_StarVampire, RRY_Xenomorph" },
 
                 // Better Infestation Queens: They tend to wander around, gathering resources, and ignoring the fight.
-                { "ExcludedRaces", "BI_Queen" },
+                // Boats: Boats are not real pawns
+                { "ExcludedRaces", "BI_Queen, SPBoats_*" },
             };
-            var sPrevDefaults = new Dictionary<string, Dictionary<string, string>> {
-                // This is used to change the defaults on mod upgrades
-                { "ExcludedFactionTypes", new Dictionary<string, string> {
-                    { "1.1.0.0", "ROMV_Sabbat, ROM_StarVampire" },
-                    { "1.1.5.0", "ROMV_Sabbat, ROM_StarVampire" },
-                    { "1.1.5.1", "ROMV_Sabbat, ROM_StarVampire" },
-                    { currentVerStr, sDefaults["ExcludedFactionTypes"] },
+            var sPrevDefaults = new Dictionary<string, Dictionary<string, Version>> {
+                // This is used to change the defaults on mod upgrades.  Version used is the last version before the change.
+                { "ExcludedFactionTypes", new Dictionary<string, Version> {
+                    { "ROMV_Sabbat, ROM_StarVampire", new Version("1.1.5.1") },
+                    { sDefaults["ExcludedFactionTypes"], currentVer },
                 } },
-                { "ExcludedRaces", new Dictionary<string, string> {
-                    { currentVerStr, sDefaults["ExcludedRaces"] },
+                { "ExcludedRaces", new Dictionary<string, Version> {
+                    { "",         new Version("1.1.5.0") },
+                    { "BI_Queen", new Version("1.3.1")  },
+                    { sDefaults["ExcludedRaces"], currentVer },
                 } },
             };
 
@@ -227,9 +231,9 @@ namespace FactionBlender {
                 setting.CustomDrawerHeight = 34f * 4;
 
                 // Force change defaults on mod upgrade
-                if (!currentVer.Equals(configVer)) {
-                    var prevDefault = sPrevDefaults[sName][configVerSetting.Value];
-                    if (prevDefault == null || setting.Value == prevDefault) setting.Value = sDefaults[sName];
+                if (!currentVer.Equals(configVer) && sPrevDefaults[sName].ContainsKey(setting.Value)) {
+                    Version lastVerForDefault = sPrevDefaults[sName][setting.Value];
+                    if (configVer <= lastVerForDefault) setting.Value = sDefaults[sName];
                 }
             }
 
@@ -344,16 +348,16 @@ namespace FactionBlender {
 
             // Filter by defaultFactionType
             if (pawn.defaultFactionType != null) {
-                foreach (string factionDefName in excludedFactionTypesList) {
-                    if (pawn.defaultFactionType.defName == factionDefName)
+                foreach (Regex factionDefNameRgx in excludedFactionTypesList) {
+                    if (factionDefNameRgx.IsMatch(pawn.defaultFactionType.defName))
                         return watchSetting == "ExcludedFactionTypes" ? nil : false;
                 }
             }
 
             // Filter by race defName
             if (pawn.race.defName != null) {
-                foreach (string raceDefName in excludedRacesList) {
-                    if (pawn.race.defName == raceDefName)
+                foreach (Regex raceDefNameRgx in excludedRacesList) {
+                    if (raceDefNameRgx.IsMatch(pawn.race.defName))
                         return watchSetting == "ExcludedRaces" ? nil : false;
                 }
             }
