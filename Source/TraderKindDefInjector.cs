@@ -53,10 +53,10 @@ namespace FactionBlender {
 
             // Add the rest, while merging where we find (label-like) dupes
             foreach (var traderKind in traderKindDefs.ToList()) {
-                string curLabel = traderKind.label.ToLower();
-                string newLabel = newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
+                string curLabel = traderKind.label?.ToLower();
+                string newLabel = curLabel != null && newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
                 int lm = FB_Civil.caravanTraderKinds.FirstIndexOf(tkd =>
-                    tkd.label.ToLower() == curLabel || tkd.label.ToLower() == newLabel
+                   tkd.label != null && tkd.label?.ToLower() == curLabel || tkd.label?.ToLower() == newLabel
                 ); // returns Count on failure, not -1
             
                 // If we somehow missed a dupe, skip it
