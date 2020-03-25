@@ -109,6 +109,8 @@ namespace FactionBlender {
                 { "TKKN_Savanna",        new[] {  0,40} },
             };
 
+            public static HashSet<string> warnedAboutBiome = new HashSet<string> {};
+
             [HarmonyPostfix]
             static void IsPackAnimalAllowed_Postfix(BiomeDef __instance, ref bool __result, List<ThingDef> ___allowedPackAnimals, ThingDef pawn) {
                 // If the original already gave us a positive result, just accept it and short-circuit
@@ -134,11 +136,13 @@ namespace FactionBlender {
                 string biomeName = __instance.defName;
                 if (!biomeMinMaxTemp.ContainsKey(biomeName)) {
                     // We don't have a temperature defined, so hope for the best
-                    Log.ErrorOnce(
-                        "[FactionBlender] Unrecognized biome " + biomeName + ".  Accepting all pack animals for traders here, which might cause some " +
-                        "to freeze/burn to death, if the biome is hostile.  Ask the FB dev to include the biome in the static min/max temp list.",
-                        __instance.debugRandomId + 1688085595
-                    );
+                    if (!warnedAboutBiome.Contains(biomeName)) {
+                        Log.Warning(
+                            "[FactionBlender] Unrecognized biome " + biomeName + ".  Accepting all pack animals for traders here, which might cause some " +
+                            "to freeze/burn to death, if the biome is hostile.  Ask the FB dev to include the biome in the static min/max temp list."
+                        );
+                        warnedAboutBiome.Add(biomeName);
+                    }
 
                     __result = true;
                     ___allowedPackAnimals.AddDistinct(pawn);
