@@ -44,15 +44,18 @@ namespace FactionBlender {
              *   Mallorn Forest (from Lord of the Rims - Elves)
              *   Terra Project
              *   Misc. MapGen Xtension 'Urban Biome'
+             *   More Vanilla Biomes
              */
             public static readonly Dictionary<string, int[]> biomeMinMaxTemp = new Dictionary<string, int[]> {
-                { "SeaIce",              new[] {-50, 5} },
-                { "IceSheet",            new[] {-50, 5} },
-                { "Tundra",              new[] {-50,25} },
-                { "Permafrost",          new[] {-50, 5} },
-                { "RRP_Permafrost",      new[] {-50, 5} },
-                { "TundraSkerries",      new[] {-50,35} },
-                { "AB_PropaneLakes",     new[] {-50, 5} },
+                { "SeaIce",                 new[] {-50, 5} },
+                { "IceSheet",               new[] {-50, 5} },
+                { "Tundra",                 new[] {-50,25} },
+                { "Permafrost",             new[] {-50, 5} },
+                { "RRP_Permafrost",         new[] {-50, 5} },
+                { "TundraSkerries",         new[] {-50,35} },
+                { "AB_PropaneLakes",        new[] {-50, 5} },
+                { "ZBiome_CloudForest",     new[] {-50,35} },
+                { "ZBiome_Iceberg_NoBeach", new[] {-50,10} },
 
                 { "TemperateForest",     new[] {-35,25} },
                 { "TemperateSwamp",      new[] {-35,25} },
@@ -74,6 +77,11 @@ namespace FactionBlender {
                 { "TemperateForest_UrbanRuins", new[] {-35,25} },
                 { "TemperateSwamp_UrbanRuins",  new[] {-35,25} },
                 { "BorealForest_UrbanRuins",    new[] {-35,25} },
+                { "ZBiome_AlpineMeadow", new[] {-35,40} },
+                { "ZBiome_CoastalDunes", new[] {-30,40} },
+                { "ZBiome_DesertOasis",  new[] {-35,40} },
+                { "ZBiome_Grasslands",   new[] {-35,40} },
+                { "ZBiome_Marsh",        new[] {-35,40} },
 
                 { "Desert",              new[] {-25,40} },
                 { "AridShrubland",       new[] {-25,40} },
@@ -82,6 +90,7 @@ namespace FactionBlender {
                 { "TKKN_Desert",         new[] {-25,40} },
                 { "VolcanicIsland",      new[] {-25,40} },
                 { "AB_RockyCrags",       new[] {-25,40} },
+                { "ZBiome_Sandbar_NoBeach", new[] {-25,40} },
 
                 { "TKKN_VolcanicFlow",   new[] {-20,40} },
 
