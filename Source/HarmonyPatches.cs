@@ -389,18 +389,16 @@ namespace FactionBlender {
         [HarmonyPatch(typeof(PawnApparelGenerator), "GenerateWorkingPossibleApparelSetFor")]
         public static class GenerateWorkingPossibleApparelSetFor_Patch {
             [HarmonyPrefix]
-            private static void Prefix(Pawn pawn, float money, List<ThingStuffPair> apparelCandidates) {
+            private static void Prefix(Pawn pawn, List<ThingStuffPair> ___allApparelPairs) {
                 // Short-circuit    
                 if (pawn == null || pawn.Faction == null || pawn.kindDef.apparelRequired == null) return;
 
                 // [Reflection prep] PawnApparelGenerator.CanUseStuff(pawn, pa);
                 MethodInfo CanUseStuffMethod = AccessTools.Method(typeof(PawnApparelGenerator), "CanUseStuff");
 
-                List<ThingStuffPair> allApparelPairs = ThingStuffPair.AllWith(td => td.IsApparel);
-
                 List<ThingDef> reqApparel = pawn.kindDef.apparelRequired;
                 for (int i = 0; i < reqApparel.Count; i++) {
-                    IEnumerable<ThingStuffPair> pairs = allApparelPairs.Where(
+                    IEnumerable<ThingStuffPair> pairs = ___allApparelPairs.Where(
                         pa => pa.thing == reqApparel[i]
                     );
 
