@@ -2,6 +2,8 @@
 <Configuration>
   <Excluded>
     <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\FactionBlender\.git</exclude>
+    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\FactionBlender\.gitattributes</exclude>
+    <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\FactionBlender\.gitignore</exclude>
     <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\FactionBlender\.vs</exclude>
     <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\FactionBlender\README.md</exclude>
     <exclude>C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\FactionBlender\Source\.vs</exclude>
