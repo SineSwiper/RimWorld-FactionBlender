@@ -52,7 +52,10 @@ namespace FactionBlender {
                 if (!hasStuffCategory.Contains(stuffCategory)) {
                     // Find a "stuff" that fits
                     ThingDef stuff = DefDatabase<ThingDef>.AllDefs.Where(
-                        st => st.IsStuff && st.stuffProps.categories != null && st.stuffProps.categories.Contains(stuffCategory)
+                        st => (
+                            st.IsStuff && st.stuffProps is StuffProperties sp && sp.commonality > 0 &&
+                            sp.categories != null && sp.categories.Contains(stuffCategory)
+                        )
                     ).OrderBy(
                         // Whichever is closest to the min/max ranges
                         st => Math.Min(

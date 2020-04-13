@@ -403,7 +403,7 @@ namespace FactionBlender {
                     );
 
                     // The original method is going to have a bad time, so auto-add an appropriate filter to fix it
-                    if ( !pairs.Any( pa => (bool)CanUseStuffMethod.Invoke(null, new object[] { pawn, pa }) ) ) {
+                    if ( !pairs.Any( pa => (bool)CanUseStuffMethod.Invoke(null, new object[] { pawn, pa }) && pa.Commonality > 0 ) ) {
                         string logMsg =
                             "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
                             reqApparel[i] + " while generating apparel for " + pawn.kindDef.defName + "; "
