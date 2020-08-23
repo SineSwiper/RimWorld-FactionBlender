@@ -20,7 +20,7 @@ namespace FactionBlender {
          * about every major animal mod out there, and without this fix, the only pack animals that manage
          * to show up are Lórien deer and Muffalo.  No dinos, no genetic hybrids, no alpha animals, nothing
          * except those two.
-         * 
+         *
          * This _should_ be its own mod.  I might split this off eventually.
          */
 
@@ -178,7 +178,7 @@ namespace FactionBlender {
         }
 
         /* Fix CanBeBuilder checks to not crash.
-         * 
+         *
          * The core CanBeBuilder (and Torann's A RimWorld of Magic) makes some bad assumptions about what
          * properties are available for pawns.  Some animals and non-humans might not have a story or
          * definition.  So, protect all of that by checking all levels of expected objects for undefinedness.
@@ -197,31 +197,31 @@ namespace FactionBlender {
         }
 
         /* A better version of GenerateCarriers.
-         * 
+         *
          * Vanilla pack animal creation for caravans doesn't really take into account the variety of pack
          * animals we now have.  It typically only creates 3-4 pack animals and randomly stuffs them with all
          * of the wares.  This will happen even if, say, tiny chickenffalos can't hold the massive load.  Or
          * it will split them up among 3-4 huge paraceramuffalo that could still hold 10 times the amount.
-         * 
+         *
          * I wish I had the patience to figure out how make the small tweak as a transpiler fix.  However,
          * since I plan on just writing this override, I might as well add in my other ideas.
-         * 
+         *
          * Like the IsPackAnimalAllowed patch, this maybe should be its own "Fix Pack Animals" mod.
          */
 
         [HarmonyPatch(typeof(PawnGroupKindWorker_Trader), "GenerateCarriers")]
         public static class GenerateCarriers_Override {
-            
+
             // This may be an complete override, but if anybody wants to add another prefix, it will default to
             // run before this.  I don't think anybody's really messed with this method, though.
             [HarmonyPriority(Priority.Last)]
             [HarmonyPrefix]
             private static bool Prefix(PawnGroupMakerParms parms, PawnGroupMaker groupMaker, Pawn trader, List<Thing> wares, List<Pawn> outPawns) {
                 Func<Thing, float> massTotaler = t => t.stackCount * t.GetStatValue(StatDefOf.Mass, true);
-                
+
                 List<Thing> list = wares.Where(t => !(t is Pawn)).ToList();
                 list.SortByDescending(massTotaler);
-                
+
                 float ttlMassThings = list.Sum(massTotaler);
                 float ttlCapacity   = 0f;
                 float ttlBodySize   = 0f;
@@ -247,6 +247,7 @@ namespace FactionBlender {
                 // Generate all of the carrier pawns (empty).  Either we spawn as many pawns as we need to cover
                 // 120% of the weight of the items, or enough pawns before it seems "unreasonable" based on body
                 // size.
+                List<Pawn> carrierPawns = new List<Pawn> {};
                 for (; ttlCapacity < ttlMassThings * 1.2 && ttlBodySize < 20; numCarriers++) {
                     PawnGenerationRequest request = new PawnGenerationRequest(
                         kind:             kind,
@@ -256,20 +257,24 @@ namespace FactionBlender {
                         validatorPreGear: validator
                     );
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
-                    outPawns.Add(pawn);
-                    
+                    carrierPawns.Add(pawn);
+
                     ttlCapacity += MassUtility.Capacity(pawn);
                     // Still can't have 100 chickenmuffalos.  That might slow down some PCs.
                     ttlBodySize += Mathf.Max(pawn.BodySize, 0.5f);
 
                     if (mixedCarriers) kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
+
+                    // Include a hard limit of 50 pack animals for extreme ttlMassThings scenarios, like massive
+                    // percentages from Supply and Demand
+                    if (numCarriers >= 50) break;
                 }
 
                 // Add items (in descending order of weight) to randomly chosen pack animals.  This isn't the most
                 // efficient routine, as we're trying to be a bit random.  If I was trying to be efficient, I would
                 // use something like SortByDescending(p.Capacity) against the existing thing list.
                 foreach (Thing thing in list) {
-                    List<Pawn> validPawns = outPawns.FindAll(p => !MassUtility.WillBeOverEncumberedAfterPickingUp(p, thing, thing.stackCount));
+                    List<Pawn> validPawns = carrierPawns.FindAll(p => !MassUtility.WillBeOverEncumberedAfterPickingUp(p, thing, thing.stackCount));
 
                     if (validPawns.Count() != 0) {
                         validPawns.RandomElement().inventory.innerContainer.TryAdd(thing, true);
@@ -279,7 +284,7 @@ namespace FactionBlender {
                         int countLeft = thing.stackCount;
                         int c = 0;  // safety counter (while loops can be dangerous)
                         while (countLeft > 0) {
-                            validPawns = outPawns.FindAll(p => MassUtility.CountToPickUpUntilOverEncumbered(p, thing) >= 1);
+                            validPawns = carrierPawns.FindAll(p => MassUtility.CountToPickUpUntilOverEncumbered(p, thing) >= 1);
                             if (validPawns.Count() != 0 && c < thing.stackCount) {
                                 Pawn pawn = validPawns.RandomElement();
                                 int countToAdd = Mathf.Min( MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing), countLeft );
@@ -288,17 +293,15 @@ namespace FactionBlender {
                             else {
                                 // Either no carrier can handle a single item, or we're just in some bad while loop breakout.  In
                                 // any case, force it in, evenly split among all carriers.
-                                int splitCount = Mathf.FloorToInt(countLeft / outPawns.Count());
+                                int splitCount = Mathf.FloorToInt(countLeft / carrierPawns.Count());
                                 if (splitCount > 0) {
-                                    outPawns.ForEach(p => p.inventory.innerContainer.TryAdd(thing, splitCount, true));
-                                    countLeft -= splitCount * outPawns.Count();
+                                    carrierPawns.ForEach(p => p.inventory.innerContainer.TryAdd(thing, splitCount, true));
+                                    countLeft -= splitCount * carrierPawns.Count();
                                 }
-                                
+
                                 // Give the remainer to the ones with space (one at a time)
                                 while (countLeft > 0) {
-                                    validPawns = new List<Pawn>(outPawns);
-                                    validPawns.SortByDescending(p => MassUtility.FreeSpace(p));
-                                    validPawns.First().inventory.innerContainer.TryAdd(thing, 1, true);
+                                    carrierPawns.MaxBy(p => MassUtility.FreeSpace(p)).inventory.innerContainer.TryAdd(thing, 1, true);
                                     countLeft--;
                                 }
                                 break;
@@ -308,11 +311,12 @@ namespace FactionBlender {
                     }
                     else {
                         // No way to split it; force it in
-                        validPawns = new List<Pawn>(outPawns);
-                        validPawns.SortByDescending(p => MassUtility.FreeSpace(p));
-                        validPawns.First().inventory.innerContainer.TryAdd(thing, true);
+                        carrierPawns.MaxBy(p => MassUtility.FreeSpace(p)).inventory.innerContainer.TryAdd(thing, true);
                     }
                 }
+
+                // Finally, add in the carrierPawns to the out list
+                outPawns.AddRange(carrierPawns);
 
                 // Always skip the original method
                 return false;
@@ -320,11 +324,11 @@ namespace FactionBlender {
         }
 
         /* Warn user of badly-behaving pawns that attack their own faction (or friendlies).
-         * 
+         *
          * This seems to happen more often than you would think, because many mods assume they are in a
          * homogenous faction that wouldn't possibly have the other enemy in it, especially if they have their
          * own AttackTargetSearcher/Finder or BestAttackTarget method.
-         * 
+         *
          * I attempted to modify the behavior here, but nothing short of a RaceProperties transplant with a new
          * set of ThinkTrees would work here.
          */
@@ -380,17 +384,17 @@ namespace FactionBlender {
         }
 
         /* Automatically fix conflicts between FactionDef->apparelStuffFilter and PawnKindDef->apparelRequired->stuffCategories.
-         * 
+         *
          * Apparently, if the game tries to create a tribal's (wooden) war mask in a faction with conflicting
          * apparelStuffFilters, it can't make the pawn.  So, auto-detect the condition and auto-fix it.
-         * 
+         *
          * Some extra details: https://ludeon.com/forums/index.php?topic=50672.0
          */
         [HarmonyPatch(typeof(PawnApparelGenerator), "GenerateWorkingPossibleApparelSetFor")]
         public static class GenerateWorkingPossibleApparelSetFor_Patch {
             [HarmonyPrefix]
             private static void Prefix(Pawn pawn, List<ThingStuffPair> ___allApparelPairs) {
-                // Short-circuit    
+                // Short-circuit
                 if (pawn == null || pawn.Faction == null || pawn.kindDef.apparelRequired == null) return;
 
                 // [Reflection prep] PawnApparelGenerator.CanUseStuff(pawn, pa);
@@ -408,7 +412,7 @@ namespace FactionBlender {
                             "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
                             reqApparel[i] + " while generating apparel for " + pawn.kindDef.defName + "; "
                         ;
-                            
+
                         ThingFilter factionFilter = pawn.Faction.def.apparelStuffFilter;
                         string      factionName   = pawn.Faction.def.defName;
                         if (factionFilter != null) {
@@ -459,8 +463,8 @@ namespace FactionBlender {
                 Faction faction = null;
                 if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == "FactionBlender_Civil");
                 if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == "FactionBlender_Pirate");
-                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, true, true, TechLevel.Spacer);
-                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, true, true);
+                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction_NewTemp(out faction, true, true, TechLevel.Spacer);
+                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction_NewTemp(out faction, true, true);
 
                 // 20% chance of animals and others
                 PawnKindDef pawnKind = null;
@@ -541,12 +545,12 @@ namespace FactionBlender {
                     if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
                     Pawn pawn = GenerateBaseAncient(__instance);
-                
+
                     int num = Rand.Range(6, 10);
                     for (int index = 0; index < num; ++index) {
                         pawn.TakeDamage(new DamageInfo(
-                            def: DamageDefOf.Bite, 
-                            amount: Rand.Range(3, 8), 
+                            def: DamageDefOf.Bite,
+                            amount: Rand.Range(3, 8),
                             instigator: (Thing) pawn
                         ));
                     }
