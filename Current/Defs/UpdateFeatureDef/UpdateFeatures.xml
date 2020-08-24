@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<HugsLib.UpdateFeatureDef Abstract="true" Name="UpdateFeatureBase">
+		<modNameReadable>Faction Blender</modNameReadable>
+		<modIdentifier>FactionBlender</modIdentifier>
+		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1734490820</linkUrl>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_3_4</defName>
+		<assemblyVersion>1.3.4</assemblyVersion>
+		<content>
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Works with RimWorld v1.2!
+- Added hard limit to trade pack animals
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_3_3</defName>
+		<assemblyVersion>1.3.3</assemblyVersion>
+		<content>
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed a few critical bugs with the apparelStuffFilter injections and patch
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_3_2</defName>
+		<assemblyVersion>1.3.2</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- The blacklists accept * as a wildcard now
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Added SmashPhil's Boats to default blacklist
+- Fixed errors from missing traderKindDef.label
+- Fixed errors from generating ancient pawns
+- Removed Manifest.xml to fix dep mismatches from Fluffy's Mod Manager
+- Added More Vanilla Biomes to the "Is pack animal allowed?" patch
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Biome pack animal error is now just a warning
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_3_1</defName>
+		<assemblyVersion>1.3.1</assemblyVersion>
+		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Fixed "Sequence contains no elements" crash that occurred on certain mod combinations
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_3_0</defName>
+		<assemblyVersion>1.3.0</assemblyVersion>
+		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Now fully compatible with RimWorld v1.1!
+- Fixed conflict with apparelRequired and factions' apparelStuffFilter during apparel generation
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_2_5</defName>
+		<assemblyVersion>1.2.5</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Ancient dangers are a bit more interesting
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Trader kinds for FB factions are merged together, so that they can all fit on the faction negotiation dialog
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added a bunch more biomes to the "Is pack animal allowed?" patch; re-adjusted temperatures
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_2_0</defName>
+		<assemblyVersion>1.2.0.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Mixed race starting colonists now work for Lost Tribes scenario
+- Added config option to blacklist specific races ("Excluded pawn kinds by race")
+- Added Chinese translations.  (Thanks, CaptainSnafu!)
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Different racial backstories no longer get mixed together.  The same goes for hair styles.
+- Xenomorphs and Better Infestation's Queens are in the blacklist by default
+- Blacklist config options now use a larger textbox
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Badly-behaving pawns (ones that attack their own faction) will get a debug warning that will include the defaultFactionType and race defName to use in one of the blacklists
+- Blacklist filter displays will update their cache properly while entries are being changed
+- Blacklist config options will detect defaults based on the previous mod version and upgrade them
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_1_5</defName>
+		<assemblyVersion>1.1.5.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Now you can use all your races for vanilla starting scenarios!
+- Added all races for wanderer, refugee, and slave types as well
+- All of these options are adjustable in Mod Settings
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+		<defName>FactionBlender_1_1_0</defName>
+		<assemblyVersion>1.1.0.0</assemblyVersion>
+		<content>&lt;b&gt;Additions:&lt;/b&gt;
+- Added a config menu.  Now you can tweak which pawns are included in various groups.
+- Replaced the caravan pack animal generation algorithm.  Now, trade caravan pack animals will vary in count based on the wares weight, will sometimes show up with a variety of pack animals, and will try to balance the cargo's weight without overloading themselves (usually).
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- The new Archotech Centipede from Genetic Rim is no longer a threat.  Unless you want to re-adjust the slider...
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- A few more variations on faction names
+- The herdAnimal property is no longer a factor in determining if they are appropriate in combat
+- Since the pack animal algorithm has been replaced, body size is no longer a factor in determining appropriate caravan pack animals
+        </content>
+	</HugsLib.UpdateFeatureDef>
+</Defs>
