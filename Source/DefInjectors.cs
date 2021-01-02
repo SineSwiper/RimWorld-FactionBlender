@@ -242,7 +242,7 @@ namespace FactionBlender {
                         // Any non-fighter is probably a "slave" type.  But exclude traders.  It doesn't make any sense to 
                         // have traders trying to trade away themselves.
                         pawn => pawn.RaceProps.Humanlike && !pawn.isFighter && !pawn.trader && FB.FilterPawnKindDef(pawn, "global")
-                    ).Select(pawn => pawn.defName).ToList()
+                    ).Select(pawn => pawn).ToList()
                 );
             }
 
@@ -283,7 +283,7 @@ namespace FactionBlender {
                 // Add a number of entries based on the popularity of the race within PKDs (maximum of 8)
                 int numEntries = Mathf.Clamp(Mathf.RoundToInt( 8 / raceCounts[pawn.race.defName] ), 1, 8);
                 foreach (int i in Enumerable.Range(1, numEntries)) {
-                    chanceBuckets[chance].kindDefs.Add(name);
+                    chanceBuckets[chance].kindDefs.Add(pawn);
                 }
             }
 
