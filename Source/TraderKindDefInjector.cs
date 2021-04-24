@@ -14,31 +14,57 @@ namespace FactionBlender {
             { "trader",                     "bulk goods trader"    },
             { "scrap trader",               "bulk goods trader"    },
             { "odds trader",                "bulk goods trader"    },
+            { "imperial trader",            "bulk goods trader"    },
+            { "imperial bulk goods provisioner", "bulk goods trader" },
+            { "general supplier",           "bulk goods trader"    },
+            { "supply officer",             "bulk goods trader"    },
+
             { "war merchant",               "combat supplier"      },
             { "weapons dealer",             "combat supplier"      },
             { "dwarven smithy",             "combat supplier"      },
             { "military industrial trader", "combat supplier"      },
+            { "imperial weapons provisioner", "combat supplier"    },
+            { "armorsmith",                 "combat supplier"      },
+            { "weaponsmith",                "combat supplier"      },
+
             { "slaver",                     "pirate merchant"      },
             { "pet dealer",                 "pirate merchant"      },
             { "smuggler",                   "pirate merchant"      },
             { "drug dealer",                "pirate merchant"      },
             { "pharmaceutical trader",      "pirate merchant"      },
             { "black market trader",        "pirate merchant"      },
+            { "frog drug trader",           "pirate merchant"      },
+            { "bulk slave trader",          "pirate merchant"      },
+            { "imperial slaver",            "pirate merchant"      },
+            { "loot trader",                "pirate merchant"      },
+            { "booty trader",               "pirate merchant"      },
+            { "sellswords",                 "pirate merchant"      },
+
             { "shaman merchant",            "exotic goods trader"  },
             { "archelogical expedition",    "exotic goods trader"  },
             { "art dealer",                 "exotic goods trader"  },
             { "arcane items collector",     "exotic goods trader"  },
             { "artifact dealer",            "exotic goods trader"  },
             { "artists troupe",             "exotic goods trader"  },
+            { "art patron",                 "exotic goods trader"  },
+            { "wine merchant",              "exotic goods trader"  },
+
             { "nomadic shepherd",           "farming goods trader" },
             { "agricultural trader",        "farming goods trader" },
             { "butcher",                    "farming goods trader" },
             { "livestock wranglers",        "farming goods trader" },
+            { "animal herder",              "farming goods trader" },
+            { "zoological trader",          "farming goods trader" },
+            { "bulk dirt trader",           "farming goods trader" },
+
             { "pelt trader",                "fabric trader"        },
             { "textiles trader",            "fabric trader"        },
             { "herbal suppliers",           "medical goods trader" },
             { "surgical supplier",          "medical goods trader" },
+            { "gnoll organ trader",         "medical goods trader" },
+            
             { "masonary material trader",   "mining company"       },
+            { "mining goods trader",        "mining company"       },
         };
 
         public static void InjectTraderKindDefsToFactions(List<FactionDef> FB_Factions) {
@@ -99,7 +125,8 @@ namespace FactionBlender {
                 MergeTraderKindDefs(baseTraderkind, tkd)
             );
 
-            // Remove any slaves from the base stockGenerators
+            // Slave trading is rather "off-brand" for a civil coalition.  Remove any slaves from the base stockGenerators.
+            // Only the pirate merchant gets away with it (in secret).
             baseTraderkind.stockGenerators = baseTraderkind.stockGenerators.Where(sg => !(sg is StockGenerator_Slaves)).ToList();
         }
 
