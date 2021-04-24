@@ -197,7 +197,7 @@ namespace FactionBlender {
                 // No Vampires: Too many post-XML modifications and they tend to burn up on entry, anyway
                 // No Star Vampires: They are loners that attack ANYBODY on contact, including their own faction
                 // No xenomorphs: Same thing
-                { "ExcludedFactionTypes", "ROMV_Sabbat, ROM_StarVampire, RRY_Xenomorph" },
+                { "ExcludedFactionTypes", "ROMV_Sabbat, ROM_StarVampire, RRY_Xenomorph, AvP_Xenomorph" },
 
                 // Better Infestation Queens: They tend to wander around, gathering resources, and ignoring the fight.
                 // Boats: Boats are not real pawns
@@ -207,6 +207,7 @@ namespace FactionBlender {
                 // This is used to change the defaults on mod upgrades.  Version used is the last version before the change.
                 { "ExcludedFactionTypes", new Dictionary<string, Version> {
                     { "ROMV_Sabbat, ROM_StarVampire", new Version("1.1.5.1") },
+                    { "ROMV_Sabbat, ROM_StarVampire, RRY_Xenomorph", new Version("1.3.5") },
                     { sDefaults["ExcludedFactionTypes"], currentVer },
                 } },
                 { "ExcludedRaces", new Dictionary<string, Version> {
