@@ -347,6 +347,10 @@ namespace FactionBlender {
             if (pawn.combatPower > ((SettingHandle<float>)config["PawnKindDifficultyLevel"]).Value)
                 return watchSetting == "PawnKindDifficultyLevel" ? nil : false;
 
+            // Don't include pawns with zero or negative combatPower; they are probably special enough to cause
+            // problems.
+            if (pawn.combatPower <= 0) return false;
+
             // Filter by defaultFactionType
             if (pawn.defaultFactionType != null) {
                 foreach (Regex factionDefNameRgx in excludedFactionTypesList) {
