@@ -38,13 +38,16 @@ namespace FactionBlender {
         private static void InjectApparelStuffIntoFaction(FactionDef faction, float valMin, float valMax) {
             var hasStuffCategory = new HashSet<StuffCategoryDef> {};
 
+            // If apparelStuffFilter is null, everything is allowed, anyway
+            if (faction.apparelStuffFilter == null) return;
+
             // Assign each "stuff" into the faction filter, based on a market value quality filter
             foreach (var stuff in DefDatabase<ThingDef>.AllDefs.Where(
                 st => st.IsStuff && st != ThingDefOf.Human.race.leatherDef && st.GetStatValueAbstract(StatDefOf.MarketValue) is float mv &&
                 mv >= valMin && mv <= valMax
             ) ) {
                 faction.apparelStuffFilter.SetAllow(stuff, true);
-                stuff.stuffProps.categories?.ForEach(scd => hasStuffCategory.Add(scd));
+                stuff.stuffProps?.categories?.ForEach(scd => hasStuffCategory.Add(scd));
             }
             
             // Make sure every stuffCategory is captured
