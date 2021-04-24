@@ -574,13 +574,20 @@ namespace FactionBlender {
                         p.isFighter && !p.RaceProps.Humanlike &&
                         p.combatPower >= 20 && p.combatPower <= 240 &&
                         (
-                            p.RaceProps.FleshType == FleshTypeDefOf.Insectoid || Regex.IsMatch(
+                            // Other kinds of insects
+                            p.RaceProps.FleshType == FleshTypeDefOf.Insectoid ||
+                            // Something something creepy crawlies
+                            Regex.IsMatch(
                                 p.RaceProps.meatDef.label.ToLower(),
-                                // Something something creepy crawlies
                                 @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobraflesh|" +
                                 // Some people might call this evil, but who's the one who installed the AvP mod?  We all know this is the
                                 // kind of frightening stuff you wanted...
                                 "xenomorph flesh"
+                            ) ||
+                            // Work around the Optimization: Meats mod
+                            Regex.IsMatch(
+                                p.RaceProps.body.label.ToLower(),
+                                @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobra|facehugger"
                             )
                         ) && p.RaceProps.baseBodySize <= 0.6
                     ).RandomElement();
