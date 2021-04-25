@@ -9,14 +9,15 @@
   <NamerFaction_FB_Civil.rulePack.rulesStrings.3>r_name->为了[civil_noun][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.3>
   <NamerFaction_FB_Civil.rulePack.rulesStrings.4>r_name->[civil_noun]的[political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.4>
   <NamerFaction_FB_Civil.rulePack.rulesStrings.5>r_name->为了[civil_noun][political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.5>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.6>r_name（p=0.6）->[political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.6>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.7>civil_noun->一个</NamerFaction_FB_Civil.rulePack.rulesStrings.7>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.8>civil_noun->许多</NamerFaction_FB_Civil.rulePack.rulesStrings.8>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.9>civil_noun->所有</NamerFaction_FB_Civil.rulePack.rulesStrings.9>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.10>civil_noun(p=0.6)->[PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.10>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.11>civil_noun(p=0.4)->[Direction] [PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.11>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.12>civil_noun(p=0.3)->[Direction] [PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.12>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.6>r_name(p=0.8)->[civil_noun]的[civil_noun]</NamerFaction_FB_Civil.rulePack.rulesStrings.6>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.7>r_name(p=0.4)->[political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.7>
 
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.8>civil_noun(p=2)->[concept_positive]</NamerFaction_FB_Civil.rulePack.rulesStrings.8>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.8>civil_noun(p=1.5)->许多</NamerFaction_FB_Civil.rulePack.rulesStrings.8>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.7>civil_noun->一个</NamerFaction_FB_Civil.rulePack.rulesStrings.7>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.9>civil_noun->所有</NamerFaction_FB_Civil.rulePack.rulesStrings.9>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.10>civil_noun->[PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.10>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.11>civil_noun(p=0.6)->[Direction] [PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.11>
 
   <!-- Amalgam Pirate Band -->
 

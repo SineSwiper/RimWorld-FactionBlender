@@ -21,15 +21,17 @@
         <li>r_name(p=0.8)->[civil_noun] for [civil_noun]</li>
         <li>r_name(p=0.4)->[political_adjective] [political_union_outlander]</li>
 
+        <li>civil_noun(p=2)->[concept_positive]</li>
+        <li>civil_noun(p=1.5)->the Many</li>
         <li>civil_noun->One</li>
-        <li>civil_noun->the Many</li>
         <li>civil_noun->All</li>
-        <li>civil_noun(p=0.4)->[PlaceOutlander]</li>
-        <li>civil_noun(p=0.3)->[Direction] [PlaceOutlander]</li>
+        <li>civil_noun->[PlaceOutlander]</li>
+        <li>civil_noun(p=0.6)->[Direction] [PlaceOutlander]</li>
       </rulesStrings>
       <rulesFiles>
         <li>political_union_outlander->Words/Nouns/PoliticalUnions_Outlander</li>
         <li>political_adjective->Words/Adjectives/PoliticalUnions</li>
+        <li>concept_positive->Words/Nouns/Concepts_Positive</li>
       </rulesFiles>
     </rulePack>
   </RulePackDef>
