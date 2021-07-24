@@ -111,7 +111,7 @@ namespace FactionBlender {
                 }
 
                 bool isHeavyWeapons = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.Any(t =>
-                    Regex.IsMatch(t, "Grenade|Flame|Demolition|GunHeavy|Turret|Pylon|Artillery|GlitterTech|OC(Heavy|Tank)|Bomb|Sentinel|FedHeavy")
+                    Regex.IsMatch(t, "Grenade|Flame|Demolition|Destructive|Breach|GunHeavy|Turret|Pylon|Artillery|GlitterTech|OC(Heavy|Tank)|Bomb|Sentinel|FedHeavy")
                 );
                 // Include animals with BFGs and death explodey types
                 if (race.Animal) {
@@ -120,6 +120,28 @@ namespace FactionBlender {
                         race.deathActionWorkerClass != null &&
                         Regex.IsMatch(race.deathActionWorkerClass.Name, "E?xplosion|Bomb")
                     ) isHeavyWeapons = true;
+                }
+
+                // Work site pawns booleans //
+
+                bool isMiner = pawn.isGoodBreacher || pawn.requiredWorkTags.HasFlag(WorkTags.Mining) || pawn.race.GetStatValueAbstract(StatDefOf.MiningSpeed) >= 1.1f;
+                if (race.ToolUser) {
+                    if (pawn.weaponTags       != null && pawn.weaponTags      .Any(t  => Regex.IsMatch(t, "Miner|Digger|Drill"))) isMiner = true;
+                    if (pawn.techHediffsTags  != null && pawn.techHediffsTags .Any(t  => Regex.IsMatch(t, "Miner|Digger|Drill"))) isMiner = true;
+                }
+                // Include animals with "digging" capabilities (Groundrunner *hint hint*)
+                if (race.Animal) {
+                    if (Regex.IsMatch(race.thinkTreeConstant.defName, "Miner|Digger|Driller")) isMiner = true;
+                }
+
+                bool isHunter = isSniper && !isHeavyWeapons;
+                if (pawn.requiredWorkTags.HasFlag(WorkTags.Hunting)) isHunter = true;
+                if (race.Animal && race.predator)                    isHunter = true;
+
+                bool isPlanter = pawn.requiredWorkTags.HasFlag(WorkTags.PlantWork) || pawn.race.GetStatValueAbstract(StatDefOf.PlantWorkSpeed) >= 1.1f || pawn.race.GetStatValueAbstract(StatDefOf.PlantHarvestYield) >= 1.1f;
+                if (race.ToolUser) {
+                    if (pawn.weaponTags       != null && pawn.weaponTags      .Any(t  => Regex.IsMatch(t, "Plant|Logger|Harvest|Field"))) isPlanter = true;
+                    if (pawn.techHediffsTags  != null && pawn.techHediffsTags .Any(t  => Regex.IsMatch(t, "Plant|Logger|Harvest|Field"))) isPlanter = true;
                 }
 
                 /*
@@ -131,15 +153,18 @@ namespace FactionBlender {
                 if (!isRanged)       msg += "Melee, ";
                 if (isSniper)        msg += "Sniper, ";
                 if (isHeavyWeapons)  msg += "Heavy Weapons, ";
+                if (isMiner)         msg += "Miner, ";
+                if (isHunter)        msg += "Hunter, ";
+                if (isPlanter)       msg += "Planter, ";
 
                 if (pawn.defName.StartsWith(...)|| pawn.defName.Contains(...)) FB.ModLogger.Message(msg);
                 */
 
                 foreach (FactionDef FBfac in FB_Factions) {
                     foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {
+                        string makerName = maker.kindDef.defName;
                         bool isPirate = FBfac.defName == "FactionBlender_Pirate";
-                        bool isCombat = isPirate || (maker.kindDef.defName == "Combat");
-                        bool isTrader = maker.kindDef.defName == "Trader";
+                        bool isCombat = isPirate || makerName == "Combat";
 
                         // Allow "combat ready" animals
                         int origCP         = (int)((SettingHandle<float>)FB.config["FilterWeakerAnimalsRaids"]).Value;
@@ -174,7 +199,7 @@ namespace FactionBlender {
                             // Add it
                             if (addIt) maker.options.Add(newOpt);
                         }
-                        else if (isTrader) {
+                        else if (makerName == "Trader") {
                             if (!FB.FilterPawnKindDef(pawn, "trade")) continue;
                             
                             // Trader group makers split up their pawns into three buckets.  The pawn will go into one of those
@@ -188,6 +213,16 @@ namespace FactionBlender {
                             else if (FB.FilterPawnKindDef(pawn, "combat", minCombatPower)) {
                                 maker.guards.Add(newOpt);
                             }
+                        }
+                        // Work Site raids
+                        else if (makerName == "Miners") {
+                            if (isMiner)   maker.options.Add(newOpt);
+                        }
+                        else if (makerName == "Hunters") {
+                            if (isHunter)  maker.options.Add(newOpt);
+                        }
+                        else if (makerName == "Loggers" || makerName == "Farmers") {
+                            if (isPlanter) maker.options.Add(newOpt);
                         }
                         else {
                             // Peaceful or Settlement: Accept almost anybody
