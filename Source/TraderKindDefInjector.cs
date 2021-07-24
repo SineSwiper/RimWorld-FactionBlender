@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
@@ -68,6 +69,8 @@ namespace FactionBlender {
         };
 
         public static void InjectTraderKindDefsToFactions(List<FactionDef> FB_Factions) {
+            /* Caravan Trader Kinds */
+            
             // Fix caravanTraderKinds for the civil faction only
             FactionDef FB_Civil = FB_Factions[1];
 
@@ -110,24 +113,52 @@ namespace FactionBlender {
                 else FB_Civil.caravanTraderKinds.Add(traderKind);
             }
 
+            /* Visitor Trader Kinds */
+
             // Add every visitor trader as a combined list
             FB_Civil.visitorTraderKinds.Clear();
             FB_Civil.visitorTraderKinds.AddRange(
                 DefDatabase<FactionDef>.AllDefs.Where(f => f != FB_Civil).SelectMany(f => f.visitorTraderKinds)
             );
 
-            // The base gets to be Rich AF with a CostCo mega list
-            var baseTraderkind = CopyTraderKindDef(FB_Civil.baseTraderKinds[0], "Base Trade Standard");
-            FB_Civil.baseTraderKinds[0] = baseTraderkind;
-            baseTraderkind.requestable = false;
+            /* Base Trader Kinds */
 
-            DefDatabase<FactionDef>.AllDefs.Where(f => f != FB_Civil).SelectMany(f => f.baseTraderKinds).ToList().ForEach( tkd =>
-                MergeTraderKindDefs(baseTraderkind, tkd)
+            // The base starts with the outlander base StockGenerators, for the essentials
+            var baseTraderKind = CopyTraderKindDef(DefDatabase<TraderKindDef>.GetNamed("Base_Outlander_Standard"), "Base Trade Standard");
+            FB_Civil.baseTraderKinds[0] = baseTraderKind;
+            baseTraderKind.requestable = false;
+
+            List<TraderKindDef>   otherTraderKinds     = DefDatabase<FactionDef>.AllDefs.Where(f => f != FB_Civil).SelectMany(f => f.baseTraderKinds).ToList();
+            List<StockGenerator>  otherStockGenerators = otherTraderKinds.SelectMany( tkd => tkd.stockGenerators ).ToList();
+            otherStockGenerators.RemoveDuplicates();
+
+            // Since we don't have access to edit the StockGenerators themselves (and properties like
+            // countRange), figure out the average SG count of each faction and only add a random set
+            // of twice as many StockGenerators.  Still higher than average, but not crazy rich.  The
+            // list will change on restart.
+
+            double avgBaseGeneratorCount = otherTraderKinds.Sum( tkd => tkd.stockGenerators.Count ) / otherTraderKinds.Count;
+            int     targetGeneratorCount = (int)Math.Ceiling(avgBaseGeneratorCount * 2);
+
+            // NOTE: Adding up the Outlander SGs too, this ends up being more like a 3:1 ratio, but
+            // we also do some removals after the list addition.
+            
+            var newGeneratorList = otherStockGenerators.InRandomOrder().ToList();
+            if (newGeneratorList.Count > targetGeneratorCount) newGeneratorList = newGeneratorList.GetRange(0, targetGeneratorCount);
+            baseTraderKind.stockGenerators.AddRange( newGeneratorList );
+
+            // Add all buyer generators
+            baseTraderKind.stockGenerators.AddRange(
+                otherStockGenerators.Where( sg =>
+                    sg is StockGenerator_BuyExpensiveSimple || sg is StockGenerator_BuySingleDef || sg is StockGenerator_BuySlaves || sg is StockGenerator_BuyTradeTag
+                )
             );
+            baseTraderKind.stockGenerators.RemoveDuplicates();
 
             // Slave trading is rather "off-brand" for a civil coalition.  Remove any slaves from the base stockGenerators.
-            // Only the pirate merchant gets away with it (in secret).
-            baseTraderkind.stockGenerators = baseTraderkind.stockGenerators.Where(sg => !(sg is StockGenerator_Slaves)).ToList();
+            // Only the pirate merchant gets away with it (in secret).  They will still buy slaves, however, since they prefer to
+            // free them.
+            baseTraderKind.stockGenerators = baseTraderKind.stockGenerators.Where(sg => !(sg is StockGenerator_Slaves)).ToList();
         }
 
         public static TraderKindDef CopyTraderKindDef(TraderKindDef origTraderKind, string labelBase) {
