@@ -254,6 +254,7 @@ namespace FactionBlender {
                         faction:          parms.faction,
                         tile:             parms.tile,
                         inhabitant:       parms.inhabitants,
+                        fixedIdeo:        parms.ideo,
                         validatorPreGear: validator
                     );
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
@@ -463,8 +464,8 @@ namespace FactionBlender {
                 Faction faction = null;
                 if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == "FactionBlender_Civil");
                 if (faction == null) faction = Find.FactionManager.AllFactionsListForReading.FirstOrDefault(f => f.def.defName == "FactionBlender_Pirate");
-                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction_NewTemp(out faction, true, true, TechLevel.Spacer);
-                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction_NewTemp(out faction, true, true);
+                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, tryMedievalOrBetter: true, allowDefeated: true, allowTemporary: true, minTechLevel: TechLevel.Spacer);
+                if (faction == null) Find.FactionManager.TryGetRandomNonColonyHumanlikeFaction(out faction, tryMedievalOrBetter: true, allowDefeated: true, allowTemporary: true);
 
                 // 20% chance of animals and others
                 PawnKindDef pawnKind = null;
