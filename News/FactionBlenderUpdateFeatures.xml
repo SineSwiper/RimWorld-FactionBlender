@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<HugsLib.UpdateFeatureDef Abstract="true" Name="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef Abstract="true" Name="FB_UpdateFeatureBase">
 		<modNameReadable>Faction Blender</modNameReadable>
 		<modIdentifier>FactionBlender</modIdentifier>
 		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1734490820</linkUrl>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+    <HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
+        <defName>FactionBlender_1_4_0</defName>
+        <assemblyVersion>1.4.0</assemblyVersion>
+        <content>&lt;b&gt;Additions:&lt;/b&gt;
+- Updated for RimWorld v1.3!
+- Added a new Ideology-only "coalated clan" faction! This faction is a bit looser with the memes and precepts than the other two.
+
+&lt;b&gt;Fixes:&lt;/b&gt;
+- Toned down the wealth a bit on the main FB bases
+        </content>
+    </HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_6</defName>
 		<assemblyVersion>1.3.6</assemblyVersion>
 		<content>
@@ -22,7 +34,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_5</defName>
 		<assemblyVersion>1.3.5</assemblyVersion>
 		<content>
@@ -31,7 +43,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_4</defName>
 		<assemblyVersion>1.3.4</assemblyVersion>
 		<content>
@@ -41,7 +53,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_3</defName>
 		<assemblyVersion>1.3.3</assemblyVersion>
 		<content>
@@ -50,7 +62,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_2</defName>
 		<assemblyVersion>1.3.2</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
@@ -68,7 +80,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_1</defName>
 		<assemblyVersion>1.3.1</assemblyVersion>
 		<content>&lt;b&gt;Fixes:&lt;/b&gt;
@@ -76,7 +88,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_3_0</defName>
 		<assemblyVersion>1.3.0</assemblyVersion>
 		<content>&lt;b&gt;Fixes:&lt;/b&gt;
@@ -85,7 +97,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_2_5</defName>
 		<assemblyVersion>1.2.5</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
@@ -99,7 +111,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_2_0</defName>
 		<assemblyVersion>1.2.0.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
@@ -119,7 +131,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_1_5</defName>
 		<assemblyVersion>1.1.5.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
@@ -129,7 +141,7 @@
         </content>
 	</HugsLib.UpdateFeatureDef>
 
-	<HugsLib.UpdateFeatureDef ParentName="UpdateFeatureBase">
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_1_0</defName>
 		<assemblyVersion>1.1.0.0</assemblyVersion>
 		<content>&lt;b&gt;Additions:&lt;/b&gt;
