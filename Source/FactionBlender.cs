@@ -128,8 +128,8 @@ namespace FactionBlender {
                     sName, ("FB_" + sName + "_Title").Translate(), ("FB_" + sName + "_Description").Translate(), true
                 );
                 var setting = (SettingHandle<bool>)config[sName];
-                setting.DisplayOrder = order;
-                setting.OnValueChanged = x => { lastSettingChanged = ""; };
+                setting.DisplayOrder        = order;
+                setting.ValueChanged       += sh => { lastSettingChanged = ""; };
                 setting.VisibilityPredicate = delegate { return hasAlienRace; };
                 order++;
             }
@@ -183,7 +183,7 @@ namespace FactionBlender {
                         rect, setting, false, min, max, step
                     );
                 };
-                setting.OnValueChanged = x => { lastSettingChanged = sName; };
+                setting.ValueChanged += sh => { lastSettingChanged = sName; };
                 order += 2;
             }
 
