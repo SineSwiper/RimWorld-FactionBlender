@@ -30,7 +30,7 @@ namespace FactionBlender {
                 InjectApparelStuffIntoFaction(FactionDef.Named("PlayerTribe"), 0, 2.5f);
             }
 
-            // Fix caravanTraderKinds, visitorTraderKinds, baseTraderKinds for the civil faction only
+            // Fix caravanTraderKinds, visitorTraderKinds, baseTraderKinds for the civil factions only
             FB.ModLogger.Message("Injecting trader kinds to our factions");
             TraderKindDefInjector.InjectTraderKindDefsToFactions(FB_Factions);
         }

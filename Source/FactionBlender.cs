@@ -66,6 +66,7 @@ namespace FactionBlender {
             FB_Factions.RemoveAll(x => true);
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
             FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
+            if (ModLister.CheckIdeology("Faction Blender's coalated clan faction")) FB_Factions.Add( FactionDef.Named("FactionBlender_Clan") );
 
             ProcessSettings();
 

@@ -21,40 +21,15 @@
 
   <!-- Amalgam Pirate Band -->
 
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.0>R_name->[colorbadass][political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.0>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.0>r_name->[colorbadass][political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.0>
   <NamerFaction_FB_Pirate.rulePack.rulesStrings.1>r_name->[AdjectiveBadass] [political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.1>
   <NamerFaction_FB_Pirate.rulePack.rulesStrings.2>r_name->[badass_item]的[political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.2>
   <NamerFaction_FB_Pirate.rulePack.rulesStrings.3>r_name->[badass_item][political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.3>
   <NamerFaction_FB_Pirate.rulePack.rulesStrings.4>r_name->[badass_item]的[political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.4>
   <NamerFaction_FB_Pirate.rulePack.rulesStrings.5>r_name->[badass_item]的[political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.5>
   <NamerFaction_FB_Pirate.rulePack.rulesStrings.6>r_name->[badass_item]的[political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.6>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.7>R_name->[political_union_outrander]的[badass_group]</NamerFaction_FB_Pirate.rulePack.rulesStrings.7>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.8>R_name->[political_union_outlander]的[badass_group]</NamerFaction_FB_Pirate.rulePack.rulesStrings.8>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.9>badass_item->[Weapon]</NamerFaction_FB_Pirate.rulePack.rulesStrings.9>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.10>badass_item->[ColorBadass] [Weapon]</NamerFaction_FB_Pirate.rulePack.rulesStrings.10>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.11>badass_item->[AdjectiveBadass] [Weapon]</NamerFaction_FB_Pirate.rulePack.rulesStrings.11>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.12>badass_item->[PersonBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.12>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.13>badass_item->[ColorBadass] [PersonBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.13>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.14>badass_item->[AdjectiveBadass] [PersonBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.14>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.15>badass_item->[Enemy]</NamerFaction_FB_Pirate.rulePack.rulesStrings.15>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.16>badass_item->[ColorBadass] [Enemy]</NamerFaction_FB_Pirate.rulePack.rulesStrings.16>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.17>badass_item->[AdjectiveBadass] [Enemy]</NamerFaction_FB_Pirate.rulePack.rulesStrings.17>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.18>badass_item->[ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.18>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.19>badass_item->[ColorBadass] [ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.19>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.20>badass_item->[AdjectiveBadass] [ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.20>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.21>badass_item->[ColorBadass] [Bodypart]</NamerFaction_FB_Pirate.rulePack.rulesStrings.21>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.22>badass_item->[ColorBadass] [AnimalBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.22>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.23>badass_item->[AdjectiveBadass] [AnimalBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.23>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.24>badass_item->[AdjectiveLarge] [AnimalBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.24>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.25>badass_group->[groupname]</NamerFaction_FB_Pirate.rulePack.rulesStrings.25>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.26>badass_group->[AnimalGroup]</NamerFaction_FB_Pirate.rulePack.rulesStrings.26>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.27>badass_group->[ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.27>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.28>badass_group->[ColorBadass] [ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.28>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.29>badass_group(p=0.4)->[Gore]</NamerFaction_FB_Pirate.rulePack.rulesStrings.29>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.30>badass_group->[AnimalGroup]</NamerFaction_FB_Pirate.rulePack.rulesStrings.30>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.31>badass_group->[ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.31>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.32>badass_group->[ColorBadass] [ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.32>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.33>badass_group->[Gore]</NamerFaction_FB_Pirate.rulePack.rulesStrings.33>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.7>r_name->[political_union_outrander]的[badass_group]</NamerFaction_FB_Pirate.rulePack.rulesStrings.7>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.8>r_name->[political_union_outlander]的[badass_group]</NamerFaction_FB_Pirate.rulePack.rulesStrings.8>
 
 
 </LanguageData>

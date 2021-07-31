@@ -71,103 +71,119 @@ namespace FactionBlender {
         public static void InjectTraderKindDefsToFactions(List<FactionDef> FB_Factions) {
             /* Caravan Trader Kinds */
             
-            // Fix caravanTraderKinds for the civil faction only
-            FactionDef FB_Civil = FB_Factions[1];
+            foreach (FactionDef FB_Faction in FB_Factions.Where( fd => !fd.permanentEnemy )) {
+                string shortDefName = FB_Faction.defName.Replace("FactionBlender", "FB");
+                string tkdPrefix    = shortDefName + "_Caravan";
 
-            List<TraderKindDef> traderKindDefs = DefDatabase<FactionDef>.AllDefs.
-                Where     (f => f != FB_Civil && f.defName != "OutlanderCivil").
-                SelectMany(f => f.caravanTraderKinds).ToList()
-            ;
-            traderKindDefs.RemoveDuplicates();  // parent classes, etc.
+                List<TraderKindDef> FB_TraderKinds = FB_Faction.caravanTraderKinds;
 
-            // Add the rest, while merging where we find (label-like) dupes
-            foreach (var traderKind in traderKindDefs.ToList()) {
-                string curLabel = traderKind.label?.ToLower();
-                string newLabel = curLabel != null && newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
-                int lm = FB_Civil.caravanTraderKinds.FirstIndexOf(tkd =>
-                   tkd.label != null && tkd.label?.ToLower() == curLabel || tkd.label?.ToLower() == newLabel
-                ); // returns Count on failure, not -1
+                List<TraderKindDef> traderKindDefs = DefDatabase<FactionDef>.AllDefs.
+                    Where     (f => !FB_Factions.Contains(f) && f.defName != "OutlanderCivil").
+                    SelectMany(f => f.caravanTraderKinds).ToList()
+                ;
+                traderKindDefs.RemoveDuplicates();  // parent classes, etc.
+
+                // Convert the current ones for name changes (like "slaver" → "pirate merchant"), and requestable flags
+                for (int i = 0; i < FB_TraderKinds.Count; i++) {
+                    TraderKindDef traderKind = FB_TraderKinds[i];
+
+                    string curLabel = traderKind.label?.ToLower();
+                    if (curLabel == null) continue;
+                    string newLabel = newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
+                    if (newLabel == null) continue;
+
+                    FB_TraderKinds[i] = CopyTraderKindDef(traderKind, tkdPrefix, newLabel, newLabel);
+                }
+
+                // Add the rest, while merging where we find (label-like) dupes
+                foreach (var traderKind in traderKindDefs.ToList()) {
+                    string curLabel = traderKind.label?.ToLower();
+                    string newLabel = curLabel != null && newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
+                    int lm = FB_TraderKinds.FirstIndexOf(tkd =>
+                       tkd.label?.ToLower() is string lcLabel && lcLabel != null && (lcLabel == curLabel || lcLabel == newLabel)
+                    ); // returns Count on failure, not -1
             
-                // If we somehow missed a dupe, skip it
-                if (FB_Civil.caravanTraderKinds.Contains(traderKind)) continue;
+                    // If we somehow missed a dupe, skip it
+                    if (FB_Faction.caravanTraderKinds.Contains(traderKind)) continue;
 
-                // If we found a label-like dupe, merge them
-                else if (lm < FB_Civil.caravanTraderKinds.Count) {
-                    var labelMatch = traderKindDefs[lm];
-                    if (!labelMatch.defName.StartsWith("FB_Caravan_")) {
-                        TraderKindDef newTraderKind = CopyTraderKindDef(labelMatch, "Caravan " + labelMatch.LabelCap);
-                        traderKindDefs[lm] = newTraderKind;
-                        labelMatch = newTraderKind;
+                    // If we found a label-like dupe, merge them
+                    else if (lm < FB_Faction.caravanTraderKinds.Count) {
+                        var labelMatchTKD = FB_TraderKinds[lm];
+                        if (!labelMatchTKD.defName.StartsWith("FB_Caravan_")) {
+                            TraderKindDef newTraderKind = CopyTraderKindDef(labelMatchTKD, tkdPrefix, labelMatchTKD.LabelCap);
+                            FB_Faction.caravanTraderKinds[lm] = newTraderKind;
+                            labelMatchTKD = newTraderKind;
+                        }
+                        MergeTraderKindDefs(labelMatchTKD, traderKind);
                     }
-                    MergeTraderKindDefs(labelMatch, traderKind);
+
+                    // If we have a new one but it needs a new label, copy to a new one
+                    else if (newLabel != null) {
+                        TraderKindDef newTraderKind = CopyTraderKindDef(traderKind, tkdPrefix, newLabel, newLabel);
+                        FB_Faction.caravanTraderKinds.Add(newTraderKind);
+                    }
+
+                    // Must be unique; add it
+                    else FB_Faction.caravanTraderKinds.Add(traderKind);
                 }
 
-                // If we have a new one but it needs a new label, copy to a new one
-                else if (newLabel != null) {
-                    TraderKindDef newTraderKind = CopyTraderKindDef(traderKind, "Caravan " + newLabel);
-                    newTraderKind.label = newLabel;
-                    FB_Civil.caravanTraderKinds.Add(newTraderKind);
-                }
+                /* Visitor Trader Kinds */
 
-                // Must be unique; add it
-                else FB_Civil.caravanTraderKinds.Add(traderKind);
-            }
+                // Add every visitor trader as a combined list
+                FB_Faction.visitorTraderKinds.Clear();
+                FB_Faction.visitorTraderKinds.AddRange(
+                    DefDatabase<FactionDef>.AllDefs.Where(f => !FB_Factions.Contains(f)).SelectMany(f => f.visitorTraderKinds)
+                );
 
-            /* Visitor Trader Kinds */
+                /* Base Trader Kinds */
 
-            // Add every visitor trader as a combined list
-            FB_Civil.visitorTraderKinds.Clear();
-            FB_Civil.visitorTraderKinds.AddRange(
-                DefDatabase<FactionDef>.AllDefs.Where(f => f != FB_Civil).SelectMany(f => f.visitorTraderKinds)
-            );
+                // The base starts with the outlander base StockGenerators, for the essentials
+                var baseTraderKind = CopyTraderKindDef(DefDatabase<TraderKindDef>.GetNamed("Base_Outlander_Standard"), shortDefName, "Base Trade Standard");
+                FB_Faction.baseTraderKinds[0] = baseTraderKind;
+                baseTraderKind.requestable = false;
 
-            /* Base Trader Kinds */
+                List<TraderKindDef>   otherTraderKinds     = DefDatabase<FactionDef>.AllDefs.Where(f => !FB_Factions.Contains(f)).SelectMany(f => f.baseTraderKinds).ToList();
+                List<StockGenerator>  otherStockGenerators = otherTraderKinds.SelectMany( tkd => tkd.stockGenerators ).ToList();
+                otherStockGenerators.RemoveDuplicates();
 
-            // The base starts with the outlander base StockGenerators, for the essentials
-            var baseTraderKind = CopyTraderKindDef(DefDatabase<TraderKindDef>.GetNamed("Base_Outlander_Standard"), "Base Trade Standard");
-            FB_Civil.baseTraderKinds[0] = baseTraderKind;
-            baseTraderKind.requestable = false;
+                // Since we don't have access to edit the StockGenerators themselves (and properties like
+                // countRange), figure out the average SG count of each faction and only add a random set
+                // of twice as many StockGenerators.  Still higher than average, but not crazy rich.  The
+                // list will change on restart.
 
-            List<TraderKindDef>   otherTraderKinds     = DefDatabase<FactionDef>.AllDefs.Where(f => f != FB_Civil).SelectMany(f => f.baseTraderKinds).ToList();
-            List<StockGenerator>  otherStockGenerators = otherTraderKinds.SelectMany( tkd => tkd.stockGenerators ).ToList();
-            otherStockGenerators.RemoveDuplicates();
+                double avgBaseGeneratorCount = otherTraderKinds.Sum( tkd => tkd.stockGenerators.Count ) / otherTraderKinds.Count;
+                int     targetGeneratorCount = (int)Math.Ceiling(avgBaseGeneratorCount * 2);
 
-            // Since we don't have access to edit the StockGenerators themselves (and properties like
-            // countRange), figure out the average SG count of each faction and only add a random set
-            // of twice as many StockGenerators.  Still higher than average, but not crazy rich.  The
-            // list will change on restart.
-
-            double avgBaseGeneratorCount = otherTraderKinds.Sum( tkd => tkd.stockGenerators.Count ) / otherTraderKinds.Count;
-            int     targetGeneratorCount = (int)Math.Ceiling(avgBaseGeneratorCount * 2);
-
-            // NOTE: Adding up the Outlander SGs too, this ends up being more like a 3:1 ratio, but
-            // we also do some removals after the list addition.
+                // NOTE: Adding up the Outlander SGs too, this ends up being more like a 3:1 ratio, but
+                // we also do some removals after the list addition.
             
-            var newGeneratorList = otherStockGenerators.InRandomOrder().ToList();
-            if (newGeneratorList.Count > targetGeneratorCount) newGeneratorList = newGeneratorList.GetRange(0, targetGeneratorCount);
-            baseTraderKind.stockGenerators.AddRange( newGeneratorList );
+                var newGeneratorList = otherStockGenerators.InRandomOrder().ToList();
+                if (newGeneratorList.Count > targetGeneratorCount) newGeneratorList = newGeneratorList.GetRange(0, targetGeneratorCount);
+                baseTraderKind.stockGenerators.AddRange( newGeneratorList );
 
-            // Add all buyer generators
-            baseTraderKind.stockGenerators.AddRange(
-                otherStockGenerators.Where( sg =>
-                    sg is StockGenerator_BuyExpensiveSimple || sg is StockGenerator_BuySingleDef || sg is StockGenerator_BuySlaves || sg is StockGenerator_BuyTradeTag
-                )
-            );
-            baseTraderKind.stockGenerators.RemoveDuplicates();
+                // Add all buyer generators
+                baseTraderKind.stockGenerators.AddRange(
+                    otherStockGenerators.Where( sg =>
+                        sg is StockGenerator_BuyExpensiveSimple || sg is StockGenerator_BuySingleDef || sg is StockGenerator_BuySlaves || sg is StockGenerator_BuyTradeTag
+                    )
+                );
+                baseTraderKind.stockGenerators.RemoveDuplicates();
 
-            // Slave trading is rather "off-brand" for a civil coalition.  Remove any slaves from the base stockGenerators.
-            // Only the pirate merchant gets away with it (in secret).  They will still buy slaves, however, since they prefer to
-            // free them.
-            baseTraderKind.stockGenerators = baseTraderKind.stockGenerators.Where(sg => !(sg is StockGenerator_Slaves)).ToList();
+                // Slave trading is against the civil coalition's ideology.  Remove any slaves from the base stockGenerators.
+                // Only the pirate merchant gets away with it (in secret).  They will still buy slaves, however, since they prefer to
+                // free them.
+                if (shortDefName == "FB_Civil")
+                    baseTraderKind.stockGenerators = baseTraderKind.stockGenerators.Where(sg => !(sg is StockGenerator_Slaves)).ToList();
+            }
         }
 
-        public static TraderKindDef CopyTraderKindDef(TraderKindDef origTraderKind, string labelBase) {
-            string newDefName = "FB_" + GenText.ToTitleCaseSmart(labelBase).Replace(" ", "_");
+        public static TraderKindDef CopyTraderKindDef(TraderKindDef origTraderKind, string defNamePrefix, string labelBase, string newLabel = null) {
+            string newDefName = defNamePrefix + "_" + GenText.ToTitleCaseSmart(labelBase).Replace(" ", "_");
 
             // Construction
             var newTraderKind = new TraderKindDef {
                 defName         = newDefName,
-                label           = origTraderKind.label,
+                label           = newLabel ?? origTraderKind.label,
                 commonality     = origTraderKind.commonality,
                 orbital         = false,
                 requestable     = true,
