@@ -9,12 +9,13 @@
     <deityTypeMaker MayRequire="Ludeon.RimWorld.Ideology">DeityTypeMakerKriminul</deityTypeMaker>
     <leaderTitleMaker MayRequire="Ludeon.RimWorld.Ideology">LeaderTitleMaker_Kriminul</leaderTitleMaker>
     <festivalNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerFestivalKriminul</festivalNameMaker>
+    <iconPath>World/FB_Pirate</iconPath>
+    <iconColor>(0.8, 0.8, 0.8)</iconColor>
+    <!-- These three tags groups are filled in via InjectStyleDefsToCultures -->
     <allowedPlaceTags>
       <li>OriginSpacer</li>
       <li>OriginTribal</li>
     </allowedPlaceTags>
-    <iconPath>World/FB_Pirate</iconPath>
-    <iconColor>(0.8, 0.8, 0.8)</iconColor>
     <thingStyleCategories>
       <li MayRequire="Ludeon.RimWorld.Ideology">
         <category>Spikecore</category>
@@ -65,14 +66,15 @@
     <leaderTitleMaker MayRequire="Ludeon.RimWorld.Ideology">LeaderTitleMaker_Astropolitan</leaderTitleMaker>
     <festivalNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerFestivalAstropolitan</festivalNameMaker>
     <!-- TODO: This may need more tags, if mods start adding them -->
+    <iconPath>World/FB_Civil</iconPath>
+    <iconColor>(0.8, 0.8, 0.8)</iconColor>
+    <!-- These three tags groups are filled in via InjectStyleDefsToCultures -->
     <allowedPlaceTags>
       <li>OriginSpacer</li>
       <li>OriginTribal</li>
       <li MayRequire="Ludeon.RimWorld.Royalty">OriginTechnoFeudal</li>
     </allowedPlaceTags>
-    <iconPath>World/FB_Civil</iconPath>
-    <iconColor>(0.8, 0.8, 0.8)</iconColor>
-    <!-- TODO: Fill this in via def injectors -->
+    <thingStyleCategories />
     <styleItemTags>
       <li>
         <tag>Urban</tag>
@@ -102,7 +104,7 @@
     </styleItemTags>
   </CultureDef>
 
-  <CultureDef>
+  <CultureDef MayRequire="Ludeon.RimWorld.Ideology">
     <defName>FB_CoalatedClan</defName>
     <label>coalated clan</label>
     <description>A loose collection of races, united under one clan.</description>
@@ -111,15 +113,15 @@
     <deityTypeMaker MayRequire="Ludeon.RimWorld.Ideology">FB_DeityTypeMakerRandom</deityTypeMaker>
     <leaderTitleMaker MayRequire="Ludeon.RimWorld.Ideology">FB_LeaderTitleMaker_Random</leaderTitleMaker>
     <festivalNameMaker MayRequire="Ludeon.RimWorld.Ideology">FB_NamerFestivalRandom</festivalNameMaker>
-    <!-- TODO: This may need more tags, if mods start adding them -->
+    <iconPath>World/FB_Clan</iconPath>
+    <iconColor>(0.8, 0.8, 0.8)</iconColor>
+    <!-- These three tags groups are filled in via InjectStyleDefsToCultures -->
     <allowedPlaceTags>
       <li>OriginSpacer</li>
       <li>OriginTribal</li>
       <li MayRequire="Ludeon.RimWorld.Royalty">OriginTechnoFeudal</li>
     </allowedPlaceTags>
-    <iconPath>World/FB_Clan</iconPath>
-    <iconColor>(0.8, 0.8, 0.8)</iconColor>
-    <!-- TODO: Fill this in via def injectors -->
+    <thingStyleCategories />
     <styleItemTags>
       <li>
         <tag>Urban</tag>

@@ -33,6 +33,9 @@ namespace FactionBlender {
             // Fix caravanTraderKinds, visitorTraderKinds, baseTraderKinds for the civil factions only
             FB.ModLogger.Message("Injecting trader kinds to our factions");
             TraderKindDefInjector.InjectTraderKindDefsToFactions(FB_Factions);
+
+            FB.ModLogger.Message("Injecting styles to our cultures");
+            InjectStyleDefsToCultures(FB_Factions);
         }
 
         private static void InjectApparelStuffIntoFaction(FactionDef faction, float valMin, float valMax) {
@@ -69,6 +72,29 @@ namespace FactionBlender {
 
                     if (stuff != null) faction.apparelStuffFilter.SetAllow(stuff, true);
                 }
+            }
+        }
+
+        private static void InjectStyleDefsToCultures(List<FactionDef> FB_Factions) {
+            List<CultureDef> FB_Cultures = FB_Factions.SelectMany( fd => fd.allowedCultures ).ToList();
+
+            List<string> allPlaceTags = DefDatabase<PlaceDef>.AllDefs.SelectMany( pd  =>  pd.tags      ).Distinct().ToList();
+            List<string> allStyleTags = StyleItemDef.AllStyleItemDefs.SelectMany( sid => sid.styleTags ).Distinct().ToList();
+
+            foreach (CultureDef FB_Culture in FB_Cultures) {
+                // Clear out old settings
+                FB_Culture.allowedPlaceTags.Clear();
+                FB_Culture.thingStyleCategories.Clear();
+                FB_Culture.styleItemTags.Clear();
+
+                // Add all of the possible placeTags, thingStyleCategories, and styleTags
+                FB_Culture.allowedPlaceTags.AddRange( allPlaceTags );
+                FB_Culture.thingStyleCategories.AddRange(
+                    DefDatabase<StyleCategoryDef>.AllDefs.Select( scd => new ThingStyleCategoryWithPriority( category: scd, priority: 1 ) )
+                );
+                FB_Culture.styleItemTags.AddRange(
+                    allStyleTags.Select( st => new StyleItemTagWeighted(tag: st, baseWeight: 1, weightFactor: 1) )
+                );
             }
         }
 
