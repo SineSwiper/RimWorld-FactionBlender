@@ -12,6 +12,7 @@ using UnityEngine;
 
 namespace FactionBlender {
     [StaticConstructorOnStartup]
+    [HarmonyPatch]
     internal class HarmonyPatches {
         /* Fix all of the biome.allowedPackAnimals, so that more animals can be proper pack animals.
          *
@@ -24,7 +25,7 @@ namespace FactionBlender {
          * This _should_ be its own mod.  I might split this off eventually.
          */
 
-        [HarmonyPatch(typeof(BiomeDef), "IsPackAnimalAllowed")]
+        [HarmonyPatch]
         public static class BiomeDef_IsPackAnimalAllowed_Patch {
             /* XXX: Trying to figure out the min-max temperatures of a biome by indirect inference of the
              * BiomeWorker scores is a very dicey at best.  I'm just going to resort to a static list, and
@@ -120,8 +121,9 @@ namespace FactionBlender {
 
             public static HashSet<string> warnedAboutBiome = new HashSet<string> {};
 
+            [HarmonyPatch(typeof(BiomeDef), "IsPackAnimalAllowed")]
             [HarmonyPostfix]
-            static void IsPackAnimalAllowed_Postfix(BiomeDef __instance, ref bool __result, List<ThingDef> ___allowedPackAnimals, ThingDef pawn) {
+            static void IsPackAnimalAllowed_Patch(BiomeDef __instance, ref bool __result, List<ThingDef> ___allowedPackAnimals, ThingDef pawn) {
                 // If the original already gave us a positive result, just accept it and short-circuit
                 if (__result) return;
 
@@ -185,15 +187,13 @@ namespace FactionBlender {
          */
 
         [HarmonyPatch(typeof(LordToil_Siege), "CanBeBuilder")]
-        public static class CanBeBuilder_Patch {
-            [HarmonyPrefix]
-            private static bool Prefix(Pawn p, ref bool __result) {
-                if (p?.def?.thingClass == null) {
-                    __result = false;
-                    return false;
-                }
-                return true;
+        [HarmonyPrefix]
+        private static bool CanBeBuilder_Patch(Pawn p, ref bool __result) {
+            if (p?.def?.thingClass == null) {
+                __result = false;
+                return false;
             }
+            return true;
         }
 
         /* A better version of GenerateCarriers.
@@ -210,118 +210,115 @@ namespace FactionBlender {
          */
 
         [HarmonyPatch(typeof(PawnGroupKindWorker_Trader), "GenerateCarriers")]
-        public static class GenerateCarriers_Override {
+        // This may be an complete override, but if anybody wants to add another prefix, it will default to
+        // run before this.  I don't think anybody's really messed with this method, though.
+        [HarmonyPriority(Priority.Last)]
+        [HarmonyPrefix]
+        private static bool GenerateCarriers_Override(PawnGroupMakerParms parms, PawnGroupMaker groupMaker, Pawn trader, List<Thing> wares, List<Pawn> outPawns) {
+            Func<Thing, float> massTotaler = t => t.stackCount * t.GetStatValue(StatDefOf.Mass, true);
 
-            // This may be an complete override, but if anybody wants to add another prefix, it will default to
-            // run before this.  I don't think anybody's really messed with this method, though.
-            [HarmonyPriority(Priority.Last)]
-            [HarmonyPrefix]
-            private static bool Prefix(PawnGroupMakerParms parms, PawnGroupMaker groupMaker, Pawn trader, List<Thing> wares, List<Pawn> outPawns) {
-                Func<Thing, float> massTotaler = t => t.stackCount * t.GetStatValue(StatDefOf.Mass, true);
+            List<Thing> list = wares.Where(t => !(t is Pawn)).ToList();
+            list.SortByDescending(massTotaler);
 
-                List<Thing> list = wares.Where(t => !(t is Pawn)).ToList();
-                list.SortByDescending(massTotaler);
+            float ttlMassThings = list.Sum(massTotaler);
+            float ttlCapacity   = 0f;
+            float ttlBodySize   = 0f;
+            int   numCarriers   = 0;
 
-                float ttlMassThings = list.Sum(massTotaler);
-                float ttlCapacity   = 0f;
-                float ttlBodySize   = 0f;
-                int   numCarriers   = 0;
+            IEnumerable<PawnGenOption> carrierKinds = groupMaker.carriers.Where(p => {
+                if (parms.tile != -1)
+                    return Find.WorldGrid[parms.tile].biome.IsPackAnimalAllowed(p.kind.race);
+                return true;
+            });
 
-                IEnumerable<PawnGenOption> carrierKinds = groupMaker.carriers.Where(p => {
-                    if (parms.tile != -1)
-                        return Find.WorldGrid[parms.tile].biome.IsPackAnimalAllowed(p.kind.race);
-                    return true;
-                });
+            PawnKindDef kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
 
-                PawnKindDef kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
+            // No slow or small juveniles
+            Predicate<Pawn> validator = (p =>
+                p.ageTracker.CurLifeStage.bodySizeFactor >= 1 &&
+                p.GetStatValue(StatDefOf.MoveSpeed, true) >= p.kindDef.race.GetStatValueAbstract(StatDefOf.MoveSpeed)
+            );
 
-                // No slow or small juveniles
-                Predicate<Pawn> validator = (p =>
-                    p.ageTracker.CurLifeStage.bodySizeFactor >= 1 &&
-                    p.GetStatValue(StatDefOf.MoveSpeed, true) >= p.kindDef.race.GetStatValueAbstract(StatDefOf.MoveSpeed)
+            // 50/50 chance of uniform carriers (like vanilla) or mixed carriers
+            bool mixedCarriers = Rand.RangeInclusive(0, 1) == 1;
+
+            // Generate all of the carrier pawns (empty).  Either we spawn as many pawns as we need to cover
+            // 120% of the weight of the items, or enough pawns before it seems "unreasonable" based on body
+            // size.
+            List<Pawn> carrierPawns = new List<Pawn> {};
+            for (; ttlCapacity < ttlMassThings * 1.2 && ttlBodySize < 20; numCarriers++) {
+                PawnGenerationRequest request = new PawnGenerationRequest(
+                    kind:             kind,
+                    faction:          parms.faction,
+                    tile:             parms.tile,
+                    inhabitant:       parms.inhabitants,
+                    fixedIdeo:        parms.ideo,
+                    validatorPreGear: validator
                 );
+                Pawn pawn = PawnGenerator.GeneratePawn(request);
+                carrierPawns.Add(pawn);
 
-                // 50/50 chance of uniform carriers (like vanilla) or mixed carriers
-                bool mixedCarriers = Rand.RangeInclusive(0, 1) == 1;
+                ttlCapacity += MassUtility.Capacity(pawn);
+                // Still can't have 100 chickenmuffalos.  That might slow down some PCs.
+                ttlBodySize += Mathf.Max(pawn.BodySize, 0.5f);
 
-                // Generate all of the carrier pawns (empty).  Either we spawn as many pawns as we need to cover
-                // 120% of the weight of the items, or enough pawns before it seems "unreasonable" based on body
-                // size.
-                List<Pawn> carrierPawns = new List<Pawn> {};
-                for (; ttlCapacity < ttlMassThings * 1.2 && ttlBodySize < 20; numCarriers++) {
-                    PawnGenerationRequest request = new PawnGenerationRequest(
-                        kind:             kind,
-                        faction:          parms.faction,
-                        tile:             parms.tile,
-                        inhabitant:       parms.inhabitants,
-                        fixedIdeo:        parms.ideo,
-                        validatorPreGear: validator
-                    );
-                    Pawn pawn = PawnGenerator.GeneratePawn(request);
-                    carrierPawns.Add(pawn);
+                if (mixedCarriers) kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
 
-                    ttlCapacity += MassUtility.Capacity(pawn);
-                    // Still can't have 100 chickenmuffalos.  That might slow down some PCs.
-                    ttlBodySize += Mathf.Max(pawn.BodySize, 0.5f);
-
-                    if (mixedCarriers) kind = carrierKinds.RandomElementByWeight(x => x.selectionWeight).kind;
-
-                    // Include a hard limit of 50 pack animals for extreme ttlMassThings scenarios, like massive
-                    // percentages from Supply and Demand
-                    if (numCarriers >= 50) break;
-                }
-
-                // Add items (in descending order of weight) to randomly chosen pack animals.  This isn't the most
-                // efficient routine, as we're trying to be a bit random.  If I was trying to be efficient, I would
-                // use something like SortByDescending(p.Capacity) against the existing thing list.
-                foreach (Thing thing in list) {
-                    List<Pawn> validPawns = carrierPawns.FindAll(p => !MassUtility.WillBeOverEncumberedAfterPickingUp(p, thing, thing.stackCount));
-
-                    if (validPawns.Count() != 0) {
-                        validPawns.RandomElement().inventory.innerContainer.TryAdd(thing, true);
-                    }
-                    else if (thing.stackCount > 1) {
-                        // No carrier can handle the full stack; split it up
-                        int countLeft = thing.stackCount;
-                        int c = 0;  // safety counter (while loops can be dangerous)
-                        while (countLeft > 0) {
-                            validPawns = carrierPawns.FindAll(p => MassUtility.CountToPickUpUntilOverEncumbered(p, thing) >= 1);
-                            if (validPawns.Count() != 0 && c < thing.stackCount) {
-                                Pawn pawn = validPawns.RandomElement();
-                                int countToAdd = Mathf.Min( MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing), countLeft );
-                                countLeft -= pawn.inventory.innerContainer.TryAdd(thing, countToAdd, true);
-                            }
-                            else {
-                                // Either no carrier can handle a single item, or we're just in some bad while loop breakout.  In
-                                // any case, force it in, evenly split among all carriers.
-                                int splitCount = Mathf.FloorToInt(countLeft / carrierPawns.Count());
-                                if (splitCount > 0) {
-                                    carrierPawns.ForEach(p => p.inventory.innerContainer.TryAdd(thing, splitCount, true));
-                                    countLeft -= splitCount * carrierPawns.Count();
-                                }
-
-                                // Give the remainer to the ones with space (one at a time)
-                                while (countLeft > 0) {
-                                    carrierPawns.MaxBy(p => MassUtility.FreeSpace(p)).inventory.innerContainer.TryAdd(thing, 1, true);
-                                    countLeft--;
-                                }
-                                break;
-                            }
-                            c++;
-                        }
-                    }
-                    else {
-                        // No way to split it; force it in
-                        carrierPawns.MaxBy(p => MassUtility.FreeSpace(p)).inventory.innerContainer.TryAdd(thing, true);
-                    }
-                }
-
-                // Finally, add in the carrierPawns to the out list
-                outPawns.AddRange(carrierPawns);
-
-                // Always skip the original method
-                return false;
+                // Include a hard limit of 50 pack animals for extreme ttlMassThings scenarios, like massive
+                // percentages from Supply and Demand
+                if (numCarriers >= 50) break;
             }
+
+            // Add items (in descending order of weight) to randomly chosen pack animals.  This isn't the most
+            // efficient routine, as we're trying to be a bit random.  If I was trying to be efficient, I would
+            // use something like SortByDescending(p.Capacity) against the existing thing list.
+            foreach (Thing thing in list) {
+                List<Pawn> validPawns = carrierPawns.FindAll(p => !MassUtility.WillBeOverEncumberedAfterPickingUp(p, thing, thing.stackCount));
+
+                if (validPawns.Count() != 0) {
+                    validPawns.RandomElement().inventory.innerContainer.TryAdd(thing, true);
+                }
+                else if (thing.stackCount > 1) {
+                    // No carrier can handle the full stack; split it up
+                    int countLeft = thing.stackCount;
+                    int c = 0;  // safety counter (while loops can be dangerous)
+                    while (countLeft > 0) {
+                        validPawns = carrierPawns.FindAll(p => MassUtility.CountToPickUpUntilOverEncumbered(p, thing) >= 1);
+                        if (validPawns.Count() != 0 && c < thing.stackCount) {
+                            Pawn pawn = validPawns.RandomElement();
+                            int countToAdd = Mathf.Min( MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing), countLeft );
+                            countLeft -= pawn.inventory.innerContainer.TryAdd(thing, countToAdd, true);
+                        }
+                        else {
+                            // Either no carrier can handle a single item, or we're just in some bad while loop breakout.  In
+                            // any case, force it in, evenly split among all carriers.
+                            int splitCount = Mathf.FloorToInt(countLeft / carrierPawns.Count());
+                            if (splitCount > 0) {
+                                carrierPawns.ForEach(p => p.inventory.innerContainer.TryAdd(thing, splitCount, true));
+                                countLeft -= splitCount * carrierPawns.Count();
+                            }
+
+                            // Give the remainer to the ones with space (one at a time)
+                            while (countLeft > 0) {
+                                carrierPawns.MaxBy(p => MassUtility.FreeSpace(p)).inventory.innerContainer.TryAdd(thing, 1, true);
+                                countLeft--;
+                            }
+                            break;
+                        }
+                        c++;
+                    }
+                }
+                else {
+                    // No way to split it; force it in
+                    carrierPawns.MaxBy(p => MassUtility.FreeSpace(p)).inventory.innerContainer.TryAdd(thing, true);
+                }
+            }
+
+            // Finally, add in the carrierPawns to the out list
+            outPawns.AddRange(carrierPawns);
+
+            // Always skip the original method
+            return false;
         }
 
         /* Warn user of badly-behaving pawns that attack their own faction (or friendlies).
@@ -334,12 +331,13 @@ namespace FactionBlender {
          * set of ThinkTrees would work here.
          */
 
-        [HarmonyPatch(typeof(Pawn_MindState), "MindStateTick")]
+        [HarmonyPatch]
         public static class MindStateTick_Patch {
             public static Dictionary<string, bool> hasWarnedAboutMisbehavingPawn = new Dictionary<string, bool> {};
 
+            [HarmonyPatch(typeof(Pawn_MindState), "MindStateTick")]
             [HarmonyPrefix]
-            private static void Prefix(Pawn_MindState __instance) {
+            private static void Patch(Pawn_MindState __instance) {
                 Pawn pawn = __instance?.pawn;
 
                 // Early state?
@@ -392,63 +390,62 @@ namespace FactionBlender {
          * Some extra details: https://ludeon.com/forums/index.php?topic=50672.0
          */
         [HarmonyPatch(typeof(PawnApparelGenerator), "GenerateWorkingPossibleApparelSetFor")]
-        public static class GenerateWorkingPossibleApparelSetFor_Patch {
-            [HarmonyPrefix]
-            private static void Prefix(Pawn pawn, List<ThingStuffPair> ___allApparelPairs) {
-                // Short-circuit
-                if (pawn == null || pawn.Faction == null || pawn.kindDef.apparelRequired == null) return;
+        [HarmonyPrefix]
+        private static void GenerateWorkingPossibleApparelSetFor_Patch(Pawn pawn, List<ThingStuffPair> ___allApparelPairs) {
+            // Short-circuit
+            if (pawn == null || pawn.Faction == null || pawn.kindDef.apparelRequired == null) return;
 
-                // [Reflection prep] PawnApparelGenerator.CanUseStuff(pawn, pa);
-                MethodInfo CanUseStuffMethod = AccessTools.Method(typeof(PawnApparelGenerator), "CanUseStuff");
+            // [Reflection prep] PawnApparelGenerator.CanUseStuff(pawn, pa);
+            MethodInfo CanUseStuffMethod = AccessTools.Method(typeof(PawnApparelGenerator), "CanUseStuff");
 
-                List<ThingDef> reqApparel = pawn.kindDef.apparelRequired;
-                for (int i = 0; i < reqApparel.Count; i++) {
-                    IEnumerable<ThingStuffPair> pairs = ___allApparelPairs.Where(
-                        pa => pa.thing == reqApparel[i]
-                    );
+            List<ThingDef> reqApparel = pawn.kindDef.apparelRequired;
+            for (int i = 0; i < reqApparel.Count; i++) {
+                IEnumerable<ThingStuffPair> pairs = ___allApparelPairs.Where(
+                    pa => pa.thing == reqApparel[i]
+                );
 
-                    // The original method is going to have a bad time, so auto-add an appropriate filter to fix it
-                    if ( !pairs.Any( pa => (bool)CanUseStuffMethod.Invoke(null, new object[] { pawn, pa }) && pa.Commonality > 0 ) ) {
-                        string logMsg =
-                            "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
-                            reqApparel[i] + " while generating apparel for " + pawn.kindDef.defName + "; "
-                        ;
+                // The original method is going to have a bad time, so auto-add an appropriate filter to fix it
+                if ( !pairs.Any( pa => (bool)CanUseStuffMethod.Invoke(null, new object[] { pawn, pa }) && pa.Commonality > 0 ) ) {
+                    string logMsg =
+                        "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
+                        reqApparel[i] + " while generating apparel for " + pawn.kindDef.defName + "; "
+                    ;
 
-                        ThingFilter factionFilter = pawn.Faction.def.apparelStuffFilter;
-                        string      factionName   = pawn.Faction.def.defName;
-                        if (factionFilter != null) {
-                            List<StuffCategoryDef> stuffCategories = reqApparel[i].stuffCategories;
-                            ThingStuffPair examplePair = pairs.RandomElementByWeight(pa => pa.Commonality);
+                    ThingFilter factionFilter = pawn.Faction.def.apparelStuffFilter;
+                    string      factionName   = pawn.Faction.def.defName;
+                    if (factionFilter != null) {
+                        List<StuffCategoryDef> stuffCategories = reqApparel[i].stuffCategories;
+                        ThingStuffPair examplePair = pairs.RandomElementByWeight(pa => pa.Commonality);
 
-                            if (stuffCategories == null && examplePair != null && examplePair.stuff != null) stuffCategories = examplePair.stuff.stuffProps.categories;
+                        if (stuffCategories == null && examplePair != null && examplePair.stuff != null) stuffCategories = examplePair.stuff.stuffProps.categories;
 
-                            if (stuffCategories != null) {
-                                logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + string.Join(", ", stuffCategories);
+                        if (stuffCategories != null) {
+                            logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + string.Join(", ", stuffCategories);
 
-                                foreach (StuffCategoryDef sc in stuffCategories) {
-                                    factionFilter.SetAllow(sc, true);
-                                }
-                            }
-                            else if (examplePair.stuff != null) {
-                                logMsg = logMsg + "adding " + examplePair.stuff + " to " + factionName + "'s apparelStuffFilter";
-                                factionFilter.SetAllow(examplePair.stuff, true);
-                            }
-                            else if (examplePair != null) {
-                                logMsg = logMsg + "adding " + examplePair.thing + " to " + factionName + "'s apparelStuffFilter";
-                                factionFilter.SetAllow(examplePair.thing, true);
-                            }
-                            else {  // probably pendatic, but ¯\_(ツ)_/¯
-                                logMsg = logMsg + "adding " + reqApparel[i] + " to " + factionName + "'s apparelStuffFilter";
-                                factionFilter.SetAllow(reqApparel[i], true);
+                            foreach (StuffCategoryDef sc in stuffCategories) {
+                                factionFilter.SetAllow(sc, true);
                             }
                         }
-                        else {
-                            logMsg = logMsg + "cannot fix since there is no apparelStuffFilter for " + factionName;
+                        else if (examplePair.stuff != null) {
+                            logMsg = logMsg + "adding " + examplePair.stuff + " to " + factionName + "'s apparelStuffFilter";
+                            factionFilter.SetAllow(examplePair.stuff, true);
                         }
-
-                        Base.Instance.ModLogger.Warning(logMsg);
+                        else if (examplePair != null) {
+                            logMsg = logMsg + "adding " + examplePair.thing + " to " + factionName + "'s apparelStuffFilter";
+                            factionFilter.SetAllow(examplePair.thing, true);
+                        }
+                        else {  // probably pendatic, but ¯\_(ツ)_/¯
+                            logMsg = logMsg + "adding " + reqApparel[i] + " to " + factionName + "'s apparelStuffFilter";
+                            factionFilter.SetAllow(reqApparel[i], true);
+                        }
                     }
+                    else {
+                        logMsg = logMsg + "cannot fix since there is no apparelStuffFilter for " + factionName;
+                    }
+
+                    Base.Instance.ModLogger.Warning(logMsg);
                 }
+            }
 
                 return;
             }
@@ -458,6 +455,7 @@ namespace FactionBlender {
          * These are a series of patches against Ancient pawn generators, to allow a mixed set of pawns.
          */
 
+        [HarmonyPatch]
         public static class GenerateAncientsPatches {
             private static Pawn GenerateBaseAncient(ThingSetMaker_MapGen_AncientPodContents instance) {
                 // Faction grabber, with a few backup plans
@@ -491,123 +489,113 @@ namespace FactionBlender {
             }
 
             [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateFriendlyAncient")]
-            private static class GenerateFriendlyAncient_Override {
-                [HarmonyPrefix]
-                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
-                    // Skip this method (if the config is disabled)
-                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+            [HarmonyPrefix]
+            private static bool GenerateFriendlyAncient_Override(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                // Skip this method (if the config is disabled)
+                if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
-                    __result = GenerateBaseAncient(__instance);
+                __result = GenerateBaseAncient(__instance);
 
-                    // Skip the original method
-                    return false;
-                }
+                // Skip the original method
+                return false;
             }
 
             [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateIncappedAncient")]
-            private static class GenerateIncappedAncient_Override {
-                [HarmonyPrefix]
-                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
-                    // Skip this method (if the config is disabled)
-                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+            [HarmonyPrefix]
+            private static bool GenerateIncappedAncient_Override(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                // Skip this method (if the config is disabled)
+                if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
-                    Pawn pawn = GenerateBaseAncient(__instance);
-                    HealthUtility.DamageUntilDowned(pawn, true);
+                Pawn pawn = GenerateBaseAncient(__instance);
+                HealthUtility.DamageUntilDowned(pawn, true);
 
-                    __result = pawn;
+                __result = pawn;
 
-                    // Skip the original method
-                    return false;
-                }
+                // Skip the original method
+                return false;
             }
 
             [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateAngryAncient")]
-            private static class GenerateAngryAncient_Override {
-                [HarmonyPrefix]
-                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
-                    // Skip this method (if the config is disabled)
-                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+            [HarmonyPrefix]
+            private static bool GenerateAngryAncient_Override(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                // Skip this method (if the config is disabled)
+                if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
-                    Pawn pawn = GenerateBaseAncient(__instance);
-                    pawn.SetFactionDirect(Faction.OfAncientsHostile);
+                Pawn pawn = GenerateBaseAncient(__instance);
+                pawn.SetFactionDirect(Faction.OfAncientsHostile);
 
-                    __result = pawn;
+                __result = pawn;
 
-                    // Skip the original method
-                    return false;
-                }
+                // Skip the original method
+                return false;
             }
 
             [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateHalfEatenAncient")]
-            private static class GenerateHalfEatenAncient_Override {
-                [HarmonyPrefix]
-                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
-                    // Skip this method (if the config is disabled)
-                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+            [HarmonyPrefix]
+            private static bool GenerateHalfEatenAncient_Override(ThingSetMaker_MapGen_AncientPodContents __instance, ref Pawn __result) {
+                // Skip this method (if the config is disabled)
+                if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
-                    Pawn pawn = GenerateBaseAncient(__instance);
+                Pawn pawn = GenerateBaseAncient(__instance);
 
-                    int num = Rand.Range(6, 10);
-                    for (int index = 0; index < num; ++index) {
-                        pawn.TakeDamage(new DamageInfo(
-                            def: DamageDefOf.Bite,
-                            amount: Rand.Range(3, 8),
-                            instigator: (Thing) pawn
-                        ));
-                    }
-
-                    __result = pawn;
-
-                    // Skip the original method
-                    return false;
+                int num = Rand.Range(6, 10);
+                for (int index = 0; index < num; ++index) {
+                    pawn.TakeDamage(new DamageInfo(
+                        def: DamageDefOf.Bite,
+                        amount: Rand.Range(3, 8),
+                        instigator: (Thing) pawn
+                    ));
                 }
+
+                __result = pawn;
+
+                // Skip the original method
+                return false;
             }
 
             // Find other appropriate pawnkind types besides just megascarabs
             [HarmonyPatch(typeof(ThingSetMaker_MapGen_AncientPodContents), "GenerateScarabs")]
-            private static class GenerateScarabs_Override {
-                [HarmonyPrefix]
-                private static bool Prefix(ThingSetMaker_MapGen_AncientPodContents __instance, ref List<Thing> __result) {
-                    // Skip this method (if the config is disabled)
-                    if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
+            [HarmonyPrefix]
+            private static bool GenerateScarabs_Override(ThingSetMaker_MapGen_AncientPodContents __instance, ref List<Thing> __result) {
+                // Skip this method (if the config is disabled)
+                if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
-                    PawnKindDef pawnKind = DefDatabase<PawnKindDef>.AllDefsListForReading.Where(p =>
-                        p.isFighter && !p.RaceProps.Humanlike &&
-                        p.combatPower >= 20 && p.combatPower <= 240 &&
-                        (
-                            // Other kinds of insects
-                            p.RaceProps.FleshType == FleshTypeDefOf.Insectoid ||
-                            // Something something creepy crawlies
-                            Regex.IsMatch(
-                                p.RaceProps.meatDef.label.ToLower(),
-                                @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobraflesh|" +
-                                // Some people might call this evil, but who's the one who installed the AvP mod?  We all know this is the
-                                // kind of frightening stuff you wanted...
-                                "xenomorph flesh"
-                            ) ||
-                            // Work around the Optimization: Meats mod
-                            Regex.IsMatch(
-                                p.RaceProps.body.label.ToLower(),
-                                @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobra|facehugger"
-                            )
-                        ) && p.RaceProps.baseBodySize <= 0.6
-                    ).RandomElement();
+                PawnKindDef pawnKind = DefDatabase<PawnKindDef>.AllDefsListForReading.Where(p =>
+                    p.isFighter && !p.RaceProps.Humanlike &&
+                    p.combatPower >= 20 && p.combatPower <= 240 &&
+                    (
+                        // Other kinds of insects
+                        p.RaceProps.FleshType == FleshTypeDefOf.Insectoid ||
+                        // Something something creepy crawlies
+                        Regex.IsMatch(
+                            p.RaceProps.meatDef.label.ToLower(),
+                            @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobraflesh|" +
+                            // Some people might call this evil, but who's the one who installed the AvP mod?  We all know this is the
+                            // kind of frightening stuff you wanted...
+                            "xenomorph flesh"
+                        ) ||
+                        // Work around the Optimization: Meats mod
+                        Regex.IsMatch(
+                            p.RaceProps.body.label.ToLower(),
+                            @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobra|facehugger"
+                        )
+                    ) && p.RaceProps.baseBodySize <= 0.6
+                ).RandomElement();
 
-                    List<Thing> thingList = new List<Thing>();
-                    int cpLimit = Rand.Range(120, 240);
-                    int ttlCP   = 0;
-                    while (ttlCP < cpLimit) {
-                        Pawn pawn = PawnGenerator.GeneratePawn(pawnKind);
-                        pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Manhunter);
-                        thingList.Add(pawn);
-                        ttlCP += (int)pawnKind.combatPower;
-                    }
-
-                    __result = thingList;
-
-                    // Skip the original method
-                    return false;
+                List<Thing> thingList = new List<Thing>();
+                int cpLimit = Rand.Range(120, 240);
+                int ttlCP   = 0;
+                while (ttlCP < cpLimit) {
+                    Pawn pawn = PawnGenerator.GeneratePawn(pawnKind);
+                    pawn.mindState.mentalStateHandler.TryStartMentalState(MentalStateDefOf.Manhunter);
+                    thingList.Add(pawn);
+                    ttlCP += (int)pawnKind.combatPower;
                 }
+
+                __result = thingList;
+
+                // Skip the original method
+                return false;
             }
 
         }
