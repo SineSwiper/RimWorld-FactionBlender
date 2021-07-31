@@ -184,12 +184,14 @@ namespace FactionBlender {
          * The core CanBeBuilder (and Torann's A RimWorld of Magic) makes some bad assumptions about what
          * properties are available for pawns.  Some animals and non-humans might not have a story or
          * definition.  So, protect all of that by checking all levels of expected objects for undefinedness.
+         * 
+         * Also, in 1.3, it also assumes non-humanoids have builder skills, which they don't.
          */
 
         [HarmonyPatch(typeof(LordToil_Siege), "CanBeBuilder")]
         [HarmonyPrefix]
         private static bool CanBeBuilder_Patch(Pawn p, ref bool __result) {
-            if (p?.def?.thingClass == null) {
+            if (p?.def?.thingClass == null || p?.skills == null || p?.workSettings == null) {
                 __result = false;
                 return false;
             }
@@ -447,8 +449,22 @@ namespace FactionBlender {
                 }
             }
 
-                return;
-            }
+            return;
+        }
+
+        /* Don't attempt to create a title for a pawn if the faction doesn't exist.
+         *
+         * This may happen because the user disabled the Royalty faction, but the FB pawn is a Royalty pawn that requires a title.
+         */
+
+        [HarmonyPatch(typeof(PawnGenerator), "TryGenerateNewPawnInternal")]
+        [HarmonyPrefix]
+        private static void TryGenerateNewPawnInternal_Patch(ref PawnGenerationRequest request) {
+            // Royalty faction exists; bounce out
+            if (Find.FactionManager.RandomRoyalFaction() != null) return;
+
+            request.FixedTitle     = null;
+            request.ForbidAnyTitle = true;
         }
 
         /*
