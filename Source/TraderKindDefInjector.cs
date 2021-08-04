@@ -101,13 +101,13 @@ namespace FactionBlender {
                     string newLabel = curLabel != null && newTraderLabel.ContainsKey(curLabel) ? newTraderLabel[curLabel] : null;
                     int lm = FB_TraderKinds.FirstIndexOf(tkd =>
                        tkd.label?.ToLower() is string lcLabel && lcLabel != null && (lcLabel == curLabel || lcLabel == newLabel)
-                    ); // returns Count on failure, not -1
+                    );
             
                     // If we somehow missed a dupe, skip it
                     if (FB_Faction.caravanTraderKinds.Contains(traderKind)) continue;
 
                     // If we found a label-like dupe, merge them
-                    else if (lm < FB_Faction.caravanTraderKinds.Count) {
+                    else if (lm >= 0) {
                         var labelMatchTKD = FB_TraderKinds[lm];
                         if (!labelMatchTKD.defName.StartsWith("FB_Caravan_")) {
                             TraderKindDef newTraderKind = CopyTraderKindDef(labelMatchTKD, tkdPrefix, labelMatchTKD.LabelCap);
