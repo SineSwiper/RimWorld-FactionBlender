@@ -1,35 +1,97 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-
-  <!-- Civil Coalition -->
-
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.0>r_name->[civil_noun] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.0>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.1>r_name->[civil_noun] [political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.1>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.2>r_name->[civil_noun]的[political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.2>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.3>r_name->为了[civil_noun][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.3>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.4>r_name->[civil_noun]的[political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.4>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.5>r_name->为了[civil_noun][political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.5>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.6>r_name(p=0.8)->[civil_noun]的[civil_noun]</NamerFaction_FB_Civil.rulePack.rulesStrings.6>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.7>r_name(p=0.4)->[political_adjective] [political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.7>
-
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.8>civil_noun(p=2)->[concept_positive]</NamerFaction_FB_Civil.rulePack.rulesStrings.8>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.8>civil_noun(p=1.5)->许多</NamerFaction_FB_Civil.rulePack.rulesStrings.8>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.7>civil_noun->一个</NamerFaction_FB_Civil.rulePack.rulesStrings.7>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.9>civil_noun->所有</NamerFaction_FB_Civil.rulePack.rulesStrings.9>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.10>civil_noun->[PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.10>
-  <NamerFaction_FB_Civil.rulePack.rulesStrings.11>civil_noun(p=0.6)->[Direction] [PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.11>
-
-  <!-- Amalgam Pirate Band -->
-
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.0>r_name->[colorbadass][political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.0>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.1>r_name->[AdjectiveBadass] [political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.1>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.2>r_name->[badass_item]的[political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.2>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.3>r_name->[badass_item][political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.3>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.4>r_name->[badass_item]的[political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.4>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.5>r_name->[badass_item]的[political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.5>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.6>r_name->[badass_item]的[political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.6>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.7>r_name->[political_union_outrander]的[badass_group]</NamerFaction_FB_Pirate.rulePack.rulesStrings.7>
-  <NamerFaction_FB_Pirate.rulePack.rulesStrings.8>r_name->[political_union_outlander]的[badass_group]</NamerFaction_FB_Pirate.rulePack.rulesStrings.8>
-
-
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.0>r_name-&gt;[civil_noun][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.0>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.1>r_name-&gt;[civil_noun][political_adjective][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.1>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.2>r_name-&gt;[civil_noun][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.2>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.3>r_name-&gt;[civil_noun][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.3>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.4>r_name-&gt;[civil_noun][political_adjective][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.4>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.5>r_name-&gt;[civil_noun][political_adjective][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.5>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.6>r_name(p=0.8)-&gt;[civil_noun][civil_noun]</NamerFaction_FB_Civil.rulePack.rulesStrings.6>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.7>r_name(p=0.4)-&gt;[political_adjective][political_union_outlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.7>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.8>civil_noun(p=2)-&gt;[concept_positive]</NamerFaction_FB_Civil.rulePack.rulesStrings.8>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.9>civil_noun(p=1.5)-&gt;多数</NamerFaction_FB_Civil.rulePack.rulesStrings.9>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.10>civil_noun-&gt;唯一</NamerFaction_FB_Civil.rulePack.rulesStrings.10>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.11>civil_noun-&gt;世界</NamerFaction_FB_Civil.rulePack.rulesStrings.11>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.12>civil_noun-&gt;[PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.12>
+  <NamerFaction_FB_Civil.rulePack.rulesStrings.13>civil_noun(p=0.6)-&gt;[Direction][PlaceOutlander]</NamerFaction_FB_Civil.rulePack.rulesStrings.13>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.0>r_name-&gt;[colorbadass][political_union_outrander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.0>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.1>r_name-&gt;[AdjectiveBadass][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.1>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.2>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.2>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.3>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.3>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.4>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.4>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.5>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.5>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.6>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.6>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.7>r_name-&gt;[badass_group][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.7>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.8>r_name-&gt;[badass_group][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.8>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.9>r_name-&gt;[badass_group][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.9>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.10>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.10>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.11>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.11>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.12>r_name-&gt;[badass_item][political_union_outlander]</NamerFaction_FB_Pirate.rulePack.rulesStrings.12>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.13>badass_item-&gt;[badass_noun]</NamerFaction_FB_Pirate.rulePack.rulesStrings.13>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.14>badass_item-&gt;[badass_noun][badass_adjective]</NamerFaction_FB_Pirate.rulePack.rulesStrings.14>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.15>badass_item-&gt;[Bodypart][badass_adjective]</NamerFaction_FB_Pirate.rulePack.rulesStrings.15>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.16>badass_item-&gt;[AnimalBadass][badass_adjective]</NamerFaction_FB_Pirate.rulePack.rulesStrings.16>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.17>badass_noun-&gt;[Weapon]</NamerFaction_FB_Pirate.rulePack.rulesStrings.17>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.18>badass_noun-&gt;[PersonBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.18>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.19>badass_noun-&gt;[Enemy]</NamerFaction_FB_Pirate.rulePack.rulesStrings.19>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.20>badass_noun-&gt;[ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.20>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.21>badass_adjective-&gt;[ColorBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.21>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.22>badass_adjective-&gt;[AdjectiveBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.22>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.23>badass_adjective-&gt;[AdjectiveLarge]</NamerFaction_FB_Pirate.rulePack.rulesStrings.23>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.24>badass_group-&gt;[groupname]</NamerFaction_FB_Pirate.rulePack.rulesStrings.24>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.25>badass_group-&gt;[AnimalGroup]</NamerFaction_FB_Pirate.rulePack.rulesStrings.25>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.26>badass_group-&gt;[ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.26>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.27>badass_group-&gt;[badass_adjective][ConceptBadass]</NamerFaction_FB_Pirate.rulePack.rulesStrings.27>
+  <NamerFaction_FB_Pirate.rulePack.rulesStrings.28>badass_group-&gt;[Gore]</NamerFaction_FB_Pirate.rulePack.rulesStrings.28>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.0>r_name-&gt;[noun_pre][union_mid]</NamerFaction_FB_Clan.rulePack.rulesStrings.0>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.1>r_name-&gt;[noun_pre_nonposs][preposition][union_post]</NamerFaction_FB_Clan.rulePack.rulesStrings.1>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.2>r_name-&gt;[noun_post][preposition][union]</NamerFaction_FB_Clan.rulePack.rulesStrings.2>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.3>r_name-&gt;[noun_pre][preposition][noun_post][union_mid]</NamerFaction_FB_Clan.rulePack.rulesStrings.3>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.4>noun_pre-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.4>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.5>noun_pre-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.5>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.6>noun_pre-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.6>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.7>noun_pre(p=0.8)-&gt;[concept_positive]</NamerFaction_FB_Clan.rulePack.rulesStrings.7>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.8>noun_pre(p=0.4)-&gt;[PlaceOutlander]</NamerFaction_FB_Clan.rulePack.rulesStrings.8>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.9>noun_pre(p=0.2)-&gt;[Direction][PlaceOutlander]</NamerFaction_FB_Clan.rulePack.rulesStrings.9>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.10>noun_pre_nonposs-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.10>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.11>noun_pre_nonposs-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.11>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.12>noun_pre_nonposs-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.12>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.13>noun_pre_nonposs-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.13>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.14>noun_pre_nonposs(p=0.8)-&gt;[concept_positive]</NamerFaction_FB_Clan.rulePack.rulesStrings.14>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.15>noun_pre_nonposs(p=0.4)-&gt;[PlaceOutlander]</NamerFaction_FB_Clan.rulePack.rulesStrings.15>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.16>noun_pre_nonposs(p=0.2)-&gt;[Direction][PlaceOutlander]</NamerFaction_FB_Clan.rulePack.rulesStrings.16>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.17>noun_post-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.17>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.18>noun_post-&gt;[noun]</NamerFaction_FB_Clan.rulePack.rulesStrings.18>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.19>noun_post(p=0.8)-&gt;[concept_positive]</NamerFaction_FB_Clan.rulePack.rulesStrings.19>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.20>noun_post(p=0.4)-&gt;[PlaceOutlander]</NamerFaction_FB_Clan.rulePack.rulesStrings.20>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.21>noun_post(p=0.2)-&gt;[Direction][PlaceOutlander]</NamerFaction_FB_Clan.rulePack.rulesStrings.21>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.22>noun-&gt;[thing]</NamerFaction_FB_Clan.rulePack.rulesStrings.22>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.23>noun-&gt;[color][thing]</NamerFaction_FB_Clan.rulePack.rulesStrings.23>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.24>noun-&gt;[group]</NamerFaction_FB_Clan.rulePack.rulesStrings.24>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.25>group-&gt;氏族</NamerFaction_FB_Clan.rulePack.rulesStrings.25>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.26>group-&gt;[groupname]</NamerFaction_FB_Clan.rulePack.rulesStrings.26>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.27>group-&gt;[AnimalGroup]</NamerFaction_FB_Clan.rulePack.rulesStrings.27>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.28>group-&gt;[groupadj]氏族</NamerFaction_FB_Clan.rulePack.rulesStrings.28>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.29>group-&gt;[groupadj][groupname]</NamerFaction_FB_Clan.rulePack.rulesStrings.29>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.30>group-&gt;[groupadj][AnimalGroup]</NamerFaction_FB_Clan.rulePack.rulesStrings.30>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.31>groupadj-&gt;[thing]</NamerFaction_FB_Clan.rulePack.rulesStrings.31>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.32>groupadj-&gt;[color]</NamerFaction_FB_Clan.rulePack.rulesStrings.32>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.33>groupadj-&gt;[color][thing]</NamerFaction_FB_Clan.rulePack.rulesStrings.33>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.34>groupadj(p=0.2)-&gt;[Direction]</NamerFaction_FB_Clan.rulePack.rulesStrings.34>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.35>groupadj(p=0.2)-&gt;[Direction][thing]</NamerFaction_FB_Clan.rulePack.rulesStrings.35>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.36>groupadj(p=0.2)-&gt;[color][Direction]</NamerFaction_FB_Clan.rulePack.rulesStrings.36>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.37>preposition-&gt;的</NamerFaction_FB_Clan.rulePack.rulesStrings.37>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.38>preposition-&gt;</NamerFaction_FB_Clan.rulePack.rulesStrings.38>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.39>union-&gt;[union_mid]</NamerFaction_FB_Clan.rulePack.rulesStrings.39>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.40>union-&gt;[union_mid]</NamerFaction_FB_Clan.rulePack.rulesStrings.40>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.41>union_mid-&gt;[political_union]</NamerFaction_FB_Clan.rulePack.rulesStrings.41>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.42>union_mid-&gt;[political_union]</NamerFaction_FB_Clan.rulePack.rulesStrings.42>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.43>union_post-&gt;[political_union]</NamerFaction_FB_Clan.rulePack.rulesStrings.43>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.44>union_post-&gt;[political_union]</NamerFaction_FB_Clan.rulePack.rulesStrings.44>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.45>color(p=1.5)-&gt;[ColorBadass]</NamerFaction_FB_Clan.rulePack.rulesStrings.45>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.46>color-&gt;[Color]</NamerFaction_FB_Clan.rulePack.rulesStrings.46>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.47>thing-&gt;[Weapon]</NamerFaction_FB_Clan.rulePack.rulesStrings.47>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.48>thing-&gt;[AnimalBadass]</NamerFaction_FB_Clan.rulePack.rulesStrings.48>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.49>thing-&gt;[Bodypart]</NamerFaction_FB_Clan.rulePack.rulesStrings.49>
+  <NamerFaction_FB_Clan.rulePack.rulesStrings.50>thing-&gt;[NaturalObject]</NamerFaction_FB_Clan.rulePack.rulesStrings.50>
 </LanguageData>

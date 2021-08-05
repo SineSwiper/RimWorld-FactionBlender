@@ -10,7 +10,6 @@
   <FB_EnableMixedWanderers_Description>控制那些可能会加入你们的流浪者是否可能是其他种族。</FB_EnableMixedWanderers_Description>
   <FB_EnableMixedAncients_Title>混合种族古代人</FB_EnableMixedAncients_Title>
   <FB_EnableMixedAncients_Description>控制诸如 远古威胁 一类事件中的古代人是否包含多样化种族</FB_EnableMixedAncients_Description>
-
   <FB_FilterWeakerAnimalsRaids_Title>战斗势力最小值(动物)</FB_FilterWeakerAnimalsRaids_Title>
   <FB_FilterWeakerAnimalsRaids_Description>控制海盗袭击队中包含的动物的多样性，基于战斗势力的最小值。平民队伍会被设为最小战斗势力值的66%，而商队则为33%。</FB_FilterWeakerAnimalsRaids_Description>
   <FB_FilterSlowPawnsCaravans_Title>最小移动速度(商队人员)</FB_FilterSlowPawnsCaravans_Title>
@@ -21,6 +20,5 @@
   <FB_ExcludedFactionTypes_Description>逗点隔开的阵营 defNames 字符串。这个列表用于从 defaultFactionTypes 中过滤掉一些种族.</FB_ExcludedFactionTypes_Description>
   <FB_ExcludedRaces_Title>按种族排除小人</FB_ExcludedRaces_Title>
   <FB_ExcludedRaces_Description>一个用逗号分隔的字符串，装载种族名。这个列表用于过滤掉特定种族的个别小人。</FB_ExcludedRaces_Description>
-
-  <Filtered>过滤的</Filtered>
+  <Filtered>过滤</Filtered>
 </LanguageData>
