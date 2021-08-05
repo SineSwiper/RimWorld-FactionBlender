@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-
-  <FactionBlender_Pirate.label>混编海盗团</FactionBlender_Pirate.label>
+  <FactionBlender_Pirate.label>海盗团联盟</FactionBlender_Pirate.label>
   <FactionBlender_Pirate.description>多个种族联合起来，在同一威名下劫掠、肆虐。在与他们文明的邻居或其他海盗同行的竞争中也不落下风。他们会吸纳任何想加入的人，也会强掳、拐骗任何他们想要的人，以各种方式壮大自身的势力和多样性。他们经常带着凶猛的野兽，甚至是罕见的怪物和机械生物出现，用恐惧席卷他们的目标。</FactionBlender_Pirate.description>
   <FactionBlender_Pirate.pawnsPlural>海盗</FactionBlender_Pirate.pawnsPlural>
   <FactionBlender_Pirate.leaderTitle>首领</FactionBlender_Pirate.leaderTitle>
-
-  <FactionBlender_Civil.label>联合公民</FactionBlender_Civil.label>
+  <FactionBlender_Civil.label>公民联盟</FactionBlender_Civil.label>
   <FactionBlender_Civil.description>一个由外来者组成的文明阵营，不轮种族或物种，都联合在同一的旗帜下。一开始只是一个小镇，不断吸纳难民和流浪者，他们善于发掘和利用星球上不同种族各自的特征和优势，同心协力、因人制宜，很快便作为一个整体繁盛、安稳了起来。它们也拥有来自各地区各种族的学识，学会了驯服各种各类的动物，甚至是怪物和机械生物。</FactionBlender_Civil.description>
   <FactionBlender_Civil.pawnsPlural>外来者</FactionBlender_Civil.pawnsPlural>
   <FactionBlender_Civil.leaderTitle>主席-指挥官</FactionBlender_Civil.leaderTitle>
-
-
+  <FactionBlender_Clan.label>氏族联盟</FactionBlender_Clan.label>
+  <FactionBlender_Clan.description>一个松散的种族集合体，统一在一个氏族之下。与其他联盟一样，他们已经学会了训练各种不同大小的动物和机械人，但不同的是，他们的道德准则和意识形态比较松散。</FactionBlender_Clan.description>
+  <FactionBlender_Clan.pawnsPlural>氏族成员</FactionBlender_Clan.pawnsPlural>
+  <FactionBlender_Clan.leaderTitle>族长</FactionBlender_Clan.leaderTitle>
 </LanguageData>
