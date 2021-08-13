@@ -22,5 +22,5 @@
   <FB_ExcludedRaces_Title>按种族排除小人</FB_ExcludedRaces_Title>
   <FB_ExcludedRaces_Description>一个用逗号分隔的字符串，装载种族名。这个列表用于过滤掉特定种族的个别小人。</FB_ExcludedRaces_Description>
 
-  <Filtered>过滤的</Filtered>
+  <Filtered>过滤</Filtered>
 </LanguageData>

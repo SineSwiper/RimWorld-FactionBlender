@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <FB_AmalgamPirates.label>海盗团联盟</FB_AmalgamPirates.label>
+  <FB_AmalgamPirates.description>多个种族联合起来，在同一威名下劫掠、肆虐。在与他们文明的邻居或其他海盗同行的竞争中也不落下风。</FB_AmalgamPirates.description>
+  <FB_CivilCoalition.label>公民联盟</FB_CivilCoalition.label>
+  <FB_CivilCoalition.description>一个由外来者组成的文明阵营，不轮种族或物种，都联合在同一的旗帜下。</FB_CivilCoalition.description>
+  <FB_CoalatedClan.label>氏族联盟</FB_CoalatedClan.label>
+  <FB_CoalatedClan.description>一个松散的种族集合体，统一在一个氏族之下。</FB_CoalatedClan.description>
+</LanguageData>
