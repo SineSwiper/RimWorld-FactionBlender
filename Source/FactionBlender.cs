@@ -202,7 +202,8 @@ namespace FactionBlender {
 
                 // Better Infestation Queens: They tend to wander around, gathering resources, and ignoring the fight.
                 // Boats: Boats are not real pawns
-                { "ExcludedRaces", "BI_Queen, SPBoats_*" },
+                // TRoM Golems: Just do not function at all as an enemy, fills up with ticking exceptions
+                { "ExcludedRaces", "BI_Queen, SPBoats_*, TM_*Golem" },
             };
             var sPrevDefaults = new Dictionary<string, Dictionary<string, Version>> {
                 // This is used to change the defaults on mod upgrades.  Version used is the last version before the change.
@@ -212,8 +213,9 @@ namespace FactionBlender {
                     { sDefaults["ExcludedFactionTypes"], currentVer },
                 } },
                 { "ExcludedRaces", new Dictionary<string, Version> {
-                    { "",         new Version("1.1.5.0") },
-                    { "BI_Queen", new Version("1.3.1")  },
+                    { "",                    new Version("1.1.5.0") },
+                    { "BI_Queen",            new Version("1.3.1")  },
+                    { "BI_Queen, SPBoats_*", new Version("1.4.1")  },
                     { sDefaults["ExcludedRaces"], currentVer },
                 } },
             };

@@ -160,9 +160,20 @@ namespace FactionBlender {
             // XXX: Because we're setting the "temp" value directly on the SettingHandle, validation is only
             // used for colorizing the input box on badInput.
 
+            // XXX: This setting of global stuff and resetting it back is silly, but it's apparently the Unity way of doing things...
+            GUIStyle taStyle        = Text.CurTextAreaStyle;
+            bool oldWordWrap        = taStyle.wordWrap;
+            TextAnchor oldAlignment = taStyle.alignment;
+
+            taStyle.wordWrap  = true;
+            taStyle.alignment = TextAnchor.UpperLeft;
+
             // TODO: Use TextAreaScrollable.  This would also require a more permanent HandleControlInfo-like
             // object to hold the scrollbar data
             handle.StringValue = Widgets.TextArea(controlRect, handle.StringValue, false);
+
+            taStyle.wordWrap  = oldWordWrap;
+            taStyle.alignment = oldAlignment;
 
             // Trigger on each keypress
             var focused = GUI.GetNameOfFocusedControl() == controlName;
