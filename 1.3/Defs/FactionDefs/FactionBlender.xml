@@ -56,8 +56,13 @@
     <leaderTitle>boss</leaderTitle>
     <factionIconPath>World/FB_Pirate</factionIconPath>
     <colorSpectrum>
-      <li>(0.45, 0.05, 0.05)</li>
-      <li>(0.95, 0.25, 0.05)</li>
+        <li>(0.45, 0.00, 0.00)</li>
+        <li>(1.00, 0.00, 0.00)</li>
+        <li>(0.45, 0.10, 0.00)</li>
+        <li>(1.00, 0.25, 0.00)</li>
+        <li>(0.45, 0.00, 0.10)</li>
+        <li>(1.00, 0.00, 0.25)</li>
+        <li>(0.45, 0.00, 0.00)</li>
     </colorSpectrum>
     <permanentEnemy>true</permanentEnemy>
     <factionNameMaker>NamerFaction_FB_Pirate</factionNameMaker>
@@ -148,8 +153,13 @@
     <label>civil coalition</label>
     <description>A civil faction of outlanders who have united under a common banner, regardless of race or species.\n\nWhat started as a small town grew into a nation as they took in wanderers and refugees from other cities. They quickly realized that the different peoples of the planet have their own strengths, which increased the productivity and security of their nation as a whole.\n\nThey've also learned how to tame many types of animals, large and small, and even hacked some of the mechanoids that have dared to attack them.</description>
     <colorSpectrum>
-        <li>(0.00, 0.65, 0.65)</li>
-        <li>(0.45, 1.00, 1.00)</li>
+        <li>(0.00, 0.35, 0.35)</li>
+        <li>(0.75, 1.00, 1.00)</li>
+        <li>(0.00, 0.20, 0.35)</li>
+        <li>(0.75, 0.85, 1.00)</li>
+        <li>(0.00, 0.35, 0.20)</li>
+        <li>(0.75, 1.00, 0.85)</li>
+        <li>(0.00, 0.35, 0.35)</li>
     </colorSpectrum>
     <pawnSingular>civilian</pawnSingular>
     <pawnsPlural>civilians</pawnsPlural>
@@ -366,6 +376,11 @@
     <colorSpectrum>
         <li>(0.00, 0.00, 0.65)</li>
         <li>(0.45, 0.45, 1.00)</li>
+        <li>(0.00, 0.20, 0.65)</li>
+        <li>(0.45, 0.60, 1.00)</li>
+        <li>(0.20, 0.00, 0.65)</li>
+        <li>(0.60, 0.45, 1.00)</li>
+        <li>(0.00, 0.00, 0.65)</li>
     </colorSpectrum>
     <pawnSingular>clansmember</pawnSingular>
     <pawnsPlural>clansmembers</pawnsPlural>
