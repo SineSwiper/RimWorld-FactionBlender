@@ -112,150 +112,158 @@ namespace FactionBlender {
 
             // Loop through each PawnKindDef
             foreach (PawnKindDef pawn in DefDatabase<PawnKindDef>.AllDefs.Where(pawn => FB.FilterPawnKindDef(pawn, "global"))) {
-                RaceProperties race = pawn.RaceProps;
+                try {
+                    RaceProperties race = pawn.RaceProps;
 
-                // Define weapon-like traits
-                bool isRanged = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.Any(t =>
-                    !(t.Contains("Melee") || t == "None") &&
-                    Regex.IsMatch(t, "Gun|Ranged|Pistol|Rifle|Sniper|Carbine|Revolver|Bowman|Grenade|Artillery|Assault|MageAttack|DefensePylon|GlitterTech|^OC|Federator|Ogrenaut|Hellmaker")
-                );
-                // Animals can shoot projectiles, too
-                if (race.Animal && pawn.race.Verbs != null && pawn.race.Verbs.Any(v =>
-                    v.burstShotCount >= 1 && v.range >= 10 && v.commonality >= 0.7 && v.defaultProjectile != null
-                )) isRanged = true;
-
-                bool isSniper = false;
-                if (isRanged) {
-                    // Using All here to be more strict about sniper weapon usage
-                    isSniper = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.All(t =>
+                    // Define weapon-like traits
+                    bool isRanged = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.Any(t =>
                         !(t.Contains("Melee") || t == "None") &&
-                        Regex.IsMatch(t, "Sniper|Ranged(Strong|Mighty|Heavy|Chief)|ElderThingGun")
+                        Regex.IsMatch(t, "Gun|Ranged|Pistol|Rifle|Sniper|Carbine|Revolver|Bowman|Grenade|Artillery|Assault|MageAttack|DefensePylon|GlitterTech|^OC|Federator|Ogrenaut|Hellmaker")
                     );
+                    // Animals can shoot projectiles, too
                     if (race.Animal && pawn.race.Verbs != null && pawn.race.Verbs.Any(v =>
-                        v.burstShotCount >= 1 && v.range >= 40 && v.commonality >= 0.7 && v.defaultProjectile != null
-                    )) isSniper = true;
-                }
+                        v.burstShotCount >= 1 && v.range >= 10 && v.commonality >= 0.7 && v.defaultProjectile != null
+                    )) isRanged = true;
 
-                bool isHeavyWeapons = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.Any(t =>
-                    Regex.IsMatch(t, "Grenade|Flame|Demolition|Destructive|Breach|GunHeavy|Turret|Pylon|Artillery|GlitterTech|OC(Heavy|Tank)|Bomb|Sentinel|FedHeavy")
-                );
-                // Include animals with BFGs and death explodey types
-                if (race.Animal) {
-                    if (isRanged && pawn.combatPower >= 500) isHeavyWeapons = true;
-                    if (
-                        race.deathActionWorkerClass != null &&
-                        Regex.IsMatch(race.deathActionWorkerClass.Name, "E?xplosion|Bomb")
-                    ) isHeavyWeapons = true;
-                }
-
-                // Work site pawns booleans //
-
-                bool isMiner = pawn.isGoodBreacher || pawn.requiredWorkTags.HasFlag(WorkTags.Mining) || pawn.race.GetStatValueAbstract(StatDefOf.MiningSpeed) >= 1.1f;
-                if (race.ToolUser) {
-                    if (pawn.weaponTags       != null && pawn.weaponTags      .Any(t  => Regex.IsMatch(t, "Miner|Digger|Drill"))) isMiner = true;
-                    if (pawn.techHediffsTags  != null && pawn.techHediffsTags .Any(t  => Regex.IsMatch(t, "Miner|Digger|Drill"))) isMiner = true;
-                }
-                // Include animals with "digging" capabilities (Groundrunner *hint hint*)
-                if (race.Animal) {
-                    if (Regex.IsMatch(race.thinkTreeConstant.defName, "Miner|Digger|Driller")) isMiner = true;
-                }
-
-                bool isHunter = isSniper && !isHeavyWeapons;
-                if (pawn.requiredWorkTags.HasFlag(WorkTags.Hunting)) isHunter = true;
-                if (race.Animal && race.predator)                    isHunter = true;
-
-                bool isPlanter = pawn.requiredWorkTags.HasFlag(WorkTags.PlantWork) || pawn.race.GetStatValueAbstract(StatDefOf.PlantWorkSpeed) >= 1.1f || pawn.race.GetStatValueAbstract(StatDefOf.PlantHarvestYield) >= 1.1f;
-                if (race.ToolUser) {
-                    if (pawn.weaponTags       != null && pawn.weaponTags      .Any(t  => Regex.IsMatch(t, "Plant|Logger|Harvest|Field"))) isPlanter = true;
-                    if (pawn.techHediffsTags  != null && pawn.techHediffsTags .Any(t  => Regex.IsMatch(t, "Plant|Logger|Harvest|Field"))) isPlanter = true;
-                }
-
-                /*
-                 * DEBUG
-                 *
-                string msg = pawn.defName;
-                msg += " --> ";
-                if (isRanged)        msg += "Ranged, ";
-                if (!isRanged)       msg += "Melee, ";
-                if (isSniper)        msg += "Sniper, ";
-                if (isHeavyWeapons)  msg += "Heavy Weapons, ";
-                if (isMiner)         msg += "Miner, ";
-                if (isHunter)        msg += "Hunter, ";
-                if (isPlanter)       msg += "Planter, ";
-
-                if (pawn.defName.StartsWith(...)|| pawn.defName.Contains(...)) FB.ModLogger.Message(msg);
-                */
-
-                foreach (FactionDef FBfac in FB_Factions) {
-                    foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {
-                        string makerName = maker.kindDef.defName;
-                        bool isPirate = FBfac.defName == "FactionBlender_Pirate";
-                        bool isCombat = isPirate || makerName == "Combat";
-
-                        // Allow "combat ready" animals
-                        int origCP         = (int)((SettingHandle<float>)FB.config["FilterWeakerAnimalsRaids"]).Value;
-                        int minCombatPower =
-                            isPirate ? origCP :                                     // 100%
-                            isCombat ? (int)System.Math.Round( origCP / 3f * 2f ) : // 66%
-                                       (int)System.Math.Round( origCP / 3f )        // 33%
-                        ;
-
-                        // Create the pawn option
-                        var newOpt = new PawnGenOption();
-                        newOpt.kind = pawn;
-                        newOpt.selectionWeight =
-                            race.Animal ? 1 :
-                            race.Humanlike ? 10 : 2
-                        ;
-
-                        if (isCombat) {
-                            if (!FB.FilterPawnKindDef(pawn, "combat", minCombatPower)) continue;
-
-                            // XXX: Unfortunately, there are no names for these pawnGroupMakers, so we have to use commonality
-                            // to identify each type.
-                            
-                            // Additional filters for specialized categories
-                            bool addIt = true;
-                            if      (maker.commonality == 65) addIt = isRanged;
-                            else if (maker.commonality == 60) addIt = !isRanged;
-                            else if (maker.commonality == 40) addIt = isSniper;
-                            else if (maker.commonality == 25) addIt = isHeavyWeapons;
-                            else if (maker.commonality == 10) newOpt.selectionWeight = race.Humanlike ? 1 : 10;
-
-                            // Add it
-                            if (addIt) maker.options.Add(newOpt);
-                        }
-                        else if (makerName == "Trader") {
-                            if (!FB.FilterPawnKindDef(pawn, "trade")) continue;
-                            
-                            // Trader group makers split up their pawns into three buckets.  The pawn will go into one of those
-                            // three, or none of them.
-                            if (pawn.trader) {
-                                maker.traders.Add(newOpt);
-                            }
-                            else if (race.packAnimal) {
-                                maker.carriers.Add(newOpt);
-                            }
-                            else if (FB.FilterPawnKindDef(pawn, "combat", minCombatPower)) {
-                                maker.guards.Add(newOpt);
-                            }
-                        }
-                        // Work Site raids
-                        else if (makerName == "Miners") {
-                            if (isMiner)   maker.options.Add(newOpt);
-                        }
-                        else if (makerName == "Hunters") {
-                            if (isHunter)  maker.options.Add(newOpt);
-                        }
-                        else if (makerName == "Loggers" || makerName == "Farmers") {
-                            if (isPlanter) maker.options.Add(newOpt);
-                        }
-                        else {
-                            // Peaceful or Settlement: Accept almost anybody
-                            maker.options.Add(newOpt);
-                        }
-
+                    bool isSniper = false;
+                    if (isRanged) {
+                        // Using All here to be more strict about sniper weapon usage
+                        isSniper = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.All(t =>
+                            !(t.Contains("Melee") || t == "None") &&
+                            Regex.IsMatch(t, "Sniper|Ranged(Strong|Mighty|Heavy|Chief)|ElderThingGun")
+                        );
+                        if (race.Animal && pawn.race.Verbs != null && pawn.race.Verbs.Any(v =>
+                            v.burstShotCount >= 1 && v.range >= 40 && v.commonality >= 0.7 && v.defaultProjectile != null
+                        )) isSniper = true;
                     }
+
+                    bool isHeavyWeapons = race.ToolUser && pawn.weaponTags != null && pawn.weaponTags.Any(t =>
+                        Regex.IsMatch(t, "Grenade|Flame|Demolition|Destructive|Breach|GunHeavy|Turret|Pylon|Artillery|GlitterTech|OC(Heavy|Tank)|Bomb|Sentinel|FedHeavy")
+                    );
+                    // Include animals with BFGs and death explodey types
+                    if (race.Animal) {
+                        if (isRanged && pawn.combatPower >= 500) isHeavyWeapons = true;
+                        if (
+                            race.deathActionWorkerClass != null &&
+                            Regex.IsMatch(race.deathActionWorkerClass.Name, "E?xplosion|Bomb")
+                        ) isHeavyWeapons = true;
+                    }
+
+                    // Work site pawns booleans //
+
+                    bool isMiner = pawn.isGoodBreacher || pawn.requiredWorkTags.HasFlag(WorkTags.Mining) || pawn.race.GetStatValueAbstract(StatDefOf.MiningSpeed) >= 1.1f;
+                    if (race.ToolUser) {
+                        if (pawn.weaponTags       != null && pawn.weaponTags      .Any(t  => Regex.IsMatch(t, "Miner|Digger|Drill"))) isMiner = true;
+                        if (pawn.techHediffsTags  != null && pawn.techHediffsTags .Any(t  => Regex.IsMatch(t, "Miner|Digger|Drill"))) isMiner = true;
+                    }
+                    // Include animals with "digging" capabilities (Groundrunner *hint hint*)
+                    if (race.Animal) {
+                        if (race.thinkTreeConstant != null && Regex.IsMatch(race.thinkTreeConstant.defName, "Miner|Digger|Driller")) isMiner = true;
+                    }
+
+                    bool isHunter = isSniper && !isHeavyWeapons;
+                    if (pawn.requiredWorkTags.HasFlag(WorkTags.Hunting)) isHunter = true;
+                    if (race.Animal && race.predator)                    isHunter = true;
+
+                    bool isPlanter = pawn.requiredWorkTags.HasFlag(WorkTags.PlantWork) || pawn.race.GetStatValueAbstract(StatDefOf.PlantWorkSpeed) >= 1.1f || pawn.race.GetStatValueAbstract(StatDefOf.PlantHarvestYield) >= 1.1f;
+                    if (race.ToolUser) {
+                        if (pawn.weaponTags       != null && pawn.weaponTags      .Any(t  => Regex.IsMatch(t, "Plant|Logger|Harvest|Field"))) isPlanter = true;
+                        if (pawn.techHediffsTags  != null && pawn.techHediffsTags .Any(t  => Regex.IsMatch(t, "Plant|Logger|Harvest|Field"))) isPlanter = true;
+                    }
+
+                    /*
+                     * DEBUG
+                     *
+                    string msg = pawn.defName;
+                    msg += " --> ";
+                    if (isRanged)        msg += "Ranged, ";
+                    if (!isRanged)       msg += "Melee, ";
+                    if (isSniper)        msg += "Sniper, ";
+                    if (isHeavyWeapons)  msg += "Heavy Weapons, ";
+                    if (isMiner)         msg += "Miner, ";
+                    if (isHunter)        msg += "Hunter, ";
+                    if (isPlanter)       msg += "Planter, ";
+
+                    if (pawn.defName.StartsWith(...)|| pawn.defName.Contains(...)) FB.ModLogger.Message(msg);
+                    */
+
+                    foreach (FactionDef FBfac in FB_Factions) {
+                        foreach (PawnGroupMaker maker in FBfac.pawnGroupMakers) {
+                            string makerName = maker.kindDef.defName;
+                            bool isPirate = FBfac.defName == "FactionBlender_Pirate";
+                            bool isCombat = isPirate || makerName == "Combat";
+
+                            // Allow "combat ready" animals
+                            int origCP         = (int)((SettingHandle<float>)FB.config["FilterWeakerAnimalsRaids"]).Value;
+                            int minCombatPower =
+                                isPirate ? origCP :                                     // 100%
+                                isCombat ? (int)System.Math.Round( origCP / 3f * 2f ) : // 66%
+                                           (int)System.Math.Round( origCP / 3f )        // 33%
+                            ;
+
+                            // Create the pawn option
+                            var newOpt = new PawnGenOption();
+                            newOpt.kind = pawn;
+                            newOpt.selectionWeight =
+                                race.Animal ? 1 :
+                                race.Humanlike ? 10 : 2
+                            ;
+
+                            if (isCombat) {
+                                if (!FB.FilterPawnKindDef(pawn, "combat", minCombatPower)) continue;
+
+                                // XXX: Unfortunately, there are no names for these pawnGroupMakers, so we have to use commonality
+                                // to identify each type.
+                            
+                                // Additional filters for specialized categories
+                                bool addIt = true;
+                                if      (maker.commonality == 65) addIt = isRanged;
+                                else if (maker.commonality == 60) addIt = !isRanged;
+                                else if (maker.commonality == 40) addIt = isSniper;
+                                else if (maker.commonality == 25) addIt = isHeavyWeapons;
+                                else if (maker.commonality == 10) newOpt.selectionWeight = race.Humanlike ? 1 : 10;
+
+                                // Add it
+                                if (addIt) maker.options.Add(newOpt);
+                            }
+                            else if (makerName == "Trader") {
+                                if (!FB.FilterPawnKindDef(pawn, "trade")) continue;
+                            
+                                // Trader group makers split up their pawns into three buckets.  The pawn will go into one of those
+                                // three, or none of them.
+                                if (pawn.trader) {
+                                    maker.traders.Add(newOpt);
+                                }
+                                else if (race.packAnimal) {
+                                    maker.carriers.Add(newOpt);
+                                }
+                                else if (FB.FilterPawnKindDef(pawn, "combat", minCombatPower)) {
+                                    maker.guards.Add(newOpt);
+                                }
+                            }
+                            // Work Site raids
+                            else if (makerName == "Miners") {
+                                if (isMiner)   maker.options.Add(newOpt);
+                            }
+                            else if (makerName == "Hunters") {
+                                if (isHunter)  maker.options.Add(newOpt);
+                            }
+                            else if (makerName == "Loggers" || makerName == "Farmers") {
+                                if (isPlanter) maker.options.Add(newOpt);
+                            }
+                            else {
+                                // Peaceful or Settlement: Accept almost anybody
+                                maker.options.Add(newOpt);
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception ex) {
+                    throw new Exception(
+                        string.Format("Triggered exception while injecting a {0} PawnKindDef from race {1}", pawn.defName, pawn.race?.defName),
+                        ex
+                    );
                 }
             }
         }

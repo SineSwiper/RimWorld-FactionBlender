@@ -339,53 +339,62 @@ namespace FactionBlender {
             if (pawn.defName.StartsWith(...)|| pawn.defName.Contains(...)) Logger.Message(msg);
             */
 
-            // Global filters //
+            // Try to collect more detailed information for errors (which are usually because of weird conditions from the def)
+            try {
+                // Global filters //
 
-            /* True Story: Sarg Bjornson (Genetic Rim author) added Archotech Centipedes and somebody ended up
-             * fighting one in a FB raid the same day.  Amusing, but, in @Extinction's words, "a fight of
-             * apocalyptic proportions".
-             */
-            if (pawn.combatPower > ((SettingHandle<float>)config["PawnKindDifficultyLevel"]).Value)
-                return watchSetting == "PawnKindDifficultyLevel" ? nil : false;
+                /* True Story: Sarg Bjornson (Genetic Rim author) added Archotech Centipedes and somebody ended up
+                 * fighting one in a FB raid the same day.  Amusing, but, in @Extinction's words, "a fight of
+                 * apocalyptic proportions".
+                 */
+                if (pawn.combatPower > ((SettingHandle<float>)config["PawnKindDifficultyLevel"]).Value)
+                    return watchSetting == "PawnKindDifficultyLevel" ? nil : false;
 
-            // Don't include pawns with zero or negative combatPower; they are probably special enough to cause
-            // problems.
-            if (pawn.combatPower <= 0) return false;
+                // Don't include pawns with zero or negative combatPower; they are probably special enough to cause
+                // problems.
+                if (pawn.combatPower <= 0) return false;
 
-            // Filter by defaultFactionType
-            if (pawn.defaultFactionType != null) {
-                foreach (Regex factionDefNameRgx in excludedFactionTypesList) {
-                    if (factionDefNameRgx.IsMatch(pawn.defaultFactionType.defName))
-                        return watchSetting == "ExcludedFactionTypes" ? nil : false;
+                // Filter by defaultFactionType
+                if (pawn.defaultFactionType != null) {
+                    foreach (Regex factionDefNameRgx in excludedFactionTypesList) {
+                        if (factionDefNameRgx.IsMatch(pawn.defaultFactionType.defName))
+                            return watchSetting == "ExcludedFactionTypes" ? nil : false;
+                    }
+                }
+
+                // Filter by race defName
+                if (pawn.race.defName != null) {
+                    foreach (Regex raceDefNameRgx in excludedRacesList) {
+                        if (raceDefNameRgx.IsMatch(pawn.race.defName))
+                            return watchSetting == "ExcludedRaces" ? nil : false;
+                    }
+                }
+
+                // Combat filters //
+                if (filterType == "combat") {
+                    // Gotta fight if you're in a combat raid
+                    if (!pawn.isFighter && !race.predator) return false;
+
+                    // If it's an animal, make sure Vegeta agrees with the power level
+                    if (((SettingHandle<float>)config["FilterWeakerAnimalsRaids"]).Value > 0) {
+                        if (race.Animal && pawn.combatPower < minCombatPower)
+                            return watchSetting == "FilterWeakerAnimalsRaids" ? nil : false;
+                    }
+                }
+                // Trade filters //
+                else if (filterType == "trade") {
+                    // Enforce a minimum speed.  Trader pawns shouldn't get left too far behind, especially pack animals.
+                    if ((pawn.trader || race.packAnimal || FilterPawnKindDef(pawn, "combat", minCombatPower)) &&
+                        pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed) < ((SettingHandle<float>)config["FilterSlowPawnsCaravans"]).Value
+                    )
+                        return watchSetting == "FilterSlowPawnsCaravans" ? nil : false;
                 }
             }
-
-            // Filter by race defName
-            if (pawn.race.defName != null) {
-                foreach (Regex raceDefNameRgx in excludedRacesList) {
-                    if (raceDefNameRgx.IsMatch(pawn.race.defName))
-                        return watchSetting == "ExcludedRaces" ? nil : false;
-                }
-            }
-
-            // Combat filters //
-            if (filterType == "combat") {
-                // Gotta fight if you're in a combat raid
-                if (!pawn.isFighter && !race.predator) return false;
-
-                // If it's an animal, make sure Vegeta agrees with the power level
-                if (((SettingHandle<float>)config["FilterWeakerAnimalsRaids"]).Value > 0) {
-                    if (race.Animal && pawn.combatPower < minCombatPower)
-                        return watchSetting == "FilterWeakerAnimalsRaids" ? nil : false;
-                }
-            }
-            // Trade filters //
-            else if (filterType == "trade") {
-                // Enforce a minimum speed.  Trader pawns shouldn't get left too far behind, especially pack animals.
-                if ((pawn.trader || race.packAnimal || FilterPawnKindDef(pawn, "combat", minCombatPower)) &&
-                    pawn.race.GetStatValueAbstract(StatDefOf.MoveSpeed) < ((SettingHandle<float>)config["FilterSlowPawnsCaravans"]).Value
-                )
-                    return watchSetting == "FilterSlowPawnsCaravans" ? nil : false;
+            catch (Exception ex) {
+                throw new Exception(
+                    string.Format("Triggered exception while filtering for a {0} PawnKindDef from race {1}", pawn.defName, pawn.race?.defName),
+                    ex
+                );
             }
 
             return true;
