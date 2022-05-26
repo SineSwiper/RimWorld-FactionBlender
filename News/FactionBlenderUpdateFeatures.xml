@@ -6,6 +6,20 @@
 		<linkUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=1734490820</linkUrl>
 	</HugsLib.UpdateFeatureDef>
 
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
+		<defName>FactionBlender_1_4_2</defName>
+		<assemblyVersion>1.4.2</assemblyVersion>
+		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Excluded memes that don't make sense for FB factions, like Xenophobia.  This also includes support for Alpha Memes and Vanilla Memes Expanded.
+- Added TRoM's Golems to default blacklist
+- Updates to the Chinese translation, courtesy of Juijote
+
+&lt;b&gt;Tweaks:&lt;/b&gt;
+- Added PawnKindDef identification for certain exceptions
+- Expanded the color range used in faction icons
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
     <HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
         <defName>FactionBlender_1_4_1</defName>
         <assemblyVersion>1.4.1</assemblyVersion>
