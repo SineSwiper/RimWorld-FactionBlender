@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using HugsLib;
 using HugsLib.Settings;
 using Verse;
+using static Verse.DefInjectionPackage;
 
 namespace FactionBlender {
     [StaticConstructorOnStartup]
@@ -66,14 +67,19 @@ namespace FactionBlender {
             FB_Factions.RemoveAll(x => true);
             FB_Factions.Add( FactionDef.Named("FactionBlender_Pirate") );
             FB_Factions.Add( FactionDef.Named("FactionBlender_Civil")  );
-            if (ModLister.CheckIdeology("Faction Blender's coalated clan faction")) FB_Factions.Add( FactionDef.Named("FactionBlender_Clan") );
+            if (ModsConfig.IdeologyActive) FB_Factions.Add( FactionDef.Named("FactionBlender_Clan") );
 
             ProcessSettings();
 
             DefInjector.InjectMiscToFactions(FB_Factions);
 
-            Logger.Message("Injecting pawn groups to our factions");
             FillFilterLists();
+            if (ModsConfig.BiotechActive) {
+                Logger.Message("Injecting xenotypes to our factions");
+                DefInjector.InjectXenotypeDefsToFactions(FB_Factions);
+            }
+
+            Logger.Message("Injecting pawn groups to our factions");
             DefInjector.InjectPawnKindDefsToFactions(FB_Factions);
 
             if (hasAlienRace) {
@@ -227,8 +233,8 @@ namespace FactionBlender {
 
                 var setting = (SettingHandle<string>)config[sName];
                 setting.DisplayOrder = order;
-                if (sName == "ExcludedFactionTypes") setting.OnValueChanged = x => { FillFilterLists(x);     lastSettingChanged = sName; };
-                else                                 setting.OnValueChanged = x => { FillFilterLists("", x); lastSettingChanged = sName; };
+                if (sName == "ExcludedFactionTypes") setting.ValueChanged += sh => { FillFilterLists(sh.StringValue);     lastSettingChanged = sName; };
+                else                                 setting.ValueChanged += sh => { FillFilterLists("", sh.StringValue); lastSettingChanged = sName; };
                 order += 2;
 
                 setting.CustomDrawer = rect => DrawUtility.CustomDrawer_InputTextbox(rect, setting);

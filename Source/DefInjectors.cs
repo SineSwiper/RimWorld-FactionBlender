@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using Verse;
 using HugsLib.Settings;
 using UnityEngine;
+using HarmonyLib;
+using System.Reflection;
 
 namespace FactionBlender {
     public class DefInjectors {
@@ -95,6 +97,35 @@ namespace FactionBlender {
                 FB_Culture.styleItemTags.AddRange(
                     allStyleTags.Select( st => new StyleItemTagWeighted(tag: st, baseWeight: 1, weightFactor: 1) )
                 );
+            }
+        }
+
+        public void InjectXenotypeDefsToFactions(List<FactionDef> FB_Factions) {
+            if (!ModsConfig.BiotechActive) return;
+
+            foreach (FactionDef FBfac in FB_Factions) {
+                bool isPirate = FBfac.defName == "FactionBlender_Pirate";
+
+                List<XenotypeChance> allXenotypes =
+                    DefDatabase<XenotypeDef>.AllDefs.
+                    // Pirates won't accept non-violent xenotypes
+                    Where ( xtd => xtd.canGenerateAsCombatant || !isPirate ).
+                    // Start with an inverse of combatPowerFactor, and equalize it to a 100% total for all of them.
+                    // Baseliners still get a small majority with double the base rate.
+                    Select( xtd => new XenotypeChance(xtd,
+                        xtd == XenotypeDefOf.Baseliner ?  2f :
+                        xtd.combatPowerFactor == 0     ? 10f :
+                        1f / xtd.combatPowerFactor
+                    ) ).
+                    ToList()
+                ;
+
+                float chanceTotal = allXenotypes.Sum( xtc => xtc.chance );
+                allXenotypes.ForEach( xtc => xtc.chance /= chanceTotal );
+
+                // [Reflection] FBfac.xenotypeSet.xenotypeChances = allXenotypes
+                FieldInfo xenotypeChangesField = AccessTools.Field(typeof(XenotypeSet), "xenotypeChances");
+                xenotypeChangesField.SetValue(FBfac.xenotypeSet, allXenotypes);
             }
         }
 
