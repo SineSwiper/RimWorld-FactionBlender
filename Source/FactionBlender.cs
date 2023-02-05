@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using HugsLib;
 using HugsLib.Settings;
 using Verse;
-using static Verse.DefInjectionPackage;
 
 namespace FactionBlender {
     [StaticConstructorOnStartup]

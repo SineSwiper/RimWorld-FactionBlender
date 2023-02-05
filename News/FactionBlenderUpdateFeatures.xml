@@ -7,6 +7,15 @@
 	</HugsLib.UpdateFeatureDef>
 
 	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
+		<defName>FactionBlender_1_4_3</defName>
+		<assemblyVersion>1.4.3</assemblyVersion>
+		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Works with RimWorld v1.4!
+- Added xenotypes injectors to FB factions
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_4_2</defName>
 		<assemblyVersion>1.4.2</assemblyVersion>
 		<content>&lt;b&gt;Fixes:&lt;/b&gt;
