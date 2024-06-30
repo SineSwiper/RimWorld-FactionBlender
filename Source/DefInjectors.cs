@@ -175,8 +175,9 @@ namespace FactionBlender {
                     if (race.Animal) {
                         if (isRanged && pawn.combatPower >= 500) isHeavyWeapons = true;
                         if (
-                            race.deathActionWorkerClass != null &&
-                            Regex.IsMatch(race.deathActionWorkerClass.Name, "E?xplosion|Bomb")
+                            race.DeathActionWorker is DeathActionWorker deathAction && (
+                                deathAction.DangerousInMelee || Regex.IsMatch(deathAction.GetType().Name, "E?xplosion|Bomb")
+                            )
                         ) isHeavyWeapons = true;
                     }
 
@@ -354,8 +355,10 @@ namespace FactionBlender {
 
             // Before we start, figure out if there are any PKDs that seem outnumbered, based on the number of
             // PKDs tied to that race.  We'll use that to balance the kindDef string counts.
-            List<PawnKindDef> allFilteredPKDs = DefDatabase<PawnKindDef>.AllDefs.Where(
-                pawn => pawn.RaceProps.Humanlike && Base.Instance.FilterPawnKindDef(pawn, "global")
+            List<PawnKindDef> allFilteredPKDs = DefDatabase<PawnKindDef>.AllDefs.Where( pkd =>
+                pkd.RaceProps.Humanlike && Base.Instance.FilterPawnKindDef(pkd, "global") &&
+                // Creep joiners have their own events, and not really compatible as starting colonists
+                pkd is not CreepJoinerFormKindDef
             ).ToList();
 
             var raceCounts = new Dictionary<string, int>();

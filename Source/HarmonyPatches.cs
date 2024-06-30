@@ -397,56 +397,62 @@ namespace FactionBlender {
             // Short-circuit
             if (pawn == null || pawn.Faction == null || pawn.kindDef.apparelRequired == null) return;
 
-            // [Reflection prep] PawnApparelGenerator.CanUseStuff(pawn, pa);
-            MethodInfo CanUseStuffMethod = AccessTools.Method(typeof(PawnApparelGenerator), "CanUseStuff");
+            // [Reflection prep] PawnApparelGenerator.ApparelRequirementCanUseStuff(specificApparelRequirements, pair);
+            MethodInfo ApparelRequirementCanUseStuffMethod = AccessTools.Method(typeof(PawnApparelGenerator), "ApparelRequirementCanUseStuff");
 
-            List<ThingDef> reqApparel = pawn.kindDef.apparelRequired;
-            for (int i = 0; i < reqApparel.Count; i++) {
-                IEnumerable<ThingStuffPair> pairs = ___allApparelPairs.Where(
-                    pa => pa.thing == reqApparel[i]
-                );
+            ThingFilter factionStuffFilter = pawn.Faction.def.apparelStuffFilter;
+            string      factionName        = pawn.Faction.def.defName;
+
+            // First, handle any stuff/apparel conflicts
+            List<SpecificApparelRequirement> specificApparelRequirements = pawn.kindDef.specificApparelRequirements ?? new();
+            foreach (ThingDef reqApparel in pawn.kindDef.apparelRequired ?? new()) {
+                List<ThingStuffPair> pairs = ___allApparelPairs.Where(
+                    pair => pair.thing == reqApparel && pair.Commonality > 0
+                ).ToList();
+                if (pairs.Count == 0) continue;
+                if (pairs.Any( pair => pawn.Faction.def.CanUseStuffForApparel(pair.stuff) )) continue;
 
                 // The original method is going to have a bad time, so auto-add an appropriate filter to fix it
-                if ( !pairs.Any( pa => (bool)CanUseStuffMethod.Invoke(null, new object[] { pawn, pa }) && pa.Commonality > 0 ) ) {
-                    string logMsg =
-                        "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
-                        reqApparel[i] + " while generating apparel for " + pawn.kindDef.defName + "; "
+                string logMsg =
+                    "Found an apparelStuffFilter/stuffCategories conflict for required apparel " +
+                    reqApparel + " while generating apparel for " + pawn.kindDef.defName + "; "
+                ;
+
+                if (factionStuffFilter != null) {
+                    List<StuffCategoryDef> stuffCategories = reqApparel.stuffCategories;
+                    ThingStuffPair examplePair =
+                        pairs.
+                        Where( pair => !pawn.Faction.def.CanUseStuffForApparel(pair.stuff) ).
+                        RandomElementByWeight(pa => pa.Commonality)
                     ;
 
-                    ThingFilter factionFilter = pawn.Faction.def.apparelStuffFilter;
-                    string      factionName   = pawn.Faction.def.defName;
-                    if (factionFilter != null) {
-                        List<StuffCategoryDef> stuffCategories = reqApparel[i].stuffCategories;
-                        ThingStuffPair examplePair = pairs.RandomElementByWeight(pa => pa.Commonality);
+                    if (stuffCategories == null && examplePair != null && examplePair.stuff != null) stuffCategories = examplePair.stuff.stuffProps.categories;
 
-                        if (stuffCategories == null && examplePair != null && examplePair.stuff != null) stuffCategories = examplePair.stuff.stuffProps.categories;
+                    if (stuffCategories != null) {
+                        logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + string.Join(", ", stuffCategories);
 
-                        if (stuffCategories != null) {
-                            logMsg = logMsg + "adding extra stuffCategories to " + factionName + "'s apparelStuffFilter: " + string.Join(", ", stuffCategories);
-
-                            foreach (StuffCategoryDef sc in stuffCategories) {
-                                factionFilter.SetAllow(sc, true);
-                            }
-                        }
-                        else if (examplePair.stuff != null) {
-                            logMsg = logMsg + "adding " + examplePair.stuff + " to " + factionName + "'s apparelStuffFilter";
-                            factionFilter.SetAllow(examplePair.stuff, true);
-                        }
-                        else if (examplePair != null) {
-                            logMsg = logMsg + "adding " + examplePair.thing + " to " + factionName + "'s apparelStuffFilter";
-                            factionFilter.SetAllow(examplePair.thing, true);
-                        }
-                        else {  // probably pendatic, but ¯\_(ツ)_/¯
-                            logMsg = logMsg + "adding " + reqApparel[i] + " to " + factionName + "'s apparelStuffFilter";
-                            factionFilter.SetAllow(reqApparel[i], true);
+                        foreach (StuffCategoryDef sc in stuffCategories) {
+                            factionStuffFilter.SetAllow(sc, true);
                         }
                     }
-                    else {
-                        logMsg = logMsg + "cannot fix since there is no apparelStuffFilter for " + factionName;
+                    else if (examplePair.stuff != null) {
+                        logMsg = logMsg + "adding " + examplePair.stuff + " to " + factionName + "'s apparelStuffFilter";
+                        factionStuffFilter.SetAllow(examplePair.stuff, true);
                     }
-
-                    Base.Instance.ModLogger.Warning(logMsg);
+                    else if (examplePair != null) {
+                        logMsg = logMsg + "adding " + examplePair.thing + " to " + factionName + "'s apparelStuffFilter";
+                        factionStuffFilter.SetAllow(examplePair.thing, true);
+                    }
+                    else {  // probably pendatic, but ¯\_(ツ)_/¯
+                        logMsg = logMsg + "adding " + reqApparel + " to " + factionName + "'s apparelStuffFilter";
+                        factionStuffFilter.SetAllow(reqApparel, true);
+                    }
                 }
+                else {
+                    logMsg = logMsg + "cannot fix since there is no apparelStuffFilter for " + factionName;
+                }
+
+                Base.Instance.ModLogger.Warning(logMsg);
             }
 
             return;
@@ -577,11 +583,16 @@ namespace FactionBlender {
                 if (!(SettingHandle<bool>)Base.Config["EnableMixedAncients"]) return true;
 
                 PawnKindDef pawnKind = DefDatabase<PawnKindDef>.AllDefsListForReading.Where(p =>
-                    p.isFighter && !p.RaceProps.Humanlike &&
-                    p.combatPower >= 20 && p.combatPower <= 240 &&
+                    p.isFighter && !p.RaceProps.Humanlike &&         // can't be human, but needs to fight
+                    p.combatPower >= 20 && p.combatPower <= 240 &&   // not too challenging, so that we have numerous entities
+                    p.RaceProps.baseBodySize <= 0.6 &&               // must be small
                     (
                         // Other kinds of insects
-                        p.RaceProps.FleshType == FleshTypeDefOf.Insectoid ||
+                        p.RaceProps.FleshType == FleshTypeDefOf.Insectoid  || 
+                        // Or Anomoly fleshbeasts
+                        p.RaceProps.FleshType == FleshTypeDefOf.Fleshbeast ||
+                        // Probably worthy of a fight...
+                        p.RaceProps.alwaysViolent ||
                         // Something something creepy crawlies
                         Regex.IsMatch(
                             p.RaceProps.meatDef.label.ToLower(),
@@ -595,7 +606,7 @@ namespace FactionBlender {
                             p.RaceProps.body.label.ToLower(),
                             @"\b(?:insect|bug|snake|rat|arachnid|spider|worm|ant|slug)\b|cobra|facehugger"
                         )
-                    ) && p.RaceProps.baseBodySize <= 0.6
+                    )
                 ).RandomElement();
 
                 List<Thing> thingList = new List<Thing>();
