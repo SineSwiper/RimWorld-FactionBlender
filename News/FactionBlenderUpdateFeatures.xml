@@ -7,6 +7,15 @@
 	</HugsLib.UpdateFeatureDef>
 
 	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
+		<defName>FactionBlender_1_4_4</defName>
+		<assemblyVersion>1.4.4</assemblyVersion>
+		<content>&lt;b&gt;Fixes:&lt;/b&gt;
+- Works with RimWorld v1.5!
+- Updated the excluded memes/precepts list for FB factions, including some Biotech/Anomaly memes, Alpha Memes, Vanilla Memes Expanded, and others.
+        </content>
+	</HugsLib.UpdateFeatureDef>
+
+	<HugsLib.UpdateFeatureDef ParentName="FB_UpdateFeatureBase">
 		<defName>FactionBlender_1_4_3</defName>
 		<assemblyVersion>1.4.3</assemblyVersion>
 		<content>&lt;b&gt;Fixes:&lt;/b&gt;
