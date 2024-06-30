@@ -16,7 +16,8 @@
     </requiredMemes>
     <disallowedMemes>
         <!-- Memes that don't fit with an amalgam of races -->
-        <li MayRequire="Ludeon.RimWorld.Ideology">HAR_Xenophobia</li>
+        <li MayRequire="erdelf.HumanoidAlienRaces">HAR_Xenophobia</li>
+        <li MayRequire="Ludeon.RimWorld.Anomaly">Inhuman</li>
         <li MayRequire="Sarg.AlphaMemes">AM_BiologicalDefilers</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Anonymity</li>
 
@@ -29,6 +30,9 @@
         <li MayRequire="Sarg.AlphaMemes">AM_Artist</li>
         <li MayRequire="Sarg.AlphaMemes">AM_BiologicalReconstructors</li>
         <li MayRequire="Sarg.AlphaMemes">AM_Monastic</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_GauranlenSupremacy</li>
+        <li MayRequire="VanillaExpanded.VGeneticsE">GR_CarefulGeneticists</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Fleshcrafters</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Trader</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Pacifist</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Healthcare</li>
@@ -39,6 +43,16 @@
         <li MayRequire="Sarg.AlphaMemes">AM_NonViolence</li>
         <!-- NOTE: We allow light/dark limiters here, but not for FactionBlender_Civil -->
     </disallowedMemes>
+    <disallowedPrecepts>
+        <li MayRequire="Ludeon.RimWorld.Ideology">IdeoDiversity_Abhorrent</li>
+        <li MayRequire="Ludeon.RimWorld.Ideology">IdeoDiversity_Horrible</li>
+        <li MayRequire="Ludeon.RimWorld.Biotech">PreferredXenotype</li>
+        <li MayRequire="Ludeon.RimWorld.Anomaly">Inhumanizing_Required</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_Violence_Abhorrent_Strict</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_BodyMod_OnlyBiological</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Raiding_Abhorrent</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Abhorrent</li>
+    </disallowedPrecepts>
     <classicIdeo>false</classicIdeo>
     <structureMemeWeights>
         <Structure_TheistEmbodied MayRequire="Ludeon.RimWorld.Ideology">1</Structure_TheistEmbodied>
@@ -174,31 +188,55 @@
         <li>FB_CivilCoalition</li>
     </allowedCultures>
     <requiredMemes>
-        <li MayRequire="Ludeon.RimWorld.Ideology">HAR_Xenophilia</li>
+        <li MayRequire="erdelf.HumanoidAlienRaces">HAR_Xenophilia</li>
     </requiredMemes>
     <disallowedMemes>
         <!-- Memes that don't fit with an amalgam of races -->
-        <li MayRequire="Ludeon.RimWorld.Ideology">HAR_Xenophobia</li>
+        <li MayRequire="erdelf.HumanoidAlienRaces">HAR_Xenophobia</li>
+        <li MayRequire="Ludeon.RimWorld.Anomaly">Inhuman</li>
         <li MayRequire="Sarg.AlphaMemes">AM_BiologicalDefilers</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Anonymity</li>
+        <li MayRequire="VanillaExpanded.VFEA">VFEA_Isolationist</li>
 
-        <!-- Memes that don't fit with a diverse ideology, but might be honored by the other clan -->
+        <!-- Memes too extreme for a well-balanced civil faction, but might be honored by the other clan -->
         <li MayRequire="Ludeon.RimWorld.Ideology">MaleSupremacy</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">FemaleSupremacy</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">Supremacist</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">PainIsVirtue</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">Cannibal</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">Raider</li>
+        <li MayRequire="Ludeon.RimWorld.Biotech">Bloodfeeding</li>
+        <li MayRequire="Ludeon.RimWorld.Anomaly">Ritualist</li>
+        <li MayRequire="OskarPotocki.VFE.Pirates">VFEP_PirateMeme</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_Madness</li>
         <li MayRequire="Sarg.AlphaMemes">AM_Sadist</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_BiologicalDefilers</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_GauranlenSupremacy</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_Iconoclast</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_BiologicalCorruptors</li>
+        <li MayRequire="Sarg.AlphaMemes">AM_PsychicVampirism</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_ViolentConversion</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_GodEmperor</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Fleshcrafters</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_HolyDiseases</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_FireWorship</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Bushido</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_BloodCourt</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_MechanoidSupremacy</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_InsectoidSupremacy</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Anonymity</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Nationalist</li>
+
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Structure_Serketist</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Structure_ChthonianCult</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Structure_Eschatologism</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Structure_Authoritarianism</li>
 
         <!-- Memes that aren't practical for combat -->
         <li MayRequire="Ludeon.RimWorld.Ideology">Nudism</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">Blindsight</li>
         <li MayRequire="Sarg.AlphaMemes">AM_NonViolence</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Pacifist</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Light</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">Darkness</li>
     </disallowedMemes>
@@ -211,13 +249,33 @@
         <li MayRequire="Ludeon.RimWorld.Ideology">Cannibalism_RequiredRavenous</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">IdeoDiversity_Abhorrent</li>
         <li MayRequire="Ludeon.RimWorld.Ideology">IdeoDiversity_Horrible</li>
+        <li MayRequire="Ludeon.RimWorld.Biotech">Bloodfeeders_Revered</li>
+        <li MayRequire="Ludeon.RimWorld.Biotech">ChildLabor_Encouraged</li>
+        <li MayRequire="Ludeon.RimWorld.Biotech">PreferredXenotype</li>
+        <li MayRequire="Ludeon.RimWorld.Anomaly">Inhumanizing_Required</li>
         <li MayRequire="Sarg.AlphaMemes">AM_Violence_Abhorrent_Strict</li>
         <li MayRequire="Sarg.AlphaMemes">AM_Corpses_Sublime</li>
         <li MayRequire="Sarg.AlphaMemes">AM_Death_Desired</li>
         <li MayRequire="Sarg.AlphaMemes">AM_Bonding_Abhorrent</li>
         <li MayRequire="Sarg.AlphaMemes">AM_AnimalSlaughter_Desired</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Anonymity_Required</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Illness_Exalted</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Insectoids_Exalted</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_KillingWithFire_Preferred</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Leader_Godlike</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_BodyMod_OnlyBiological</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Corruption_Essential</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Defeat_Dishonorable</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Mechanoids_Exalted</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Power_Exalted</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Proselytizing_Forceful</li>
         <li MayRequire="VanillaExpanded.VMemesE">VME_Raiding_Honorable</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Honorable</li>
+        <li MayRequire="VanillaExpanded.VMemesE">VME_Violence_Abhorrent</li>
+        <li MayRequire="VanillaExpanded.VFEA">VFEA_Recruiting_Forbidden</li>
+        <li MayRequire="VanillaExpanded.VFEA">VFEA_BeingRecruited_Forbidden</li>
+        <li MayRequire="wvc.sergkart.races.biotech">WVC_GeneticSupremacy_Desired</li>
+        <li MayRequire="wvc.sergkart.races.biotech">WVC_GeneticSupremacy_Preferred</li>
     </disallowedPrecepts>
     <classicIdeo>false</classicIdeo>
     <structureMemeWeights>
@@ -401,8 +459,10 @@
     <allowedCultures>
         <li>FB_CoalatedClan</li>
     </allowedCultures>
-    <!-- No meme/precept is disallowed -->
-    <disallowedMemes />
+    <!-- (Almost) no meme/precept is disallowed -->
+    <disallowedMemes>
+        <li MayRequire="erdelf.HumanoidAlienRaces">HAR_Xenophobia</li>
+    </disallowedMemes>
     <disallowedPrecepts />
     <classicIdeo>false</classicIdeo>
     <!-- TODO: Fill this in via def injectors -->
