@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <CultureDef>
+    <defName>FB_AmalgamPirates</defName>
+    <label>amalgam pirate band</label>
+    <description>An amalgam of various races, who have grouped together in the name of pirating, looting, and general mayhem.</description>
+    <ideoNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerIdeoKriminul</ideoNameMaker>
+    <deityNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerDeityKriminul</deityNameMaker>
+    <deityTypeMaker MayRequire="Ludeon.RimWorld.Ideology">DeityTypeMakerKriminul</deityTypeMaker>
+    <leaderTitleMaker MayRequire="Ludeon.RimWorld.Ideology">LeaderTitleMaker_Kriminul</leaderTitleMaker>
+    <festivalNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerFestivalKriminul</festivalNameMaker>
+    <iconPath>World/FB_Pirate</iconPath>
+    <iconColor>(0.8, 0.8, 0.8)</iconColor>
+    <!-- These three tags groups are filled in via InjectStyleDefsToCultures -->
+    <allowedPlaceTags>
+      <li>OriginSpacer</li>
+      <li>OriginTribal</li>
+    </allowedPlaceTags>
+    <thingStyleCategories>
+      <li MayRequire="Ludeon.RimWorld.Ideology">
+        <category>Spikecore</category>
+        <priority>2</priority>
+      </li>
+    </thingStyleCategories>
+    <styleItemTags>
+      <li>
+        <tag>Punk</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>NoBeard</tag>
+        <baseWeight>10</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>BeardPunk</tag>
+        <baseWeight>0.1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>NoTattoo</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>TattooFacePunk</tag>
+        <baseWeight>0.4</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>TattooBodyPunk</tag>
+        <baseWeight>0.4</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+    </styleItemTags>
+  </CultureDef>
+
+  <CultureDef>
+    <defName>FB_CivilCoalition</defName>
+    <label>civil coalition</label>
+    <description>A large collection of cultures who have united under a common banner.</description>
+    <ideoNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerIdeoAstropolitan</ideoNameMaker>
+    <deityNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerDeityAstropolitan</deityNameMaker>
+    <deityTypeMaker MayRequire="Ludeon.RimWorld.Ideology">DeityTypeMakerAstropolitan</deityTypeMaker>
+    <leaderTitleMaker MayRequire="Ludeon.RimWorld.Ideology">LeaderTitleMaker_Astropolitan</leaderTitleMaker>
+    <festivalNameMaker MayRequire="Ludeon.RimWorld.Ideology">NamerFestivalAstropolitan</festivalNameMaker>
+    <!-- TODO: This may need more tags, if mods start adding them -->
+    <iconPath>World/FB_Civil</iconPath>
+    <iconColor>(0.8, 0.8, 0.8)</iconColor>
+    <!-- These three tags groups are filled in via InjectStyleDefsToCultures -->
+    <allowedPlaceTags>
+      <li>OriginSpacer</li>
+      <li>OriginTribal</li>
+      <li MayRequire="Ludeon.RimWorld.Royalty">OriginTechnoFeudal</li>
+    </allowedPlaceTags>
+    <thingStyleCategories />
+    <styleItemTags>
+      <li>
+        <tag>Urban</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>NoBeard</tag>
+        <baseWeight>10</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>BeardRural</tag>
+        <baseWeight>0.1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>BeardUrban</tag>
+        <baseWeight>0.2</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>NoTattoo</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+    </styleItemTags>
+  </CultureDef>
+
+  <CultureDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FB_CoalatedClan</defName>
+    <label>coalated clan</label>
+    <description>A loose collection of races, united under one clan.</description>
+    <ideoNameMaker MayRequire="Ludeon.RimWorld.Ideology">FB_NamerIdeoRandom</ideoNameMaker>
+    <deityNameMaker MayRequire="Ludeon.RimWorld.Ideology">FB_NamerDeityRandom</deityNameMaker>
+    <deityTypeMaker MayRequire="Ludeon.RimWorld.Ideology">FB_DeityTypeMakerRandom</deityTypeMaker>
+    <leaderTitleMaker MayRequire="Ludeon.RimWorld.Ideology">FB_LeaderTitleMaker_Random</leaderTitleMaker>
+    <festivalNameMaker MayRequire="Ludeon.RimWorld.Ideology">FB_NamerFestivalRandom</festivalNameMaker>
+    <iconPath>World/FB_Clan</iconPath>
+    <iconColor>(0.8, 0.8, 0.8)</iconColor>
+    <!-- These three tags groups are filled in via InjectStyleDefsToCultures -->
+    <allowedPlaceTags>
+      <li>OriginSpacer</li>
+      <li>OriginTribal</li>
+      <li MayRequire="Ludeon.RimWorld.Royalty">OriginTechnoFeudal</li>
+    </allowedPlaceTags>
+    <thingStyleCategories />
+    <styleItemTags>
+      <li>
+        <tag>Urban</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>NoBeard</tag>
+        <baseWeight>10</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>BeardRural</tag>
+        <baseWeight>0.1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>BeardUrban</tag>
+        <baseWeight>0.2</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+      <li>
+        <tag>NoTattoo</tag>
+        <baseWeight>1</baseWeight>
+        <weightFactor>1</weightFactor>
+      </li>
+    </styleItemTags>
+  </CultureDef>
+
+</Defs>

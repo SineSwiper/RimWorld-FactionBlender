@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!-- This is a special namer to make sure we always use some form of [political_union_outlander] (ie: a coalition) -->
+
+  <!-- Civil Coalition -->
+
+  <RulePackDef>
+    <defName>NamerFaction_FB_Civil</defName>
+    <include>
+      <li>OutlanderPlaceNameUtility</li>
+    </include>
+    <rulePack>
+      <rulesStrings>
+        <li>r_name->[civil_noun] [political_union_outlander]</li>
+        <li>r_name->[civil_noun] [political_adjective] [political_union_outlander]</li>
+        <li>r_name->[political_union_outlander] of [civil_noun]</li>
+        <li>r_name->[political_union_outlander] for [civil_noun]</li>
+        <li>r_name->[political_adjective] [political_union_outlander] of [civil_noun]</li>
+        <li>r_name->[political_adjective] [political_union_outlander] for [civil_noun]</li>
+        <li>r_name(p=0.8)->[civil_noun] for [civil_noun]</li>
+        <li>r_name(p=0.4)->[political_adjective] [political_union_outlander]</li>
+
+        <li>civil_noun(p=2)->[concept_positive]</li>
+        <li>civil_noun(p=1.5)->the Many</li>
+        <li>civil_noun->One</li>
+        <li>civil_noun->All</li>
+        <li>civil_noun->[PlaceOutlander]</li>
+        <li>civil_noun(p=0.6)->[Direction] [PlaceOutlander]</li>
+      </rulesStrings>
+      <rulesFiles>
+        <li>political_union_outlander->Words/Nouns/PoliticalUnions_Outlander</li>
+        <li>political_adjective->Words/Adjectives/PoliticalUnions</li>
+        <li>concept_positive->Words/Nouns/Concepts_Positive</li>
+      </rulesFiles>
+    </rulePack>
+  </RulePackDef>
+
+  <!-- Amalgam Pirate Band -->
+
+  <RulePackDef>
+    <defName>NamerFaction_FB_Pirate</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>r_name->The [ColorBadass] [political_union_outlander]</li>
+        <li>r_name->The [AdjectiveBadass] [political_union_outlander]</li>
+
+        <li>r_name->The [political_union_outlander] of [badass_item]s</li>
+        <li>r_name->The [badass_item] [political_union_outlander]</li>
+        <li>r_name->The [badass_item]'s [political_union_outlander]</li>
+        <li>r_name->The [badass_item]s' [political_union_outlander]</li>
+        <li>r_name->[political_union_outlander] of the [badass_item]</li>
+
+        <li>r_name->The [badass_group] of [political_union_outlander]s</li>
+        <li>r_name->The [political_union_outlander]'s [badass_group]</li>
+        <li>r_name->[badass_group] of the [political_union_outlander]</li>
+
+        <li>r_name->The [badass_item]s of [political_union_outlander]s</li>
+        <li>r_name->The [political_union_outlander]'s [badass_item]s</li>
+        <li>r_name->[badass_item]s of the [political_union_outlander]</li>
+
+        <li>badass_item->[badass_noun]</li>
+        <li>badass_item->[badass_adjective] [badass_noun]</li>
+        <li>badass_item->[badass_adjective] [Bodypart]</li>
+        <li>badass_item->[badass_adjective] [AnimalBadass]</li>
+
+        <li>badass_noun->[Weapon]</li>
+        <li>badass_noun->[PersonBadass]</li>
+        <li>badass_noun->[Enemy]</li>
+        <li>badass_noun->[ConceptBadass]</li>
+
+        <li>badass_adjective->[ColorBadass]</li>
+        <li>badass_adjective->[AdjectiveBadass]</li>
+        <li>badass_adjective->[AdjectiveLarge]</li>
+
+        <li>badass_group->[groupname]</li>
+        <li>badass_group->[AnimalGroup]</li>
+        <li>badass_group->[ConceptBadass]</li>
+        <li>badass_group->[badass_adjective] [ConceptBadass]</li>
+        <li>badass_group->[Gore]</li>
+      </rulesStrings>
+      <rulesFiles>
+        <li>political_union_outlander->Words/Nouns/PoliticalUnions_Outlander</li>
+        <li>groupname->Words/Nouns/GroupNames</li>
+      </rulesFiles>
+    </rulePack>
+  </RulePackDef>
+
+  <!-- Coalated Clan, a bit of a mix between the two -->
+
+  <RulePackDef>
+    <defName>NamerFaction_FB_Clan</defName>
+    <include>
+      <li>OutlanderPlaceNameUtility</li>
+    </include>
+    <rulePack>
+      <rulesStrings>
+        <li>r_name->[noun_pre] [union_mid]</li>
+        <li>r_name->[noun_pre_nonposs] [preposition] [union_post]</li>
+        <li>r_name->[union] [preposition] [noun_post]</li>
+        <li>r_name->[noun_pre] [union_mid] [preposition] [noun_post]</li>
+
+        <li>noun_pre->the [noun]</li>
+        <li>noun_pre->[noun]'s</li>
+        <li>noun_pre->[noun]s'</li>
+        <li>noun_pre(p=0.8)->[concept_positive]</li>
+        <li>noun_pre(p=0.4)->[PlaceOutlander]</li>
+        <li>noun_pre(p=0.2)->[Direction] [PlaceOutlander]</li>
+
+        <li>noun_pre_nonposs->[noun]</li>
+        <li>noun_pre_nonposs->[noun]s</li>
+        <li>noun_pre_nonposs->the [noun]</li>
+        <li>noun_pre_nonposs->the [noun]s</li>
+        <li>noun_pre_nonposs(p=0.8)->[concept_positive]</li>
+        <li>noun_pre_nonposs(p=0.4)->[PlaceOutlander]</li>
+        <li>noun_pre_nonposs(p=0.2)->[Direction] [PlaceOutlander]</li>
+
+        <li>noun_post->the [noun]</li>
+        <li>noun_post->[noun]s</li>
+        <li>noun_post(p=0.8)->[concept_positive]</li>
+        <li>noun_post(p=0.4)->[PlaceOutlander]</li>
+        <li>noun_post(p=0.2)->[Direction] [PlaceOutlander]</li>
+
+        <li>noun->[thing]</li>
+        <li>noun->[color] [thing]</li>
+        <li>noun->[group]</li>
+
+        <li>group->Clan</li>
+        <li>group->[groupname]</li>
+        <li>group->[AnimalGroup]</li>
+        <li>group->[groupadj] Clan</li>
+        <li>group->[groupadj] [groupname]</li>
+        <li>group->[groupadj] [AnimalGroup]</li>
+
+        <li>groupadj->[thing]</li>
+        <li>groupadj->[color]</li>
+        <li>groupadj->[color] [thing]</li>
+        <li>groupadj(p=0.2)->[Direction]</li>
+        <li>groupadj(p=0.2)->[Direction] [thing]</li>
+        <li>groupadj(p=0.2)->[color] [Direction]</li>
+
+        <li>preposition->of</li>
+        <li>preposition->for</li>
+
+        <li>union->[union_mid]</li>
+        <li>union->the [union_mid]</li>
+
+        <li>union_mid->[political_union]</li>
+        <li>union_mid->[political_union]s</li>
+
+        <li>union_post->the [political_union]</li>
+        <li>union_post->[political_union]s</li>
+
+        <li>color(p=1.5)->[ColorBadass]</li>
+        <li>color->[Color]</li>
+
+        <li>thing->[Weapon]</li>
+        <li>thing->[AnimalBadass]</li>
+        <li>thing->[Bodypart]</li>
+        <li>thing->[NaturalObject]</li>
+      </rulesStrings>
+      <rulesFiles>
+        <li>political_union->Words/Nouns/PoliticalUnions_Tribal</li>
+        <li>groupname->Words/Nouns/GroupNames</li>
+        <li>concept_positive->Words/Nouns/Concepts_Positive</li>
+      </rulesFiles>
+    </rulePack>
+  </RulePackDef>
+
+  <!-- Ideology namers -->
+
+  <RulePackDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FB_NamerIdeoRandom</defName>
+    <include>
+      <li>NamerIdeoGlobal</li>
+      <li>CultureSpacer</li>
+    </include>
+  </RulePackDef>
+
+  <RulePackDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FB_NamerDeityRandom</defName>
+    <include>
+      <li>NamerDeityGlobal</li>
+      <li>GodContent_English</li>
+      <li>GodContent_Byzantine</li>
+      <li>NamerDeityCorunan</li>
+    </include>
+  </RulePackDef>
+
+  <RulePackDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FB_DeityTypeMakerRandom</defName>
+    <include>
+      <li>DeityTypeMakerGlobal</li>
+    </include>
+  </RulePackDef>
+
+  <RulePackDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FB_LeaderTitleMaker_Random</defName>
+    <include>
+      <li>LeaderTitleMaker_GlobalStructure</li>
+      <li>LeaderTitleMaker_GenericContent</li>
+      <li>LeaderTitleMaker_Rustican</li>
+      <li>LeaderTitleMaker_Corunan</li>
+      <li>LeaderTitleMaker_Kriminul</li>
+      <li>LeaderTitleMaker_Sophian</li>
+    </include>
+  </RulePackDef>
+
+  <RulePackDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>FB_NamerFestivalRandom</defName>
+    <include>
+      <li>NamerFestivalGlobal</li>
+    </include>
+  </RulePackDef>
+
+</Defs>
